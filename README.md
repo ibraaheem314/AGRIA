@@ -43,7 +43,7 @@ La plateforme combine différentes sources de données en temps réel (météo, 
 ### Configuration
 1. Clonez le dépôt
    ```bash
-   git clone https://github.com/votre-username/agritech.git
+   git clone https://github.com/ibraaheem314/AGRIA.git
    cd agritech
    ```
 
