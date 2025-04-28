@@ -44,7 +44,7 @@ La plateforme combine différentes sources de données en temps réel (météo, 
 1. Clonez le dépôt
    ```bash
    git clone https://github.com/ibraaheem314/AGRIA.git
-   cd agritech
+   cd AGRIA
    ```
 
 2. Installez les dépendances frontend
@@ -125,7 +125,7 @@ agritech/
 - **OpenWeather API**: Fournit des données météorologiques en temps réel
 - **AirVisual API**: Fournit des données sur la qualité de l'air
 - **Agromonitoring API**: Fournit des données climatiques et agricoles
-- **OpenRouter/OpenAI API**: Alimente l'assistant IA pour les conseils agricoles
+- **OpenRouter/Mistral API**: Alimente l'assistant IA pour les conseils agricoles
 
 ## Déploiement
 
