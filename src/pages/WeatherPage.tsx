@@ -15,13 +15,17 @@ import {
   Clock,
   CloudLightning,
   Sunrise,
-  Sunset
+  Sunset,
+  BarChart2
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '../components/ui/PageHeader';
 import ModernWeatherMap from '../components/weather/WeatherMap';
+import TemperatureChart from '../components/weather/TemperatureChart';
+import HumidityChart from '../components/weather/HumidityChart';
+import WeatherDetailCard from '../components/weather/WeatherDetailCard';
 import { config } from '../../lib/config';
 
 // Interface pour les données météo
@@ -421,43 +425,40 @@ const WeatherPage = () => {
           />
         </div>
         
-        {/* Détails des conditions météo */}
+        {/* NOUVELLE SECTION: Graphiques d'évolution à la place des détails météo */}
         <div className="mb-6">
           <div className="flex items-center mb-3">
-            <h2 className="text-xl font-semibold mr-2">Conditions météo détaillées</h2>
-            <div className="text-xs bg-primary/20 text-primary-300 px-2 py-1 rounded-full flex items-center gap-1">
-              <Clock size={12} />
-              <span>Mis à jour à {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-            </div>
+            <h2 className="text-xl font-semibold mr-2">Évolution des conditions météo</h2>
+            <BarChart2 className="text-primary w-5 h-5" />
           </div>
           
-          {weatherData && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <WeatherDetailCard 
-                title="Température" 
-                value={`${Math.round(weatherData.temperature)}°C`} 
-                icon={<Thermometer className="text-red-400" />} 
-                description={`Ressenti ${Math.round(weatherData.feelsLike)}°C`}
+          {forecast.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Graphique de température */}
+              <TemperatureChart 
+                forecast={forecast} 
+                title="Évolution de la température"
               />
-              <WeatherDetailCard 
-                title="Humidité" 
-                value={`${weatherData.humidity}%`} 
-                icon={<Droplets className="text-blue-400" />} 
-                description={weatherData.humidity > 70 ? "Humidité élevée" : weatherData.humidity < 30 ? "Air sec" : "Niveau normal"}
-              />
-              <WeatherDetailCard 
-                title="Vent" 
-                value={`${Math.round(weatherData.windSpeed * 3.6)} km/h`} 
-                icon={<Wind className="text-blue-400" />} 
-                description={`Direction: ${getWindDirection(weatherData.windDirection)}`}
-              />
-              <WeatherDetailCard 
-                title="Précipitations" 
-                value={`${weatherData.rain1h ? weatherData.rain1h.toFixed(1) : '0'} mm`} 
-                icon={<Umbrella className="text-purple-400" />} 
-                description="Dernière heure"
+              
+              {/* Graphique d'humidité */}
+              <HumidityChart 
+                forecast={forecast} 
+                title="Évolution de l'humidité"
               />
             </div>
+          ) : (
+            <Card className="p-6 text-center">
+              <div className="py-8 text-gray-500">
+                {loading ? (
+                  <div className="flex flex-col items-center">
+                    <Loader className="animate-spin mb-3" size={24} />
+                    <span>Chargement des données pour les graphiques...</span>
+                  </div>
+                ) : (
+                  <span>Données d'évolution non disponibles</span>
+                )}
+              </div>
+            </Card>
           )}
         </div>
       </div>
@@ -472,39 +473,5 @@ const WeatherPage = () => {
     </div>
   );
 };
-
-// Composant pour les détails météo
-const WeatherDetailCard = ({ 
-  title, 
-  value, 
-  icon, 
-  description 
-}: { 
-  title: string, 
-  value: string, 
-  icon: React.ReactNode, 
-  description: string 
-}) => (
-  <Card className="p-4">
-    <div className="flex flex-col h-full">
-      <h3 className="text-base font-medium mb-1">{title}</h3>
-      
-      <div className="flex justify-between items-start mb-auto">
-        <div className="flex items-center">
-          <div className="text-4xl font-semibold mt-2">
-            {value}
-          </div>
-        </div>
-        <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-full">
-          {icon}
-        </div>
-      </div>
-      
-      <div className="text-sm text-gray-500 mt-2">
-        {description}
-      </div>
-    </div>
-  </Card>
-);
 
 export default WeatherPage; 
