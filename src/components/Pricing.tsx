@@ -230,9 +230,9 @@ const Pricing = () => {
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <motion.div 
+          <motion.div
           className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
           viewport={{ once: true }}
@@ -257,7 +257,7 @@ const Pricing = () => {
           >
             Des solutions flexibles pour chaque exploitation agricole. Choisissez le plan qui correspond à vos besoins.
           </motion.p>
-        </motion.div>
+          </motion.div>
 
         {/* Billing toggle */}
         <motion.div 
@@ -293,7 +293,7 @@ const Pricing = () => {
                 -20%
               </span>
             </button>
-          </div>
+        </div>
         </motion.div>
 
         {/* Pricing cards */}
@@ -338,7 +338,7 @@ const Pricing = () => {
                   <span className="text-gray-400 ml-2 mb-1">
                     /{annualBilling ? 'an' : 'mois'}
                   </span>
-                </div>
+                  </div>
 
                 {/* Features list */}
                 <ul className="space-y-4 mb-8">
@@ -360,8 +360,8 @@ const Pricing = () => {
                         {feature.name}
                       </span>
                     </motion.li>
-                  ))}
-                </ul>
+                ))}
+              </ul>
 
                 {/* CTA button */}
                 <motion.button
@@ -380,9 +380,9 @@ const Pricing = () => {
             </motion.div>
           ))}
         </div>
-
+        
         {/* Enterprise section */}
-        <motion.div 
+        <motion.div
           className="mt-20 max-w-4xl mx-auto bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 border border-gray-800"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

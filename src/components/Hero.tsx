@@ -29,22 +29,22 @@ const Hero = () => {
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
                 agriculture de précision
               </span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+        </motion.h1>
+        
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.4 }}
               className="text-xl text-gray-300 max-w-2xl mb-8"
-            >
+        >
               Basé sur une grande quantité de données satellite et
               climatiques, notre plateforme fournit des analyses avancées,
               indices de végétation et recommandations personnalisées.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+        </motion.p>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.6 }}
               className="flex flex-wrap gap-4"
             >
@@ -97,7 +97,7 @@ const Hero = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1 }}
             className="lg:col-span-5 relative"
-          >
+        >
             {/* Widget météo */}
             <div className="absolute -top-20 -right-10 z-10">
               <motion.div 
@@ -195,7 +195,7 @@ const Hero = () => {
                 </div>
               </div>
             </motion.div>
-          </motion.div>
+        </motion.div>
         </div>
       </div>
 

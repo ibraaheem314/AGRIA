@@ -6,6 +6,10 @@ import requests
 import json
 from datetime import datetime, timedelta
 import random
+import jwt  # Pour la gestion des JWT
+
+# Importer le blueprint d'authentification
+from auth import auth_bp, token_required
 
 # Importer la configuration des clés API
 try:
@@ -29,6 +33,9 @@ except ImportError:
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev_key_for_agritech')
 CORS(app, supports_credentials=True)
+
+# Enregistrer le blueprint d'authentification
+app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
 # Gestion de la mémoire des conversations du chatbot
 def get_chat_memory():
@@ -524,6 +531,40 @@ def optimize_irrigation():
     except Exception as e:
         return jsonify({"error": f"Erreur: {str(e)}"}), 500
 
+@app.route('/api/farms', methods=['GET'])
+@token_required
+def get_user_farms(current_user):
+    # Route protégée qui nécessite une authentification
+    # Cette fonction reçoit l'utilisateur courant en argument
+    
+    # Simuler des données de fermes pour l'utilisateur connecté
+    farms = [
+        {
+            "id": "farm_1",
+            "name": "Green Valley",
+            "area": 24.5,  # hectares
+            "location": {
+                "lat": 45.123,
+                "lon": -73.456
+            },
+            "crops": ["wheat", "corn"],
+            "created_at": "2023-03-15T10:30:00Z"
+        },
+        {
+            "id": "farm_2",
+            "name": "Sunset Fields",
+            "area": 18.2,
+            "location": {
+                "lat": 45.234,
+                "lon": -73.567
+            },
+            "crops": ["soybean"],
+            "created_at": "2023-05-02T14:45:00Z"
+        }
+    ]
+    
+    return jsonify({"farms": farms})
+
 @app.route('/api/health', methods=['GET'])
 def health_check():
     # Endpoint de vérification de santé de l'API
@@ -534,7 +575,8 @@ def health_check():
         "apis": {
             "weather": OPENWEATHER_API_KEY is not None,
             "climate": OPENWEATHER_API_KEY is not None,  # Même clé
-            "chatbot": OPEN_ROUTER_KEY is not None
+            "chatbot": OPEN_ROUTER_KEY is not None,
+            "auth": True
         }
     })
 

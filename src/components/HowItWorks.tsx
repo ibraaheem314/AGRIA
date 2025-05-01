@@ -49,7 +49,7 @@ const HowItWorks = () => {
           transition={{ duration: 0.7 }}
           viewport={{ once: true }}
         >
-          <motion.h2 
+          <motion.h2
             className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6"
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -60,7 +60,7 @@ const HowItWorks = () => {
               Comment ça fonctionne
             </span>
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-gray-300 max-w-3xl mx-auto text-lg md:text-xl"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -70,7 +70,7 @@ const HowItWorks = () => {
             Une approche simple et efficace pour surveiller vos cultures et optimiser votre production agricole.
           </motion.p>
         </motion.div>
-        
+
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
           {/* Connection line on desktop */}
           <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 transform -translate-y-1/2 z-0" />
@@ -108,7 +108,7 @@ const HowItWorks = () => {
                     "p-2 rounded-lg",
                     `bg-gradient-to-r ${step.color}/10`
                   )}>
-                    {step.icon}
+                  {step.icon}
                   </div>
                 </div>
                 
@@ -124,7 +124,7 @@ const HowItWorks = () => {
                   <div className="flex items-center gap-1">
                     <CheckCircle className="h-4 w-4 text-green-500" />
                     <span className="text-gray-400">Efficace</span>
-                  </div>
+              </div>
                 </div>
               </div>
             </motion.div>

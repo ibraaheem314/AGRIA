@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Zap, Send, ChevronDown, ChevronUp, X, Save, BarChart, CloudRain, Map } from 'lucide-react';
 import Button from '../ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
-import useChatbot from '../../../hooks/useChatbot';
+import useChatbot from '../../hooks/useChatbot';
 
 interface Message {
   id: number;
@@ -37,22 +37,22 @@ const AIAssistant: React.FC = () => {
       sender: 'user',
       timestamp: new Date()
     };
-    
+  
     setMessages([...messages, userMessage]);
     setNewMessage('');
     setIsTyping(true);
-    
+  
     try {
       // Obtenir une réponse réelle de l'API
       const response = await askQuestion(newMessage);
-      
+  
       const assistantMessage: Message = {
         id: messages.length + 2,
         text: response,
         sender: 'assistant',
         timestamp: new Date()
       };
-      
+  
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       // En cas d'erreur, afficher un message approprié
@@ -176,39 +176,39 @@ const AIAssistant: React.FC = () => {
                   </button>
                 </div>
               </div>
-            </div>
+      </div>
 
             {/* Chat body */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 styled-scrollbar backdrop-blur-sm bg-gradient-to-br from-black/30 to-neutral-900/30">
-              {messages.map((message) => (
-                <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
+          {messages.map((message) => (
+            <motion.div
+              key={message.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
                   className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div 
+            >
+              <div
                     className={`max-w-[85%] p-3 rounded-xl ${
                       message.sender === 'user' 
                         ? 'bg-primary text-white rounded-tr-none shadow-md' 
                         : 'bg-[#151918] text-white border border-neutral-800 rounded-tl-none'
-                    }`}
-                  >
+                }`}
+              >
                     <p>{message.text}</p>
                     <div className="mt-1 text-xs text-gray-400 flex justify-end">
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+              </div>
+            </motion.div>
+          ))}
               
               {isTyping && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex justify-start"
-                >
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex justify-start"
+            >
                   <div className="bg-[#151918] text-white border border-neutral-800 p-3 rounded-xl rounded-tl-none">
                     <div className="flex gap-1.5">
                       <motion.div 
@@ -227,9 +227,9 @@ const AIAssistant: React.FC = () => {
                         transition={{ duration: 1, repeat: Infinity, repeatDelay: 0.3, delay: 0.2 }}
                       />
                     </div>
-                  </div>
-                </motion.div>
-              )}
+              </div>
+            </motion.div>
+          )}
             </div>
 
             {/* Quick actions */}
@@ -269,13 +269,13 @@ const AIAssistant: React.FC = () => {
                   Détecter des problèmes
                 </Button>
               </div>
-            </div>
+      </div>
 
             {/* Chat input */}
             <div className="p-4 border-t border-neutral-800 bg-gradient-to-r from-primary/5 to-neutral-800/5">
               <div className="flex items-center bg-[#151918] border border-neutral-800 rounded-full pl-4 pr-2 py-2">
-                <input
-                  type="text"
+          <input
+            type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
@@ -295,7 +295,7 @@ const AIAssistant: React.FC = () => {
               <div className="mt-2 text-xs text-center text-gray-500">
                 Posez des questions sur vos cultures, la météo ou les recommandations
               </div>
-            </div>
+        </div>
           </motion.div>
         )}
       </AnimatePresence>

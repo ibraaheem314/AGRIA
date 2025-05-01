@@ -18,7 +18,7 @@ export const config = {
     // Weather APIs
     weather: {
       openWeather: {
-        apiKey: import.meta.env.VITE_OPENWEATHER_API_KEY || '',
+        apiKey: import.meta.env.VITE_OPENWEATHER_API_KEY || '1707374d07315cd524c6e04d0b0b734b',
         baseUrl: 'https://api.openweathermap.org/data/2.5',
       },
       airVisual: {
@@ -29,7 +29,7 @@ export const config = {
     
     // Climate API
     climate: {
-      apiKey: import.meta.env.VITE_AGROMONITORING_API_KEY || import.meta.env.VITE_OPENWEATHER_API_KEY || '',
+      apiKey: import.meta.env.VITE_AGROMONITORING_API_KEY || 'a208b345ce27b388f58bbb2a32b73dbd',
       baseUrl: 'https://api.agromonitoring.com/agro/1.0',
     },
   

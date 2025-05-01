@@ -64,32 +64,32 @@ const Home = () => {
       {/* Content with smooth transitions */}
       <div className="relative z-10">
         <section id="hero">
-          <Hero />
+      <Hero />
         </section>
-        
+
         <section id="features" className="relative">
-          <Features />
-        </section>
-        
+        <Features />
+      </section>
+
         <section id="how-it-works" className="relative">
-          <HowItWorks />
-        </section>
-        
+        <HowItWorks />
+      </section>
+
         <section id="why">
-          <WhyAgriTech />
-        </section>
-        
+        <WhyAgriTech />
+      </section>
+
         <section id="partners">
           <Partner />
         </section>
         
         <section id="pricing" className="relative">
-          <Pricing />
-        </section>
-        
+        <Pricing />
+      </section>
+
         <Footer />
       </div>
-      
+
       <AIAssistant />
     </div>
   );

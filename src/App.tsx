@@ -3,10 +3,13 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import DashboardLayout from './components/layout/DashboardLayout';
 import MarketingLayout from './components/layout/MarketingLayout';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
 import Home from './pages/Home';
 import Contact from './pages/Contact';
 import WhyAgriTech from './pages/WhyAgriTech';
+import Login from './pages/Login';
 
 import Dashboard from './pages/Dashboard';
 import Farms from './pages/Farms';
@@ -19,6 +22,7 @@ import NotFound from './pages/NotFound';
 
 function App() {
   return (
+    <AuthProvider>
     <Router>
       <Routes>
         {/* 🌿 Marketing public pages */}
@@ -26,15 +30,16 @@ function App() {
           <Route index element={<Home />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/why" element={<WhyAgriTech />} />
+            <Route path="/login" element={<Login />} />
         </Route>
 
-        {/* 📊 Dashboard app pages */}
-        <Route element={<DashboardLayout />}>
+          {/* 📊 Dashboard app pages - protected routes */}
+          <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/farms" element={<Farms />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/resources" element={<Resources />} />
-          <Route path="/weather" element={<WeatherPage />} />
+            <Route path="/weather" element={<WeatherPage />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
 
@@ -42,6 +47,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
+    </AuthProvider>
   );
 }
 

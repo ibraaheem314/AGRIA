@@ -91,7 +91,7 @@ const Features = () => {
           transition={{ duration: 0.7 }}
           viewport={{ once: true }}
         >
-          <motion.h2 
+          <motion.h2
             className="text-3xl md:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary mb-6"
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -100,7 +100,7 @@ const Features = () => {
           >
             Fonctionnalités Avancées pour l'Agriculture de Précision
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-gray-300 max-w-3xl mx-auto text-lg md:text-xl"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -111,7 +111,7 @@ const Features = () => {
             pour vous aider à prendre les meilleures décisions pour vos cultures.
           </motion.p>
         </motion.div>
-        
+
         <motion.div 
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10"
           variants={containerVariants}
@@ -120,7 +120,7 @@ const Features = () => {
           viewport={{ once: true, margin: "-100px" }}
         >
           {featureItems.map((feature, index) => (
-            <motion.div 
+            <motion.div
               key={index}
               variants={itemVariants}
               className="bg-[#0C1512]/50 backdrop-blur-sm border border-primary/10 rounded-xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20 hover:-translate-y-1"

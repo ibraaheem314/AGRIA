@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { 
   Activity, Users, Cloud, BarChart2, CircleDollarSign, Droplets, Leaf, 
   MapPin, Sprout, Sun, MoreHorizontal, Plus, Maximize2, RefreshCw, ChevronRight
@@ -8,9 +9,12 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import DataCard from '../components/ui/DataCard';
 import PageHeader from '../components/ui/PageHeader';
+import WeatherWidget from '../components/weather/WeatherWidget';
+import ClimateWidget from '../components/climate/ClimateWidget';
 
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   
   const refreshData = () => {
     setIsLoading(true);
@@ -118,6 +122,39 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Weather and Climate Section */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-text">Conditions météo et sol</h2>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              icon={<ChevronRight size={16} />}
+              iconPosition="right"
+              onClick={() => navigate('/weather')}
+            >
+              Voir détails
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <WeatherWidget 
+              lat={48.8566}
+              lon={2.3522}
+            />
+            
+            <ClimateWidget 
+              coordinates={[
+                [2.3522, 48.8566],
+                [2.3622, 48.8566],
+                [2.3622, 48.8666],
+                [2.3522, 48.8666],
+                [2.3522, 48.8566]
+              ]}
+            />
+          </div>
+        </div>
+
         {/* Section Activités récentes & Tâches */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Graphique de performance */}
@@ -201,8 +238,8 @@ const Dashboard = () => {
                     </div>
                     <div className="flex-shrink-0 text-text-tertiary">
                       {task.icon}
-          </div>
-              </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}

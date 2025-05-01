@@ -5,31 +5,31 @@ import Button from '../components/ui/Button';
 
 const WhyAgriTech = () => {
   const benefits = [
-    {
+  {
       icon: <Leaf className="h-6 w-6 text-primary" />,
       title: "Agriculture durable",
       description: "Réduisez votre empreinte carbone grâce à des pratiques agricoles optimisées et précises.",
       delay: 0.1
-    },
-    {
+  },
+  {
       icon: <Shield className="h-6 w-6 text-secondary" />,
       title: "Sécurité et transparence",
       description: "Vos données sont cryptées et stockées en toute sécurité, consultables pour vos certifications.",
       delay: 0.2
-    },
-    {
+  },
+  {
       icon: <Brain className="h-6 w-6 text-primary" />,
       title: "Prédictions avancées",
       description: "Anticipez les risques et opportunités avec notre intelligence artificielle prédictive.",
       delay: 0.3
-    },
-    {
+  },
+  {
       icon: <BarChart2 className="h-6 w-6 text-secondary" />,
       title: "Optimisation des ressources",
       description: "Irrigation, fertilisants, traitements - réduisez vos coûts tout en optimisant vos rendements.",
       delay: 0.4
-    }
-  ];
+  }
+];
 
   const container = {
     hidden: { opacity: 0 },
@@ -65,7 +65,7 @@ const WhyAgriTech = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -124,9 +124,9 @@ const WhyAgriTech = () => {
             </motion.div>
           ))}
         </motion.div>
-
+        
         {/* CTA Section */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.8 }}
@@ -158,9 +158,9 @@ const WhyAgriTech = () => {
             >
               <Button className="px-8 py-3 bg-gradient-to-r from-primary to-secondary text-white">
                 Commencer gratuitement
-              </Button>
+            </Button>
               <Button className="px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10">
-                Voir une démo
+              Voir une démo
               </Button>
             </motion.div>
           </div>
