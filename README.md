@@ -1,12 +1,12 @@
 # AgriTech - Plateforme d'Agriculture Durable
 
-## 📌 À propos du projet
+## À propos du projet
 
 AgriTech est une plateforme web moderne dédiée à l'agriculture durable, offrant aux agriculteurs des outils intelligents pour optimiser leurs pratiques agricoles, réduire leur impact environnemental et améliorer leurs rendements.
 
 La plateforme combine différentes sources de données en temps réel (météo, qualité de l'air, données climatiques) et utilise l'intelligence artificielle pour fournir des analyses et des recommandations personnalisées.
 
-## 🌟 Fonctionnalités principales
+## Fonctionnalités principales
 
 - **Tableau de bord interactif** avec indicateurs de performance et scores de durabilité
 - **Suivi météorologique et climatique** en temps réel avec visualisation des données
@@ -16,7 +16,7 @@ La plateforme combine différentes sources de données en temps réel (météo, 
 - **Planification de tâches** avec priorisation intelligente
 - **Marketplace** pour l'achat de produits et services agricoles durables
 
-## 🛠️ Technologies utilisées
+## Technologies utilisées
 
 ### Frontend
 - React avec TypeScript
@@ -33,7 +33,7 @@ La plateforme combine différentes sources de données en temps réel (météo, 
   - Agromonitoring pour les données climatiques agricoles
   - OpenAI pour l'assistant agricole intelligent
 
-## 🔧 Installation et démarrage
+## Installation et démarrage
 
 ### Prérequis
 - Node.js (v14+)
@@ -43,8 +43,8 @@ La plateforme combine différentes sources de données en temps réel (météo, 
 ### Configuration
 1. Clonez le dépôt
    ```bash
-   git clone https://github.com/votre-username/agritech.git
-   cd agritech
+   git clone https://github.com/ibraaheem314/AGRIA.git
+   cd AGRIA
    ```
 
 2. Installez les dépendances frontend
@@ -83,7 +83,7 @@ La plateforme combine différentes sources de données en temps réel (météo, 
 
 3. Accédez à l'application via `http://localhost:5173`
 
-## 🏗️ Structure du projet
+## Structure du projet
 
 ```
 agritech/
@@ -120,14 +120,14 @@ agritech/
 └── env.d.ts            # Définitions TypeScript pour les variables d'environnement
 ```
 
-## 🌐 APIs utilisées
+## APIs utilisées
 
 - **OpenWeather API**: Fournit des données météorologiques en temps réel
 - **AirVisual API**: Fournit des données sur la qualité de l'air
 - **Agromonitoring API**: Fournit des données climatiques et agricoles
-- **OpenRouter/OpenAI API**: Alimente l'assistant IA pour les conseils agricoles
+- **OpenRouter/Mistral API**: Alimente l'assistant IA pour les conseils agricoles
 
-## 🚀 Déploiement
+## Déploiement
 
 Pour le déploiement en production:
 
@@ -140,14 +140,10 @@ Pour le déploiement en production:
 
 3. Configurez votre serveur Python avec gunicorn ou un autre serveur WSGI
 
-## 🤝 Contribuer
+## Contribuer
 
 Les contributions sont les bienvenues! N'hésitez pas à ouvrir une issue ou à soumettre une pull request.
 
-## 📄 Licence
+## Licence
 
 Ce projet est sous licence MIT - voir le fichier LICENSE pour plus de détails.
-
-## 📞 Contact
-
-Pour toute question ou suggestion, veuillez nous contacter à example@agritech.com. 
