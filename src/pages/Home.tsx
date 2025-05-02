@@ -34,6 +34,9 @@ const Home = () => {
       }
     };
 
+    // Set light theme
+    document.documentElement.setAttribute('data-theme', 'light');
+
     // Apply on initial load
     handleHashChange();
 
@@ -45,45 +48,52 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="bg-dark text-white">
-      {/* Background elements */}
-      <div className="fixed inset-0 bg-grid-pattern opacity-5 pointer-events-none z-0"></div>
-
+    <div className="bg-white text-gray-800">
       {/* Content */}
-      <div className="relative z-10">
-        <section id="hero">
-      <Hero />
+      <motion.div 
+        className="relative"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        <motion.section 
+          id="hero"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Hero />
+        </motion.section>
+
+        <section id="features">
+          <Features />
         </section>
 
-        <section id="features" className="py-20">
-        <Features />
-      </section>
+        <section id="how-it-works">
+          <HowItWorks />
+        </section>
 
-        <section id="how-it-works" className="py-20">
-        <HowItWorks />
-      </section>
+        <section id="why">
+          <WhyAgriTech />
+        </section>
 
-        <section id="why" className="py-20">
-        <WhyAgriTech />
-      </section>
-
-        <section id="partners" className="py-20">
+        <section id="partners">
           <Partner />
         </section>
         
-        <section id="pricing" className="py-20">
-        <Pricing />
-      </section>
+        <section id="pricing">
+          <Pricing />
+        </section>
 
-      <Footer />
-      </div>
+        <Footer />
+      </motion.div>
 
       {/* Back to top button */}
       <motion.button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        whileHover={{ y: -3, boxShadow: '0 0 15px rgba(130, 90, 195, 0.5)' }}
+        whileHover={{ y: -3, boxShadow: '0 0 15px rgba(34, 197, 94, 0.5)' }}
         className="fixed bottom-10 right-10 bg-primary text-white p-3 rounded-full shadow-glow-sm z-40 hidden lg:flex lg:items-center lg:justify-center transition-all duration-300"
       >
         <ChevronUp size={20} />

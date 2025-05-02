@@ -1,37 +1,43 @@
 import { useState } from 'react';
-import { getFarmingAdvice } from '../api/chatbotApi';
+import { getFarmingAdvice } from '../services/chatbotAPI';
 
-interface UseChatbotReturn {
+interface ChatbotHookResult {
   askQuestion: (question: string) => Promise<string>;
+  response: string | null;
   loading: boolean;
   error: string | null;
 }
 
-const useChatbot = (): UseChatbotReturn => {
+/**
+ * Hook pour interagir avec l'assistant IA agricole
+ */
+export default function useChatbot(): ChatbotHookResult {
+  const [response, setResponse] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
+  
   const askQuestion = async (question: string): Promise<string> => {
     setLoading(true);
     setError(null);
-
+    
     try {
-      const response = await getFarmingAdvice(question);
-      return response;
+      const responseText = await getFarmingAdvice(question);
+      setResponse(responseText);
+      return responseText;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      console.error('Error getting farming advice:', err);
+      const errorMessage = 'Impossible de contacter l\'assistant. Veuillez réessayer plus tard.';
       setError(errorMessage);
-      throw new Error(errorMessage);
+      return errorMessage;
     } finally {
       setLoading(false);
     }
   };
-
+  
   return {
     askQuestion,
+    response,
     loading,
     error
   };
-};
-
-export default useChatbot; 
+} 

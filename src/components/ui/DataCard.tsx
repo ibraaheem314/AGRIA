@@ -1,6 +1,5 @@
 import React from 'react';
 import { ArrowUp, ArrowDown } from 'lucide-react';
-import { motion } from 'framer-motion';
 import Card from './Card';
 
 interface TrendProps {
@@ -13,11 +12,10 @@ interface DataCardProps {
   title: string;
   value: string;
   icon: React.ReactNode;
-  color: 'primary' | 'secondary' | 'success' | 'warning' | 'info' | 'danger' | 'accent';
+  color: 'primary' | 'secondary' | 'success' | 'warning' | 'info';
   trend?: TrendProps;
   description?: string;
   loading?: boolean;
-  onClick?: () => void;
 }
 
 const DataCard: React.FC<DataCardProps> = ({
@@ -27,8 +25,7 @@ const DataCard: React.FC<DataCardProps> = ({
   color,
   trend,
   description,
-  loading = false,
-  onClick
+  loading = false
 }) => {
   const getColorClasses = () => {
     switch (color) {
@@ -37,15 +34,11 @@ const DataCard: React.FC<DataCardProps> = ({
       case 'secondary':
         return 'text-secondary bg-secondary/10 border-secondary/20';
       case 'success':
-        return 'text-success bg-success/10 border-success/20';
+        return 'text-green-500 bg-green-500/10 border-green-500/20';
       case 'warning':
-        return 'text-warning bg-warning/10 border-warning/20';
+        return 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20';
       case 'info':
-        return 'text-info bg-info/10 border-info/20';
-      case 'danger':
-        return 'text-danger bg-danger/10 border-danger/20';
-      case 'accent':
-        return 'text-accent bg-accent/10 border-accent/20';
+        return 'text-blue-500 bg-blue-500/10 border-blue-500/20';
       default:
         return 'text-primary bg-primary/10 border-primary/20';
     }
@@ -53,20 +46,8 @@ const DataCard: React.FC<DataCardProps> = ({
 
   const iconClasses = `${getColorClasses()} p-3 rounded-lg`;
 
-  const getTrendColor = (trend: TrendProps) => {
-    return trend.isPositive ? 
-      'text-success bg-success/10' : 
-      'text-danger bg-danger/10';
-  };
-
   return (
-    <Card 
-      className="p-5 border border-primary/20 bg-surface hover:shadow-glow-sm transition-all duration-300"
-      hoverable
-      onClick={onClick}
-      withHoverAnimation={!!onClick}
-      hoverAnimationType="lift"
-    >
+    <Card className="p-5 border border-primary/20 bg-surface hover:shadow-glow-sm transition-all duration-300">
       {loading ? (
         <div className="space-y-3">
           <div className="w-2/3 h-5 bg-primary/5 rounded animate-pulse"></div>
@@ -82,17 +63,12 @@ const DataCard: React.FC<DataCardProps> = ({
             </div>
           </div>
           
-          <motion.div 
-            className="mb-2"
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="text-2xl font-semibold">{value}</div>
+          <div className="mb-2">
+            <div className="text-2xl font-bold">{value}</div>
             
             {trend && (
-              <div className="flex items-center mt-1.5">
-                <div className={`flex items-center rounded-full px-2 py-0.5 ${getTrendColor(trend)}`}>
+              <div className="flex items-center mt-1">
+                <div className={`flex items-center ${trend.isPositive ? 'text-green-500' : 'text-red-500'}`}>
                   {trend.isPositive ? (
                     <ArrowUp size={14} className="mr-1" />
                   ) : (
@@ -101,11 +77,11 @@ const DataCard: React.FC<DataCardProps> = ({
                   <span className="text-xs font-medium">{trend.value}%</span>
                 </div>
                 {trend.label && (
-                  <span className="text-xs text-text-tertiary ml-2">{trend.label}</span>
+                  <span className="text-xs text-text-tertiary ml-1">{trend.label}</span>
                 )}
               </div>
             )}
-          </motion.div>
+          </div>
           
           {description && (
             <div className="text-xs text-text-tertiary">{description}</div>

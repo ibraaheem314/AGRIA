@@ -56,17 +56,12 @@ interface Forecast {
   };
 }
 
-interface WeatherLocation {
-  lat: number;
-  lon: number;
-}
-
 interface WeatherHookResult {
   data: WeatherData | null;
   forecast: Forecast | null;
   loading: boolean;
   error: string | null;
-  refetch: () => Promise<void>;
+  refetch: (lat: number, lon: number) => Promise<void>;
 }
 
 // Fonction pour générer des données météo simulées
@@ -143,50 +138,166 @@ function getSimulatedForecastData(lat: number, lon: number): any {
   };
 }
 
-export default function useWeather(location: WeatherLocation): WeatherHookResult {
+export default function useWeather(initialLat?: number, initialLon?: number): WeatherHookResult {
   const [data, setData] = useState<WeatherData | null>(null);
   const [forecast, setForecast] = useState<Forecast | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(!!initialLat && !!initialLon);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchWeatherData = async () => {
+  const fetchWeather = async (lat: number, lon: number) => {
+    console.log('fetchWeather called with', { lat, lon });
+    
     try {
       setLoading(true);
       setError(null);
-      const weatherData = await getWeatherData(location.lat, location.lon);
-      setData(weatherData);
       
-      // Get forecast data
+      // Fetch current weather - prioritize the API service now that we have valid keys
       try {
-        console.log('Trying to get forecast data from API');
-        const forecastData = await getForecastData(location.lat, location.lon);
-        console.log('Forecast data fetched successfully');
-        setForecast(forecastData);
-      } catch (forecastError) {
-        console.warn('Failed to fetch forecast, using simulated data:', forecastError);
-        setForecast(getSimulatedForecastData(location.lat, location.lon));
+        console.log('Trying to get weather data from API');
+        // Use the weather service with valid API keys
+        const weatherData = await getWeatherData(lat, lon);
+        console.log('Weather data fetched successfully:', weatherData);
+        setData(weatherData);
+        
+        // Get forecast data
+        try {
+          console.log('Trying to get forecast data from API');
+          const forecastData = await getForecastData(lat, lon);
+          console.log('Forecast data fetched successfully');
+          setForecast(forecastData);
+        } catch (forecastError) {
+          console.warn('Failed to fetch forecast, using simulated data:', forecastError);
+          setForecast(getSimulatedForecastData(lat, lon));
+        }
+      } catch (serviceError) {
+        console.warn('Weather API service failed, trying direct API call:', serviceError);
+        
+        // Try direct API call as backup
+        const apiKey = config.weather.openWeather.apiKey;
+        if (apiKey && apiKey !== 'your_openweather_api_key_here') {
+          try {
+            console.log('Trying direct OpenWeatherMap API call');
+            const response = await axios.get(
+              `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`
+            );
+            
+            const weatherData = response.data;
+            console.log('Direct API call successful:', weatherData);
+            
+            // Transform to our format
+            setData({
+              temperature: weatherData.main.temp,
+              humidity: weatherData.main.humidity,
+              windSpeed: weatherData.wind.speed,
+              description: weatherData.weather[0].description,
+              icon: weatherData.weather[0].icon,
+              feelsLike: weatherData.main.feels_like,
+              pressure: weatherData.main.pressure,
+              visibility: weatherData.visibility,
+              clouds: weatherData.clouds.all,
+              sunrise: weatherData.sys.sunrise,
+              sunset: weatherData.sys.sunset,
+              windDirection: weatherData.wind.deg,
+              rain1h: weatherData.rain?.['1h'],
+              snow1h: weatherData.snow?.['1h'],
+              country: weatherData.sys.country,
+              cityName: weatherData.name
+            });
+            
+            // Try to get forecast as well
+            try {
+              const forecastResponse = await axios.get(
+                `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`
+              );
+              setForecast(forecastResponse.data);
+            } catch (directForecastError) {
+              console.warn('Direct forecast API call failed:', directForecastError);
+              setForecast(getSimulatedForecastData(lat, lon));
+            }
+          } catch (directApiError) {
+            console.warn('Direct API call failed, trying Flask API:', directApiError);
+            // Proceed to Flask API as next fallback
+            tryFlaskApi();
+          }
+        } else {
+          console.warn('No valid API key available, trying Flask API');
+          // No valid API key, try Flask API
+          tryFlaskApi();
+        }
       }
     } catch (err) {
-      console.error('Error fetching weather data:', err);
-      setError('Failed to load weather data. Please try again later.');
+      console.error('All weather fetching methods failed:', err);
+      setError(err instanceof Error ? err.message : 'Une erreur s\'est produite');
       
       // Toujours fournir des données simulées pour éviter une page vide
-      setData(getSimulatedWeatherData(location.lat, location.lon));
-      setForecast(getSimulatedForecastData(location.lat, location.lon));
+      setData(getSimulatedWeatherData(lat, lon));
+      setForecast(getSimulatedForecastData(lat, lon));
     } finally {
       setLoading(false);
+    }
+    
+    // Helper function to try the Flask API
+    async function tryFlaskApi() {
+      try {
+        console.log('Trying Flask API');
+        const response = await axios.get(`http://localhost:8000/api/weather?lat=${lat}&lon=${lon}`);
+        
+        if (response.data?.error) {
+          throw new Error(response.data.error);
+        }
+        
+        if (response.data) {
+          console.log('Flask API data fetched successfully');
+          // Adapter le format de l'API Flask au format attendu
+          setData({
+            temperature: response.data.temperature,
+            humidity: response.data.humidity,
+            windSpeed: response.data.windSpeed,
+            description: response.data.description,
+            icon: 'unknown', // L'API Flask ne fournit pas cette information
+            feelsLike: response.data.temperature - 1, // Approximation
+            pressure: 1013, // Valeur par défaut
+            visibility: 10000, // Valeur par défaut (10 km)
+            clouds: 0, // Valeur par défaut
+            sunrise: Math.floor(Date.now() / 1000) - 3600, // Approximation
+            sunset: Math.floor(Date.now() / 1000) + 43200, // Approximation
+            windDirection: 0, // Valeur par défaut
+            country: 'Unknown',
+            cityName: 'Unknown'
+          });
+          
+          // Prévisions simulées
+          setForecast(getSimulatedForecastData(lat, lon));
+        } else {
+          throw new Error('Données météo non disponibles');
+        }
+      } catch (flaskError) {
+        console.warn('Flask API failed, using simulated data:', flaskError);
+        // Utiliser des données simulées en dernier recours
+        setData(getSimulatedWeatherData(lat, lon));
+        setForecast(getSimulatedForecastData(lat, lon));
+      }
     }
   };
 
   useEffect(() => {
-    fetchWeatherData();
-  }, [location.lat, location.lon]);
+    console.log('useWeather hook called with', { initialLat, initialLon });
+    if (initialLat && initialLon) {
+      fetchWeather(initialLat, initialLon);
+    } else {
+      // Fournir des données simulées si aucune coordonnée n'est fournie
+      console.log('No coordinates provided, using simulated data');
+      setData(getSimulatedWeatherData(48.8566, 2.3522)); // Paris
+      setForecast(getSimulatedForecastData(48.8566, 2.3522));
+      setLoading(false);
+    }
+  }, [initialLat, initialLon]);
 
   return {
     data,
     forecast,
     loading,
     error,
-    refetch: fetchWeatherData
+    refetch: fetchWeather
   };
 } 

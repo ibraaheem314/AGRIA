@@ -1,37 +1,71 @@
 import { useState, useEffect } from 'react';
 import { getClimateData } from '../../lib/api/climate';
-
-type Coordinates = [number, number][];
+import axios from 'axios';
 
 interface ClimateHookResult {
-  data: any | null;
+  data: {
+    soilMoisture: number;
+    ndvi: number;
+    precipitation: number;
+  } | null;
   loading: boolean;
   error: string | null;
-  refetch: () => Promise<void>;
+  refetch: (coordinates: number[][]) => Promise<void>;
 }
 
-export default function useClimate(polygonCoordinates: Coordinates): ClimateHookResult {
-  const [data, setData] = useState<any | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+export default function useClimate(initialCoordinates?: number[][]): ClimateHookResult {
+  const [data, setData] = useState<ClimateHookResult['data']>(null);
+  const [loading, setLoading] = useState<boolean>(!!initialCoordinates);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchClimateData = async () => {
+  const fetchClimateData = async (coordinates: number[][]) => {
     try {
       setLoading(true);
       setError(null);
-      const climateData = await getClimateData(polygonCoordinates);
-      setData(climateData);
+      
+      try {
+        // Essaie d'abord d'utiliser le service existant
+        const climateData = await getClimateData(coordinates);
+        setData(climateData);
+      } catch (serviceError) {
+        // Tenter l'API Flask directement
+        try {
+          const response = await axios.post('http://localhost:8000/api/climate', {
+            polygon: coordinates
+          });
+          
+          if (response.data?.error) {
+            throw new Error(response.data.error);
+          }
+          
+          if (response.data) {
+            setData({
+              soilMoisture: response.data.soilMoisture,
+              ndvi: response.data.ndvi,
+              precipitation: response.data.precipitation
+            });
+          } else {
+            throw new Error('Données climatiques non disponibles');
+          }
+        } catch (flaskError) {
+          // Propager l'erreur 
+          throw flaskError;
+        }
+      }
     } catch (err) {
+      setError(err instanceof Error ? err.message : 'Une erreur s\'est produite');
       console.error('Error fetching climate data:', err);
-      setError('Failed to load climate data. Please try again later.');
+      setData(null);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchClimateData();
-  }, [JSON.stringify(polygonCoordinates)]);
+    if (initialCoordinates) {
+      fetchClimateData(initialCoordinates);
+    }
+  }, []);
 
   return {
     data,

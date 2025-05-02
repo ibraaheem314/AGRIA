@@ -1,306 +1,252 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
-  Activity, Users, Cloud, BarChart2, 
-  Droplets, Leaf, MapPin, RefreshCw, ThermometerSun, Wind
+  Activity, Users, Cloud, 
+  Droplets, Leaf, MapPin, RefreshCw,
+  Code, Terminal, Server, Calendar,
+  Shovel, Sun, Tractor, Sprout, PackageCheck
 } from 'lucide-react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import DataCard from '../components/ui/DataCard';
-import { getWeatherData } from '../../lib/api/weather';
-import { getClimateData } from '../../lib/api/climate';
+
+// Interface personnalisée pour les composants d'icônes
+interface CustomIconProps extends React.SVGProps<SVGSVGElement> {
+  size?: number;
+  className?: string;
+}
+
+// Composant Seeds personnalisé
+const Seeds = ({ size = 24, className, ...props }: CustomIconProps) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+    {...props}
+  >
+    <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z" />
+    <path d="M9 9a3 3 0 0 0 6 0" />
+    <path d="M9 15a3 3 0 0 0 6 0" />
+    <path d="M12 3v3" />
+    <path d="M12 18v3" />
+  </svg>
+);
 
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [weatherData, setWeatherData] = useState(null);
-  const [climateData, setClimateData] = useState(null);
-  
-  const PARIS_COORDINATES = {
-    lat: 48.8566,
-    lon: 2.3522
-  };
-  
-  const FARM_POLYGON = [
-    [2.3522, 48.8566],
-    [2.3622, 48.8566],
-    [2.3622, 48.8666],
-    [2.3522, 48.8666],
-    [2.3522, 48.8566]
-  ];
-  
-  // Charger les données au chargement de la page
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-  
-  const fetchDashboardData = async () => {
-    setIsLoading(true);
-    try {
-      // Récupérer les données météo
-      const weather = await getWeatherData(PARIS_COORDINATES.lat, PARIS_COORDINATES.lon);
-      setWeatherData(weather);
-      
-      // Récupérer les données de climat/sol
-      const climate = await getClimateData(FARM_POLYGON);
-      setClimateData(climate);
-    } catch (error) {
-      console.error('Erreur lors du chargement des données:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [currentSeason] = useState('Automne');
   
   const refreshData = () => {
-    fetchDashboardData();
+    setIsLoading(true);
+    // Simulate loading
+    setTimeout(() => setIsLoading(false), 1500);
   };
 
-  return (
-    <div className="container mx-auto">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-text-secondary mt-1">Overview of your agricultural activities</p>
+  const seasonalCrops = [
+    { name: 'Potimarron', status: 'Récolte', health: 95, icon: <Leaf size={16} /> },
+    { name: 'Courges', status: 'Récolte', health: 92, icon: <Leaf size={16} /> },
+    { name: 'Carottes', status: 'Croissance', health: 88, icon: <Seeds size={16} /> },
+    { name: 'Poireaux', status: 'Croissance', health: 90, icon: <Seeds size={16} /> },
+    { name: 'Choux', status: 'Croissance', health: 85, icon: <Seeds size={16} /> },
+  ];
+
+  // Widgets disponibles à afficher sur le dashboard
+  const availableWidgets = [
+    { id: 'weather', name: 'Météo locale', icon: <Cloud size={16} /> },
+    { id: 'soil', name: 'Analyse de sol', icon: <Droplets size={16} /> },
+    { id: 'tasks', name: 'Tâches à venir', icon: <Shovel size={16} /> },
+    { id: 'calendar', name: 'Calendrier', icon: <Calendar size={16} /> },
+    { id: 'market', name: 'Prix du marché', icon: <Activity size={16} /> },
+    { id: 'equipment', name: 'Statut matériel', icon: <Tractor size={16} /> },
+  ];
+
+  const CodeSnippet = () => (
+    <div className="bg-code-bg rounded-md overflow-hidden text-sm font-mono">
+      <div className="flex items-center justify-between px-4 py-2 bg-neutral-900 border-b border-neutral-800">
+        <div className="text-white font-semibold">monitor.js</div>
+        <div className="flex space-x-2">
+          <button className="text-text-tertiary hover:text-white transition-colors">
+            <Terminal size={14} />
+          </button>
+          <button className="text-text-tertiary hover:text-white transition-colors">
+            <Code size={14} />
+          </button>
         </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={refreshData}
-          loading={isLoading}
-          icon={<RefreshCw size={16} />}
-        >
-          Refresh
-        </Button>
+      </div>
+      <div className="p-4">
+        <pre className="text-code">
+          <code>
+            <span className="text-blue-400">const</span> <span className="text-yellow-300">monitor</span> = <span className="text-purple-400">require</span>(<span className="text-green-300">'agritech-monitor'</span>);{'\n\n'}
+            <span className="text-blue-400">const</span> <span className="text-yellow-300">farm</span> = <span className="text-blue-400">new</span> monitor.Farm{'{'}
+            {'\n  '}name: <span className="text-green-300">'Main Farm'</span>,
+            {'\n  '}location: <span className="text-orange-300">[48.8566, 2.3522]</span>,
+            {'\n  '}sensors: <span className="text-orange-300">['moisture', 'temperature']</span>
+            {'\n'}{'})'};{'\n\n'}
+            farm.<span className="text-yellow-300">on</span>(<span className="text-green-300">'data'</span>, <span className="text-purple-400">data</span> {'=>'} {'{'}
+            {'\n  '}console.<span className="text-yellow-300">log</span>(<span className="text-green-300">`Temperature: </span>${'{'}data.temperature{'}'}°C<span className="text-green-300">`</span>);
+            {'\n  '}console.<span className="text-yellow-300">log</span>(<span className="text-green-300">`Soil moisture: </span>${'{'}data.moisture{'}'}%<span className="text-green-300">`</span>);
+            {'\n'}{'})'};{'\n\n'}
+            farm.<span className="text-yellow-300">connect</span>();
+          </code>
+        </pre>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="container mx-auto px-4 py-6">
+      {/* Header avec bannière de saison */}
+      <div className="bg-neutral-900/70 backdrop-blur-sm border border-soil-light/20 rounded-xl p-4 mb-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-full h-1 bg-season-autumn opacity-70"></div>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-medium text-white">Tableau de bord</h1>
+            <p className="text-text-secondary mt-1">
+              <span className="text-season-autumn font-medium">Saison: {currentSeason}</span> · Vue d'ensemble de vos activités maraîchères
+            </p>
+          </div>
+          <div className="flex space-x-3">
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="border-soil-light/30 hover:border-primary"
+            >
+              Personnaliser
+            </Button>
+            <Button 
+              variant="primary" 
+              size="sm" 
+              onClick={refreshData}
+              loading={isLoading}
+              icon={<RefreshCw size={16} />}
+            >
+              Rafraîchir
+            </Button>
+          </div>
+        </div>
       </div>
       
       {/* Key Metrics */}
       <section className="mb-8">
-        <h2 className="text-lg font-medium mb-4">Key Metrics</h2>
+        <h2 className="text-lg font-medium mb-4 flex items-center">
+          <Leaf size={18} className="mr-2 text-season-autumn" />
+          <span>Indicateurs de la saison</span>
+        </h2>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <DataCard
-            title="Crop Health Score"
-            value="92%"
-            icon={<Leaf size={18} />}
+            title="Santé des cultures"
+            value="88%"
+            icon={<Sprout size={18} />}
             color="success"
             loading={isLoading}
-            trend={{ value: 4, isPositive: true, label: "vs. last week" }}
-            description="Based on 28 field analyses"
+            trend={{ value: -4, isPositive: false, label: "vs semaine dernière" }}
+            description="5 cultures d'automne en cours"
           />
           
           <DataCard
-            title="Precipitation"
-            value={weatherData ? `${weatherData.rain1h || 0}mm` : "0mm"}
+            title="Précipitations"
+            value="32mm"
             icon={<Cloud size={18} />}
             color="info"
             loading={isLoading}
-            trend={{ value: -12, isPositive: false, label: "vs. average" }}
-            description="Recent rainfall amount"
+            trend={{ value: 8, isPositive: true, label: "vs moyenne" }}
+            description="Conditions favorables pour l'automne"
           />
           
           <DataCard
-            title="Temperature"
-            value={weatherData ? `${Math.round(weatherData.temperature)}°C` : "18°C"}
-            icon={<ThermometerSun size={18} />}
+            title="Température moyenne"
+            value="12°C"
+            icon={<Sun size={18} />}
             color="warning"
             loading={isLoading}
-            description={weatherData ? `Feels like: ${Math.round(weatherData.feelsLike)}°C` : "Loading..."}
+            trend={{ value: -3, isPositive: false, label: "vs semaine dernière" }}
+            description="Prévision: baisse à 8°C cette semaine"
           />
           
           <DataCard
-            title="Soil Moisture"
-            value={climateData ? `${climateData.soilMoisture}%` : "42%"}
+            title="Humidité du sol"
+            value="52%"
             icon={<Droplets size={18} />}
             color="primary"
             loading={isLoading}
-            trend={climateData ? { value: 8, isPositive: true } : undefined}
-            description="Optimal range: 45-60%"
+            trend={{ value: 10, isPositive: true }}
+            description="Plage optimale: 45-60% pour l'automne"
           />
         </div>
       </section>
 
-      {/* Weather and Climate Details */}
+      {/* Current Crops */}
       <section className="mb-8">
-        <h2 className="text-lg font-medium mb-4">Weather & Climate Conditions</h2>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Weather Card */}
-          <Card className="p-5 border border-primary/20 bg-surface">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-medium flex items-center">
-                <Cloud size={18} className="mr-2 text-primary" />
-                Current Weather
-              </h3>
-              {weatherData && (
-                <div className="text-sm text-text-secondary">
-                  {weatherData.cityName}, {weatherData.country}
-                </div>
-              )}
-            </div>
-            
-            {isLoading ? (
-              <div className="h-32 flex items-center justify-center">
-                <div className="w-8 h-8 border-t-2 border-primary rounded-full animate-spin"></div>
-              </div>
-            ) : weatherData ? (
-              <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-                <div className="flex flex-col items-center">
-                  <img 
-                    src={`https://openweathermap.org/img/wn/${weatherData.icon}@2x.png`} 
-                    alt={weatherData.description}
-                    className="w-20 h-20"
-                  />
-                  <div className="text-center capitalize">{weatherData.description}</div>
-                </div>
-                
-                <div className="flex-1 grid grid-cols-2 gap-3">
-                  <div className="text-sm">
-                    <div className="text-text-secondary mb-1 flex items-center">
-                      <ThermometerSun size={14} className="mr-1" /> Temperature
-                    </div>
-                    <div className="font-medium">{Math.round(weatherData.temperature)}°C</div>
-                  </div>
-                  
-                  <div className="text-sm">
-                    <div className="text-text-secondary mb-1 flex items-center">
-                      <Wind size={14} className="mr-1" /> Wind
-                    </div>
-                    <div className="font-medium">{weatherData.windSpeed} m/s</div>
-                  </div>
-                  
-                  <div className="text-sm">
-                    <div className="text-text-secondary mb-1 flex items-center">
-                      <Droplets size={14} className="mr-1" /> Humidity
-                    </div>
-                    <div className="font-medium">{weatherData.humidity}%</div>
-                  </div>
-                  
-                  <div className="text-sm">
-                    <div className="text-text-secondary mb-1 flex items-center">
-                      <Cloud size={14} className="mr-1" /> Cloud Cover
-                    </div>
-                    <div className="font-medium">{weatherData.clouds}%</div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-text-secondary text-center py-6">
-                Weather data unavailable
-              </div>
-            )}
-          </Card>
-          
-          {/* Climate Card */}
-          <Card className="p-5 border border-primary/20 bg-surface">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-medium flex items-center">
-                <Leaf size={18} className="mr-2 text-primary" />
-                Soil & Vegetation Health
-              </h3>
-            </div>
-            
-            {isLoading ? (
-              <div className="h-32 flex items-center justify-center">
-                <div className="w-8 h-8 border-t-2 border-primary rounded-full animate-spin"></div>
-              </div>
-            ) : climateData ? (
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-dark/30 p-4 rounded-lg">
-                    <div className="text-text-secondary text-sm mb-1">Soil Moisture</div>
-                    <div className="text-2xl font-bold text-primary">{climateData.soilMoisture}%</div>
-                    <div className="mt-2 text-xs text-text-tertiary">
-                      {climateData.soilMoisture < 30 
-                        ? "Low moisture - consider irrigation" 
-                        : climateData.soilMoisture > 70 
-                          ? "High moisture - monitor drainage"
-                          : "Optimal moisture levels"}
-                    </div>
-                  </div>
-                  
-                  <div className="bg-dark/30 p-4 rounded-lg">
-                    <div className="text-text-secondary text-sm mb-1">Vegetation Index (NDVI)</div>
-                    <div className="text-2xl font-bold text-primary">{climateData.ndvi.toFixed(2)}</div>
-                    <div className="mt-2 text-xs text-text-tertiary">
-                      {climateData.ndvi < 0.3
-                        ? "Poor vegetation health"
-                        : climateData.ndvi > 0.6
-                          ? "Excellent vegetation health"
-                          : "Moderate vegetation health"}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="bg-dark/30 p-4 rounded-lg">
-                  <div className="text-text-secondary text-sm mb-1">Recent Precipitation</div>
-                  <div className="flex items-end gap-2">
-                    <div className="text-2xl font-bold text-primary">{climateData.precipitation}mm</div>
-                    <div className="text-text-tertiary text-sm">last 24 hours</div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-text-secondary text-center py-6">
-                Climate data unavailable
-              </div>
-            )}
-          </Card>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-medium flex items-center">
+            <Sprout size={18} className="mr-2 text-season-autumn" />
+            <span>Cultures en cours</span>
+          </h2>
+          <Button 
+            variant="outline" 
+            size="xs" 
+            className="border-soil-light/20 hover:border-soil-light/50"
+          >
+            Voir toutes les cultures
+          </Button>
         </div>
-      </section>
-
-      {/* Performance Data */}
-      <section className="mb-8">
-        <h2 className="text-lg font-medium mb-4">Performance Overview</h2>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Performance Graph */}
-          <Card className="lg:col-span-2 p-5 border border-primary/20 bg-surface">
+          <Card className="lg:col-span-2 p-4 border border-soil-light/20 bg-neutral-900/80 backdrop-blur-sm">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-medium">Crop Performance</h3>
-              <div className="text-sm text-text-secondary">Last 12 months</div>
+              <h3 className="font-medium">État des cultures saisonnières</h3>
+              <div className="bg-season-autumn/10 border border-season-autumn/20 px-3 py-1 rounded-full text-xs font-medium text-season-autumn">
+                {currentSeason} 2023
+              </div>
             </div>
-
-            <div className="h-64 relative">
-              <div className="absolute inset-x-0 bottom-0 h-64 flex items-end">
-                {[35, 45, 30, 65, 50, 60, 70, 55, 80, 75, 65, 90].map((height, i) => (
-                  <div 
-                    key={i} 
-                    className="flex-1 mx-1 rounded-t-sm bg-primary"
-                    style={{height: `${height}%`}}
-                  >
-                    <div className="h-full group relative">
-                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-dark text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                        {height}% yield
-                      </div>
-                    </div>
+            
+            <div className="space-y-3">
+              {seasonalCrops.map((crop, i) => (
+                <div 
+                  key={i} 
+                  className="flex items-center p-3 border border-soil-light/20 rounded-md bg-soil-dark/10 hover:border-season-autumn/40 hover:bg-soil-dark/20 transition-all duration-200"
+                >
+                  <div className={`
+                    w-2 h-2 rounded-full flex-shrink-0
+                    ${crop.health > 90 ? 'bg-green-500' : crop.health > 80 ? 'bg-yellow-500' : 'bg-red-500'}
+                  `}></div>
+                  <div className="ml-3 mr-auto">
+                    <div className="text-sm font-medium">{crop.name}</div>
+                    <div className="text-xs text-text-tertiary">{crop.status}</div>
                   </div>
-                ))}
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-primary">+23%</div>
-                  <div className="text-sm text-text-secondary">Annual Growth</div>
+                  <div className="flex-shrink-0 text-text-tertiary mr-4">
+                    {crop.icon}
+                  </div>
+                  <div className="text-sm font-medium">
+                    {crop.health}%
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
           </Card>
           
           {/* Tasks List */}
-          <Card className="p-5 border border-primary/20 bg-surface">
+          <Card className="p-4 border border-soil-light/20 bg-neutral-900/80 backdrop-blur-sm">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-medium">Upcoming Tasks</h3>
-              <Button variant="ghost" size="xs" className="text-text-secondary hover:text-primary">View all</Button>
+              <h3 className="font-medium">Tâches à venir</h3>
+              <Button variant="outline" size="xs">Voir toutes</Button>
             </div>
             
-            <div className="space-y-3">
+            <div className="space-y-2">
               {[
-                { title: 'Field A Irrigation', icon: <Droplets size={14} />, date: "Today", priority: 'high' },
-                { title: 'Plant Inspection', icon: <Leaf size={14} />, date: "Tomorrow", priority: 'medium' },
-                { title: 'Soil Analysis', icon: <Leaf size={14} />, date: "Thursday", priority: 'medium' },
-                { title: 'Supplier Meeting', icon: <Users size={14} />, date: "Friday", priority: 'low' },
+                { title: 'Récolte potimarrons', icon: <Shovel size={14} />, date: "Aujourd'hui", priority: 'high' },
+                { title: 'Protection contre le gel', icon: <Sun size={14} />, date: "Demain", priority: 'high' },
+                { title: 'Préparation du compost', icon: <Leaf size={14} />, date: "Jeudi", priority: 'medium' },
+                { title: 'Marché local', icon: <Users size={14} />, date: "Samedi", priority: 'medium' },
               ].map((task, i) => (
                 <div 
                   key={i} 
-                  className="flex items-center p-3 border border-primary/20 rounded-lg hover:border-primary/30 transition-colors"
+                  className="flex items-center p-2 border border-soil-light/20 rounded-md bg-soil-dark/10 hover:border-soil-light/40 hover:bg-soil-dark/20 transition-all duration-200"
                 >
                   <div className={`
                     w-2 h-2 rounded-full flex-shrink-0
@@ -308,9 +254,9 @@ const Dashboard = () => {
                   `}></div>
                   <div className="ml-3 mr-auto">
                     <div className="text-sm font-medium">{task.title}</div>
-                    <div className="text-xs text-text-secondary">{task.date}</div>
+                    <div className="text-xs text-text-tertiary">{task.date}</div>
                   </div>
-                  <div className="flex-shrink-0 text-text-secondary">
+                  <div className="flex-shrink-0 text-text-tertiary">
                     {task.icon}
                   </div>
                 </div>
@@ -320,14 +266,139 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* Location Info */}
+      {/* Seasonal Calendar */}
       <section className="mb-8">
-        <Card className="p-4 border border-primary/20 bg-surface">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-medium flex items-center">
+            <Calendar size={18} className="mr-2 text-season-autumn" />
+            <span>Calendrier cultural</span>
+          </h2>
+          <Button 
+            variant="outline" 
+            size="xs" 
+            className="border-soil-light/20 hover:border-soil-light/50"
+          >
+            Voir calendrier complet
+          </Button>
+        </div>
+        
+        <Card className="p-4 border border-soil-light/20 bg-neutral-900/80 backdrop-blur-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-medium">Période actuelle: Fin Octobre - Début Novembre</h3>
+            <div className="bg-soil-dark/50 px-3 py-1 rounded-full text-xs">
+              Phase: Plantation d'hiver / Récolte d'automne
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="border border-soil-light/20 rounded-md p-3 bg-soil-dark/10">
+              <h4 className="text-sm font-medium mb-2 text-season-autumn">À semer maintenant</h4>
+              <ul className="space-y-1 text-sm">
+                <li className="flex items-center"><Seeds size={12} className="mr-2 text-text-tertiary" /> Fèves</li>
+                <li className="flex items-center"><Seeds size={12} className="mr-2 text-text-tertiary" /> Ail</li>
+                <li className="flex items-center"><Seeds size={12} className="mr-2 text-text-tertiary" /> Oignons blancs</li>
+              </ul>
+            </div>
+            
+            <div className="border border-soil-light/20 rounded-md p-3 bg-soil-dark/10">
+              <h4 className="text-sm font-medium mb-2 text-accent">À récolter maintenant</h4>
+              <ul className="space-y-1 text-sm">
+                <li className="flex items-center"><Leaf size={12} className="mr-2 text-text-tertiary" /> Courges d'hiver</li>
+                <li className="flex items-center"><Leaf size={12} className="mr-2 text-text-tertiary" /> Potimarrons</li>
+                <li className="flex items-center"><Leaf size={12} className="mr-2 text-text-tertiary" /> Derniers haricots</li>
+                <li className="flex items-center"><Leaf size={12} className="mr-2 text-text-tertiary" /> Choux</li>
+              </ul>
+            </div>
+            
+            <div className="border border-soil-light/20 rounded-md p-3 bg-soil-dark/10">
+              <h4 className="text-sm font-medium mb-2 text-primary">Travaux du moment</h4>
+              <ul className="space-y-1 text-sm">
+                <li className="flex items-center"><Shovel size={12} className="mr-2 text-text-tertiary" /> Préparer les protections hivernales</li>
+                <li className="flex items-center"><Shovel size={12} className="mr-2 text-text-tertiary" /> Nettoyer les parcelles récoltées</li>
+                <li className="flex items-center"><Shovel size={12} className="mr-2 text-text-tertiary" /> Apport de compost</li>
+              </ul>
+            </div>
+          </div>
+        </Card>
+      </section>
+
+      {/* Matériel et équipements */}
+      <section className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-medium flex items-center">
+            <Tractor size={18} className="mr-2 text-secondary" />
+            <span>Équipements et matériel</span>
+          </h2>
+          <Button 
+            variant="outline" 
+            size="xs" 
+            className="border-soil-light/20 hover:border-soil-light/50"
+          >
+            Gérer le matériel
+          </Button>
+        </div>
+        
+        <Card className="p-4 border border-soil-light/20 bg-neutral-900/80 backdrop-blur-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="border border-soil-light/20 rounded-md p-3 bg-soil-dark/10 hover:border-secondary/30 transition-all">
+              <div className="flex justify-between items-start">
+                <h4 className="text-sm font-medium text-secondary">Tracteur</h4>
+                <span className="px-2 py-0.5 text-xs rounded-full bg-green-500/20 text-green-500 border border-green-500/20">Actif</span>
+              </div>
+              <div className="mt-2 text-xs text-text-tertiary">
+                Dernière utilisation: 24 octobre
+              </div>
+              <div className="mt-1 text-xs">Prochain entretien dans 45 jours</div>
+            </div>
+            
+            <div className="border border-soil-light/20 rounded-md p-3 bg-soil-dark/10 hover:border-secondary/30 transition-all">
+              <div className="flex justify-between items-start">
+                <h4 className="text-sm font-medium text-secondary">Motoculteur</h4>
+                <span className="px-2 py-0.5 text-xs rounded-full bg-green-500/20 text-green-500 border border-green-500/20">Actif</span>
+              </div>
+              <div className="mt-2 text-xs text-text-tertiary">
+                Dernière utilisation: 10 octobre
+              </div>
+              <div className="mt-1 text-xs">Prochain entretien dans 30 jours</div>
+            </div>
+            
+            <div className="border border-soil-light/20 rounded-md p-3 bg-soil-dark/10 hover:border-secondary/30 transition-all">
+              <div className="flex justify-between items-start">
+                <h4 className="text-sm font-medium text-secondary">Système d'irrigation</h4>
+                <span className="px-2 py-0.5 text-xs rounded-full bg-green-500/20 text-green-500 border border-green-500/20">Actif</span>
+              </div>
+              <div className="mt-2 text-xs text-text-tertiary">
+                Dernière utilisation: Aujourd'hui
+              </div>
+              <div className="mt-1 text-xs">Contrôle planifié dans 7 jours</div>
+            </div>
+            
+            <div className="border border-soil-light/20 rounded-md p-3 bg-soil-dark/10 hover:border-secondary/30 transition-all">
+              <div className="flex justify-between items-start">
+                <h4 className="text-sm font-medium text-secondary">Semoir</h4>
+                <span className="px-2 py-0.5 text-xs rounded-full bg-yellow-500/20 text-yellow-500 border border-yellow-500/20">En maintenance</span>
+              </div>
+              <div className="mt-2 text-xs text-text-tertiary">
+                Dernière utilisation: 5 octobre
+              </div>
+              <div className="mt-1 text-xs">Disponible le 3 novembre</div>
+            </div>
+          </div>
+        </Card>
+      </section>
+
+      {/* Location Info */}
+      <section>
+        <Card className="p-4 border border-soil-light/20 bg-neutral-900/80 backdrop-blur-sm">
           <div className="flex items-center">
-            <MapPin className="w-5 h-5 text-primary mr-3" />
+            <MapPin className="w-5 h-5 text-season-autumn mr-3" />
             <div>
-              <div className="text-sm text-text-secondary">Active Location</div>
-              <div className="font-medium">Main Farm - Île-de-France Region</div>
+              <div className="text-sm text-text-tertiary">Emplacement actif</div>
+              <div className="font-medium">Ferme maraîchère - Région Île-de-France</div>
+            </div>
+            <div className="ml-auto flex items-center px-3 py-1 bg-soil-dark/50 rounded-full text-xs">
+              <Cloud size={12} className="mr-1" />
+              <span>Prévision: Pluie légère demain</span>
             </div>
           </div>
         </Card>
