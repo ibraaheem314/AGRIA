@@ -57,25 +57,25 @@ export async function getWeatherData(lat: number, lon: number): Promise<WeatherD
     
     console.log(`Using API key: ${apiKey.substring(0, 5)}...`);
     
-    const response = await fetch(
+  const response = await fetch(
       `${config.weather.openWeather.baseUrl}/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`
-    );
+  );
   
-    if (!response.ok) {
+  if (!response.ok) {
       console.warn(`Échec de récupération des données météo: ${response.status} ${response.statusText}`);
       return getSimulatedWeatherData(lat, lon);
-    }
+  }
 
-    const data = await response.json();
+  const data = await response.json();
     console.log('Weather API response received:', data);
   
     // Vérifier si les coordonnées sont proches de Paris
     const isParis = isNearParis(lat, lon);
     
     const result = {
-      temperature: data.main.temp,
-      humidity: data.main.humidity,
-      windSpeed: data.wind.speed,
+    temperature: data.main.temp,
+    humidity: data.main.humidity,
+    windSpeed: data.wind.speed,
       description: data.weather[0].description,
       icon: data.weather[0].icon,
       feelsLike: data.main.feels_like,

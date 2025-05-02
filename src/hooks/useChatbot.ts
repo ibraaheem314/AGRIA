@@ -1,57 +1,43 @@
 import { useState } from 'react';
 import { getFarmingAdvice } from '../../lib/api/chatbot';
-import axios from 'axios';
 
 interface ChatbotHookResult {
+  askQuestion: (question: string) => Promise<string>;
   response: string | null;
   loading: boolean;
   error: string | null;
-  askQuestion: (question: string) => Promise<string>;
 }
 
+/**
+ * Hook pour interagir avec l'assistant IA agricole
+ */
 export default function useChatbot(): ChatbotHookResult {
   const [response, setResponse] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
-  const askQuestion = async (question: string) => {
+  
+  const askQuestion = async (question: string): Promise<string> => {
+    setLoading(true);
+    setError(null);
+    
     try {
-      setLoading(true);
-      setError(null);
-      
-      // Essaie d'abord d'utiliser le service existant (si disponible)
-      try {
-        const advice = await getFarmingAdvice(question);
-        setResponse(advice);
-        return advice;
-      } catch (serviceError) {
-        // Fallback sur l'API Flask directement
-        const response = await axios.post('http://localhost:8000/api/agribot', {
-          question: question
-        });
-        
-        if (response.data && response.data.response) {
-          const aiResponse = response.data.response;
-          setResponse(aiResponse);
-          return aiResponse;
-        } else {
-          throw new Error('Réponse invalide');
-        }
-      }
+      const responseText = await getFarmingAdvice(question);
+      setResponse(responseText);
+      return responseText;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Une erreur s\'est produite';
-      setError(errorMessage);
       console.error('Error getting farming advice:', err);
+      const errorMessage = 'Impossible de contacter l\'assistant. Veuillez réessayer plus tard.';
+      setError(errorMessage);
       return errorMessage;
     } finally {
       setLoading(false);
     }
   };
-
+  
   return {
+    askQuestion,
     response,
     loading,
-    error,
-    askQuestion
+    error
   };
 } 

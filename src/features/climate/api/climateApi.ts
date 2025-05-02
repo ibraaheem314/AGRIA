@@ -1,6 +1,6 @@
-import { config } from '../config';
+import { config } from '../../../lib/config';
 
-interface ClimateData {
+export interface ClimateData {
   soilMoisture: number;
   ndvi: number; // Normalized Difference Vegetation Index
   precipitation: number;
@@ -17,22 +17,22 @@ export async function getClimateData(polygonCoordinates: number[][]): Promise<Cl
       return getSimulatedClimateData();
     }
     
-  const response = await fetch(`${config.climate.baseUrl}/soil?polyid=demo&appid=${config.climate.apiKey}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      polygon: polygonCoordinates
-    })
-  });
+    const response = await fetch(`${config.climate.baseUrl}/soil?polyid=demo&appid=${config.climate.apiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        polygon: polygonCoordinates
+      })
+    });
 
-  if (!response.ok) {
+    if (!response.ok) {
       console.warn(`Échec de récupération des données climatiques: ${response.status} ${response.statusText}`);
       return getSimulatedClimateData();
-  }
+    }
 
-  const data = await response.json();
+    const data = await response.json();
     
     const result = {
       soilMoisture: data.moisture || 0,
@@ -65,4 +65,4 @@ function getSimulatedClimateData(): ClimateData {
     ndvi: parseFloat(ndvi.toFixed(2)),
     precipitation: parseFloat(precipitation.toFixed(1))
   };
-}
+} 

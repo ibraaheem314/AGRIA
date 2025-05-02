@@ -1,162 +1,114 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
+import { ArrowUp, ArrowDown } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 import Card from './Card';
 
-// Fonction utilitaire pour combiner des classes
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+interface TrendProps {
+  value: number;
+  isPositive: boolean;
+  label?: string;
 }
 
 interface DataCardProps {
   title: string;
-  value: string | number;
-  icon?: ReactNode;
-  trend?: {
-    value: number;
-    isPositive?: boolean;
-    label?: string;
-  };
-  color?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'default';
-  footer?: ReactNode;
-  loading?: boolean;
+  value: string;
+  icon: React.ReactNode;
+  color: 'primary' | 'secondary' | 'success' | 'warning' | 'info' | 'danger' | 'accent';
+  trend?: TrendProps;
   description?: string;
+  loading?: boolean;
   onClick?: () => void;
-  className?: string;
-  size?: 'sm' | 'md' | 'lg';
-  highlight?: boolean;
-  actions?: ReactNode;
 }
 
 const DataCard: React.FC<DataCardProps> = ({
   title,
   value,
   icon,
+  color,
   trend,
-  color = 'default',
-  footer,
-  loading = false,
   description,
-  onClick,
-  className = '',
-  size = 'md',
-  highlight = false,
-  actions
+  loading = false,
+  onClick
 }) => {
-  // Couleur d'accentuation en fonction du type
-  const colorStyles = {
-    primary: 'text-primary border-primary/20',
-    secondary: 'text-secondary border-secondary/20',
-    success: 'text-success border-success/20',
-    warning: 'text-warning border-warning/20',
-    danger: 'text-danger border-danger/20',
-    info: 'text-info border-info/20',
-    default: 'text-text-secondary border-border'
-  };
-
-  // Styles en fonction de la taille
-  const sizeStyles = {
-    sm: {
-      card: 'p-3',
-      title: 'text-xs',
-      value: 'text-xl font-bold',
-      icon: 'h-5 w-5'
-    },
-    md: {
-      card: 'p-4',
-      title: 'text-sm',
-      value: 'text-2xl font-bold',
-      icon: 'h-6 w-6'
-    },
-    lg: {
-      card: 'p-5',
-      title: 'text-base',
-      value: 'text-3xl font-bold',
-      icon: 'h-7 w-7'
+  const getColorClasses = () => {
+    switch (color) {
+      case 'primary':
+        return 'text-primary bg-primary/10 border-primary/20';
+      case 'secondary':
+        return 'text-secondary bg-secondary/10 border-secondary/20';
+      case 'success':
+        return 'text-success bg-success/10 border-success/20';
+      case 'warning':
+        return 'text-warning bg-warning/10 border-warning/20';
+      case 'info':
+        return 'text-info bg-info/10 border-info/20';
+      case 'danger':
+        return 'text-danger bg-danger/10 border-danger/20';
+      case 'accent':
+        return 'text-accent bg-accent/10 border-accent/20';
+      default:
+        return 'text-primary bg-primary/10 border-primary/20';
     }
   };
 
-  // Gestion du trend (variation)
-  const renderTrend = () => {
-    if (!trend) return null;
-    
-    const { value: trendValue, isPositive = trendValue >= 0, label } = trend;
-    const formattedValue = `${isPositive ? '+' : ''}${trendValue}%`;
-    const trendColor = isPositive ? 'text-success' : 'text-danger';
-    
-    return (
-      <div className={`flex items-center text-xs ${trendColor}`}>
-        {isPositive ? (
-          <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 5L19 12L12 19M5 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        ) : (
-          <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 19L5 12L12 5M19 12H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        )}
-        <span>{formattedValue}</span>
-        {label && <span className="ml-1 text-text-tertiary">{label}</span>}
-      </div>
-    );
+  const iconClasses = `${getColorClasses()} p-3 rounded-lg`;
+
+  const getTrendColor = (trend: TrendProps) => {
+    return trend.isPositive ? 
+      'text-success bg-success/10' : 
+      'text-danger bg-danger/10';
   };
 
   return (
     <Card 
-      variant={highlight ? 'accent' : 'default'}
-      className={cn(
-        sizeStyles[size].card,
-        highlight ? 'border-l-4' : '',
-        highlight ? colorStyles[color].split(' ')[1] : '',
-        'relative',
-        onClick ? 'cursor-pointer' : '',
-        className
-      )}
+      className="p-5 border border-primary/20 bg-surface hover:shadow-glow-sm transition-all duration-300"
+      hoverable
       onClick={onClick}
-      hoverable={!!onClick}
       withHoverAnimation={!!onClick}
+      hoverAnimationType="lift"
     >
       {loading ? (
-        <>
-          <div className="flex justify-between items-start mb-2">
-            <div className="h-4 w-20 skeleton-loading rounded"></div>
-            <div className="h-6 w-6 skeleton-loading rounded-full"></div>
-          </div>
-          <div className="h-8 w-24 skeleton-loading rounded mb-2"></div>
-          <div className="h-4 w-32 skeleton-loading rounded"></div>
-        </>
+        <div className="space-y-3">
+          <div className="w-2/3 h-5 bg-primary/5 rounded animate-pulse"></div>
+          <div className="w-1/2 h-8 bg-primary/5 rounded animate-pulse"></div>
+          <div className="w-full h-4 bg-primary/5 rounded animate-pulse"></div>
+        </div>
       ) : (
         <>
-          <div className="flex justify-between items-start mb-2">
-            <h3 className={`font-medium text-text-secondary ${sizeStyles[size].title}`}>{title}</h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-text-secondary">{title}</h3>
+            <div className={iconClasses}>
+              {icon}
+            </div>
+          </div>
+          
+          <motion.div 
+            className="mb-2"
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="text-2xl font-semibold">{value}</div>
             
-            {actions && (
-              <div className="ml-auto">{actions}</div>
-            )}
-            
-            {icon && (
-              <div className={cn("ml-2 flex-shrink-0", colorStyles[color].split(' ')[0])}>
-                {React.cloneElement(icon as React.ReactElement, {
-                  className: sizeStyles[size].icon
-                })}
+            {trend && (
+              <div className="flex items-center mt-1.5">
+                <div className={`flex items-center rounded-full px-2 py-0.5 ${getTrendColor(trend)}`}>
+                  {trend.isPositive ? (
+                    <ArrowUp size={14} className="mr-1" />
+                  ) : (
+                    <ArrowDown size={14} className="mr-1" />
+                  )}
+                  <span className="text-xs font-medium">{trend.value}%</span>
+                </div>
+                {trend.label && (
+                  <span className="text-xs text-text-tertiary ml-2">{trend.label}</span>
+                )}
               </div>
             )}
-          </div>
+          </motion.div>
           
-          <div className="flex items-end space-x-2 mb-1">
-            <div className={`${sizeStyles[size].value} ${colorStyles[color].split(' ')[0]}`}>
-              {value}
-            </div>
-            {renderTrend()}
-          </div>
-          
-          {description && <p className="text-xs text-text-tertiary">{description}</p>}
-          
-          {footer && (
-            <div className="mt-3 pt-3 border-t border-border text-sm">
-              {footer}
-            </div>
+          {description && (
+            <div className="text-xs text-text-tertiary">{description}</div>
           )}
         </>
       )}

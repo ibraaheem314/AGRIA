@@ -1,154 +1,131 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Check, X, ChevronDown, ChevronUp, Shield, Leaf, Cloud, Star, HelpCircle } from 'lucide-react';
-import Button from './ui/Button';
-import { cn } from '../lib/utils';
+import { Check, X, ChevronDown, ChevronUp, Shield, Zap, Cloud, ShieldCheck } from 'lucide-react';
 
-const plans = [
-  {
-    name: 'Découverte',
-    price: '29',
-    frequency: '/mois',
-    description: 'Pour les petites exploitations ou tests de la plateforme',
-    icon: <Leaf className="w-5 h-5" />,
-    features: [
-      'Analyse météo locale',
-      'Assistant IA pour 10 hectares',
-      'Alertes maladies basiques',
-      'Support email standard'
-    ],
-    disabledFeatures: [
-      'Rapports personnalisés',
-      'Intégration de capteurs IoT',
-      'Accès API avancé'
-    ]
-  },
-  {
-    name: 'Professionnel',
-    price: '79',
-    frequency: '/mois',
-    icon: <Cloud className="w-5 h-5" />,
-    description: 'Pour les exploitations en croissance',
-    features: [
-      'Analyse météo & sol avancée',
-      'Assistant IA jusqu\'à 100 hectares',
-      'Alertes maladies + irrigation',
-      'Priorité support technique',
-      'Accès aux conseils agronomiques personnalisés'
-    ],
-    disabledFeatures: [
-      'Intégration satellite temps réel',
-      'Support dédié 24/7'
-    ],
-    popular: true
-  },
-  {
-    name: 'Sur-mesure',
-    price: null,
-    icon: <Shield className="w-5 h-5" />,
-    description: 'Pour les grandes exploitations, coopératives ou groupes',
-    features: [
-      'Nombre d\'hectares illimité',
-      'Intégrations satellites temps réel',
-      'Rapports IA personnalisés',
-      'Support dédié 24/7',
-      'Optimisation multisites',
-      'Accompagnement stratégique'
-    ],
-    disabledFeatures: []
-  }
-];
+interface Feature {
+  name: string;
+  included: boolean;
+}
 
-const faqs = [
-  {
-    question: 'Puis-je changer de formule en cours d\'abonnement ?',
-    answer: 'Oui, vous pouvez upgrader votre formule à tout moment. Le changement prendra effet immédiatement avec un prorata temporis pour la différence de prix.'
-  },
-  {
-    question: 'Comment fonctionne la période d\'essai ?',
-    answer: 'Nous proposons 14 jours d\'essai gratuit pour les formules Découverte et Professionnel, sans engagement et sans carte bancaire.'
-  },
-  {
-    question: 'Quelles méthodes de paiement acceptez-vous ?',
-    answer: 'Nous acceptons les cartes de crédit (Visa, Mastercard, American Express), les virements bancaires et les prélèvements SEPA pour les abonnements annuels.'
-  },
-  {
-    question: 'Comment sont protégées mes données agricoles ?',
-    answer: 'Vos données sont chiffrées et stockées sur des serveurs sécurisés en Europe, conformément au RGPD. Nous ne partageons jamais vos données avec des tiers sans votre accord explicite.'
-  }
-];
+interface PlanProps {
+  name: string;
+  description: string;
+  price: number | null;
+  annualPrice?: number;
+  features: Feature[];
+  popular?: boolean;
+  cta: string;
+  icon: React.ReactNode;
+  index: number;
+}
 
-const PricingFAQ = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  const toggleFAQ = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
+const PricingPlan: React.FC<PlanProps> = ({
+  name,
+  description,
+  price,
+  annualPrice,
+  features,
+  popular,
+  cta,
+  icon,
+  index
+}) => {
   return (
-    <div className="mt-20 max-w-3xl mx-auto">
-      <motion.h3
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="text-2xl font-bold mb-8 text-center"
-      >
-        Questions fréquentes
-      </motion.h3>
-
-      <div className="space-y-4">
-        {faqs.map((faq, index) => (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            key={index}
-            className="border border-neutral-800 rounded-lg overflow-hidden"
-          >
-            <button
-              onClick={() => toggleFAQ(index)}
-              className="flex justify-between items-center w-full p-4 text-left bg-[#151818] hover:bg-[#1a1a1a] transition-colors"
-            >
-              <span className="font-medium">{faq.question}</span>
-              {openIndex === index ? (
-                <ChevronUp className="w-5 h-5 text-primary" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-gray-400" />
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className={`relative bg-dark backdrop-blur-sm border-t-2 ${
+        popular 
+          ? 'border-primary shadow-glow-primary' 
+          : 'border-white/10'
+      } hover:border-primary/50 hover:shadow-glow-sm transition-all duration-300`}
+    >
+      {popular && (
+        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 px-4 py-1 bg-primary text-white text-xs rounded-full z-10">
+          Recommandé
+        </div>
+      )}
+      
+      <div className="p-8 relative">
+        <div className="flex items-center gap-3 mb-4">
+          <div className={`w-10 h-10 rounded-full ${popular ? 'bg-primary' : 'bg-white/10'} flex items-center justify-center text-white`}>
+            {icon}
+          </div>
+          <h3 className="text-xl text-white font-light">{name}</h3>
+        </div>
+        
+        <p className="text-gray-400 text-sm mb-6 h-12">{description}</p>
+        
+        <div className="mb-8">
+          {price !== null ? (
+            <div className="flex items-baseline">
+              <span className="text-4xl text-white font-light">{price}€</span>
+              <span className="text-gray-400 ml-2">/mois</span>
+              {annualPrice && (
+                <span className="ml-2 text-xs text-primary-400">Économisez {Math.round((price * 12 - annualPrice) / (price * 12) * 100)}% annuellement</span>
               )}
-            </button>
-            
-            {openIndex === index && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="p-4 bg-[#0c0c0c] text-gray-400 text-sm"
-              >
-                {faq.answer}
-              </motion.div>
-            )}
-          </motion.div>
-        ))}
+            </div>
+          ) : (
+            <div className="text-2xl text-white font-light">Sur demande</div>
+          )}
+        </div>
+        
+        <div className="group">
+          <button 
+            className={`w-full py-3 font-light mb-8 relative overflow-hidden ${
+              popular 
+                ? 'bg-gradient-to-r from-primary to-primary-700 text-white' 
+                : 'bg-white text-dark hover:bg-gradient-to-r hover:from-primary hover:to-primary-700 hover:text-white'
+            } transition-all duration-500`}
+          >
+            <span className="relative z-10">{cta}</span>
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary-700 to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+          </button>
+        </div>
+        
+        <ul className="space-y-3">
+          {features.map((feature, idx) => (
+            <li key={idx} className="flex items-start">
+              {feature.included ? (
+                <div className="mr-3 flex-shrink-0 mt-0.5">
+                  <Check className="w-5 h-5 text-secondary" />
+                </div>
+              ) : (
+                <div className="mr-3 flex-shrink-0 mt-0.5">
+                  <X className="w-5 h-5 text-gray-600" />
+                </div>
+              )}
+              <span className={feature.included ? "text-gray-300" : "text-gray-500"}>
+                {feature.name}
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
 const Pricing = () => {
   const [annualBilling, setAnnualBilling] = useState(true);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
-  const pricingPlans = [
+  const toggleFaq = (index: number) => {
+    setOpenFaqIndex(openFaqIndex === index ? null : index);
+  };
+
+  const plans: Omit<PlanProps, 'index'>[] = [
     {
-      name: "Starter",
-      description: "Idéal pour les petites exploitations agricoles",
-      monthlyPrice: 49,
-      annualPrice: 490,
-      features: [
+      name: "Essentiel",
+      description: "Pour les petites exploitations agricoles",
+      price: annualBilling ? 39 : 49,
+      annualPrice: 468,
+      icon: <Zap size={18} />,
+    features: [
         { name: "Jusqu'à 5 parcelles", included: true },
-        { name: "Données satellite (mise à jour hebdomadaire)", included: true },
+        { name: "Données satellite hebdomadaires", included: true },
         { name: "Données météorologiques de base", included: true },
         { name: "1 utilisateur", included: true },
         { name: "Indices de végétation standards", included: true },
@@ -159,18 +136,17 @@ const Pricing = () => {
         { name: "Support dédié", included: false },
       ],
       cta: "Commencer",
-      delay: 0.1,
-      popular: false,
-      color: "from-blue-500 to-blue-700"
+      popular: false
     },
     {
-      name: "Pro",
-      description: "Pour les exploitations de taille moyenne et les coopératives",
-      monthlyPrice: 99,
-      annualPrice: 990,
-      features: [
+      name: "Professionnel",
+      description: "Pour les exploitations de taille moyenne",
+      price: annualBilling ? 79 : 99,
+      annualPrice: 948,
+      icon: <Cloud size={18} />,
+    features: [
         { name: "Jusqu'à 20 parcelles", included: true },
-        { name: "Données satellite (mise à jour tous les 2-3 jours)", included: true },
+        { name: "Données satellite (tous les 2-3 jours)", included: true },
         { name: "Données météorologiques complètes", included: true },
         { name: "3 utilisateurs", included: true },
         { name: "Tous les indices de végétation", included: true },
@@ -181,252 +157,173 @@ const Pricing = () => {
         { name: "Support dédié", included: false },
       ],
       cta: "Essai gratuit",
-      delay: 0.2,
-      popular: true,
-      color: "from-primary to-secondary"
-    },
-    {
+    popular: true
+  },
+  {
       name: "Enterprise",
-      description: "Pour les grandes exploitations et sociétés agricoles",
-      monthlyPrice: 249,
-      annualPrice: 2490,
-      features: [
+      description: "Pour les grandes exploitations et coopératives",
+    price: null,
+      icon: <ShieldCheck size={18} />,
+    features: [
         { name: "Parcelles illimitées", included: true },
-        { name: "Données satellite (mises à jour quotidiennes)", included: true },
+        { name: "Données satellite quotidiennes", included: true },
         { name: "Données météorologiques premium", included: true },
         { name: "Utilisateurs illimités", included: true },
         { name: "Indices de végétation avancés", included: true },
-        { name: "Exportation de rapports personnalisés", included: true },
+        { name: "Rapports personnalisés", included: true },
         { name: "Alertes personnalisées avancées", included: true },
         { name: "Analyses avancées des sols", included: true },
-        { name: "API Access", included: true },
+        { name: "API Access complet", included: true },
         { name: "Support dédié 24/7", included: true },
       ],
       cta: "Contacter l'équipe",
-      delay: 0.3,
-      popular: false,
-      color: "from-purple-600 to-purple-800"
+      popular: false
     },
-  ];
+];
+
+const faqs = [
+  {
+      question: "Puis-je changer de formule en cours d'abonnement ?",
+      answer: "Oui, vous pouvez upgrader votre formule à tout moment. Le changement prendra effet immédiatement avec un prorata temporis pour la différence de prix."
+  },
+  {
+      question: "Comment fonctionne la période d'essai ?",
+      answer: "Nous proposons 14 jours d'essai gratuit pour les formules Essentiel et Professionnel, sans engagement et sans carte bancaire."
+  },
+  {
+      question: "Quelles méthodes de paiement acceptez-vous ?",
+      answer: "Nous acceptons les cartes de crédit (Visa, Mastercard, American Express), les virements bancaires et les prélèvements SEPA pour les abonnements annuels."
+  },
+  {
+      question: "Comment sont protégées mes données agricoles ?",
+      answer: "Vos données sont chiffrées et stockées sur des serveurs sécurisés en Europe, conformément au RGPD. Nous ne partageons jamais vos données avec des tiers sans votre accord explicite."
+  }
+];
 
   return (
-    <div className="py-24 relative overflow-hidden" id="pricing">
-      {/* Animated background blobs */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.div 
-          className="absolute right-10 top-40 w-96 h-96 rounded-full bg-primary/20 blur-[120px]"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 0.4 }}
-          transition={{ duration: 1.8 }}
-          viewport={{ once: true }}
-        />
-        <motion.div 
-          className="absolute -left-20 bottom-40 w-80 h-80 rounded-full bg-secondary/20 blur-[100px]"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 0.3 }}
-          transition={{ duration: 1.5, delay: 0.3 }}
-          viewport={{ once: true }}
-        />
-      </div>
+    <section className="relative bg-dark py-24" id="pricing">
+      {/* Éléments décoratifs */}
+      <div className="absolute top-0 left-0 right-0 h-40 bg-grid-pattern opacity-20"></div>
+      <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-secondary/10 rounded-full blur-[100px]"></div>
+      <div className="absolute -top-20 -left-20 w-80 h-80 bg-primary/10 rounded-full blur-[100px]"></div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div
-          className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          viewport={{ once: true }}
-        >
+      <div className="container mx-auto px-6 relative">
+        <div className="text-center mb-16">
           <motion.h2 
-            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6"
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-4xl sm:text-5xl md:text-6xl font-light mb-5 text-white"
           >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-              Tarification adaptée à vos besoins
-            </span>
+            <span className="text-white">Nos </span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">tarifs</span>
           </motion.h2>
-          <motion.p 
-            className="text-gray-300 max-w-3xl mx-auto text-lg md:text-xl"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-gray-400 text-lg max-w-3xl mx-auto"
           >
-            Des solutions flexibles pour chaque exploitation agricole. Choisissez le plan qui correspond à vos besoins.
+            Des solutions adaptées à toutes les exploitations agricoles, quelle que soit leur taille
           </motion.p>
-          </motion.div>
+        </div>
 
-        {/* Billing toggle */}
-        <motion.div 
-          className="flex justify-center mb-12"
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          viewport={{ once: true }}
-        >
-          <div className="bg-gray-900 p-1 rounded-lg inline-flex items-center">
+        {/* Toggle annuel/mensuel */}
+        <div className="flex justify-center mb-16">
+          <div className="p-1 bg-surface border border-white/10 inline-flex rounded-lg shadow-glow-sm">
+            <button
+              onClick={() => setAnnualBilling(true)}
+              className={`px-6 py-2 text-sm transition-all duration-300 rounded-md ${
+                annualBilling 
+                  ? 'bg-primary text-white shadow-sm' 
+                  : 'text-white hover:bg-white/5'
+              }`}
+            >
+              Annuel <span className="text-xs opacity-80">(-20%)</span>
+            </button>
             <button
               onClick={() => setAnnualBilling(false)}
-              className={cn(
-                "px-4 py-2 text-sm font-medium rounded-md transition-all duration-200",
+              className={`px-6 py-2 text-sm transition-all duration-300 rounded-md ${
                 !annualBilling 
-                  ? "bg-gradient-to-r from-primary to-secondary text-white" 
-                  : "text-gray-400 hover:text-white"
-              )}
+                  ? 'bg-primary text-white shadow-sm' 
+                  : 'text-white hover:bg-white/5'
+              }`}
             >
               Mensuel
             </button>
-            <button
-              onClick={() => setAnnualBilling(true)}
-              className={cn(
-                "px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 relative",
-                annualBilling 
-                  ? "bg-gradient-to-r from-primary to-secondary text-white" 
-                  : "text-gray-400 hover:text-white"
-              )}
-            >
-              Annuel
-              <span className="absolute -top-8 right-0 bg-secondary text-white text-xs font-bold px-2 py-1 rounded-full">
-                -20%
-              </span>
-            </button>
+          </div>
         </div>
-        </motion.div>
 
-        {/* Pricing cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {pricingPlans.map((plan, index) => (
-            <motion.div
-              key={plan.name}
-              className={cn(
-                "relative bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 transition-all duration-300",
-                plan.popular ? "shadow-lg shadow-primary/20 md:-mt-4 md:mb-4" : ""
-              )}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: plan.delay }}
-              viewport={{ once: true }}
-              whileHover={{ y: -8, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}
-            >
-              {/* Popular badge */}
-              {plan.popular && (
-                <div className="absolute top-0 right-0">
-                  <div className="bg-gradient-to-r from-primary to-secondary text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
-                    <Star className="h-3 w-3 inline-block mr-1" />
-                    RECOMMANDÉ
-                  </div>
-                </div>
-              )}
-
-              {/* Plan header */}
-              <div className={`bg-gradient-to-r ${plan.color} p-px rounded-t-2xl`}>
-                <div className="bg-gray-900 rounded-t-2xl pt-6 pb-4 px-6">
-                  <h3 className="text-xl font-bold text-white mb-1">{plan.name}</h3>
-                  <p className="text-gray-400 text-sm">{plan.description}</p>
-                </div>
-              </div>
-
-              {/* Plan price */}
-              <div className="px-6 py-8">
-                <div className="flex items-end mb-6">
-                  <span className="text-5xl font-bold text-white">
-                    {annualBilling ? plan.annualPrice : plan.monthlyPrice}€
-                  </span>
-                  <span className="text-gray-400 ml-2 mb-1">
-                    /{annualBilling ? 'an' : 'mois'}
-                  </span>
-                  </div>
-
-                {/* Features list */}
-                <ul className="space-y-4 mb-8">
-                  {plan.features.map((feature, featureIndex) => (
-                    <motion.li
-                      key={featureIndex}
-                      className="flex items-start"
-                      initial={{ opacity: 0, x: -10 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: plan.delay + (featureIndex * 0.05) }}
-                      viewport={{ once: true }}
-                    >
-                      {feature.included ? (
-                        <Check className="h-5 w-5 text-primary shrink-0 mr-3 mt-0.5" />
-                      ) : (
-                        <X className="h-5 w-5 text-gray-500 shrink-0 mr-3 mt-0.5" />
-                      )}
-                      <span className={feature.included ? "text-gray-300" : "text-gray-500"}>
-                        {feature.name}
-                      </span>
-                    </motion.li>
-                ))}
-              </ul>
-
-                {/* CTA button */}
-                <motion.button
-                  className={cn(
-                    "w-full py-3 px-6 rounded-lg font-medium transition-all",
-                    plan.popular 
-                      ? "bg-gradient-to-r from-primary to-secondary text-white"
-                      : "bg-gray-800 text-white hover:bg-gray-700"
-                  )}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {plan.cta}
-                </motion.button>
-              </div>
-            </motion.div>
+        {/* Plans */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-24">
+          {plans.map((plan, i) => (
+            <PricingPlan
+              key={i}
+              index={i}
+              {...plan}
+            />
           ))}
         </div>
-        
-        {/* Enterprise section */}
-        <motion.div
-          className="mt-20 max-w-4xl mx-auto bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 border border-gray-800"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          viewport={{ once: true }}
-        >
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <h3 className="text-2xl font-bold text-white mb-2">Besoin d'une solution sur mesure ?</h3>
-              <p className="text-gray-400">Contactez notre équipe pour une offre personnalisée adaptée à vos besoins spécifiques.</p>
-            </div>
-            <motion.button
-              className="px-6 py-3 bg-white text-gray-900 font-medium rounded-lg whitespace-nowrap hover:bg-gray-100 transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              Demander un devis
-            </motion.button>
-          </div>
-        </motion.div>
 
-        {/* FAQ teaser */}
-        <motion.div 
-          className="mt-20 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          viewport={{ once: true }}
-        >
-          <div className="inline-flex items-center gap-2 mb-2">
-            <HelpCircle className="h-5 w-5 text-primary" />
-            <span className="text-primary font-medium">Des questions ?</span>
-          </div>
-          <h3 className="text-xl font-bold text-white mb-4">Consultez notre FAQ ou contactez-nous</h3>
-          <motion.a
-            href="#faq"
-            className="text-gray-400 hover:text-primary underline transition-colors"
-            whileHover={{ scale: 1.03 }}
+        {/* FAQ */}
+        <div className="max-w-3xl mx-auto">
+          <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="flex items-center justify-center gap-3 mb-10"
           >
-            Voir les questions fréquentes
-          </motion.a>
-        </motion.div>
+            <div className="h-px w-12 bg-primary/30"></div>
+            <h3 className="text-2xl font-light text-white text-center">Questions fréquentes</h3>
+            <div className="h-px w-12 bg-primary/30"></div>
+          </motion.div>
+
+      <div className="space-y-4">
+        {faqs.map((faq, index) => (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            key={index}
+                className="border border-white/10 bg-dark backdrop-blur-sm hover:border-primary/30 transition-colors duration-300"
+          >
+            <button
+                  onClick={() => toggleFaq(index)}
+                  className="flex justify-between items-center w-full p-5 text-left"
+            >
+                  <span className="font-light text-white">{faq.question}</span>
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors duration-300 ${
+                    openFaqIndex === index ? 'bg-primary text-white' : 'bg-white/10 text-gray-400'
+                  }`}>
+                    {openFaqIndex === index ? (
+                      <ChevronUp className="w-4 h-4" />
+              ) : (
+                      <ChevronDown className="w-4 h-4" />
+              )}
+                  </div>
+            </button>
+            
+                {openFaqIndex === index && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                    className="p-5 border-t border-white/10 text-gray-400 text-sm bg-white/5"
+              >
+                {faq.answer}
+              </motion.div>
+            )}
+          </motion.div>
+        ))}
       </div>
     </div>
+      </div>
+    </section>
   );
 };
 

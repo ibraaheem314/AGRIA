@@ -45,70 +45,85 @@ const Card: React.FC<CardProps> = ({
   withInitialAnimation = false,
   onClick,
 }) => {
-  const baseStyles = 'rounded-xl overflow-hidden relative transition-colors duration-200';
-
-  const variants = {
-    default: 'bg-surface border border-border',
-    gradient: 'bg-gradient-to-br from-surface via-surface to-surface-2 border border-border',
-    outline: 'bg-transparent border border-border',
-    filled: 'bg-surface-2 border border-border',
-    glass: 'backdrop-blur-md bg-white/5 border border-white/10',
-    glow: 'bg-surface border border-primary/20 shadow-[0_0_15px_rgba(var(--color-primary-rgb),0.15)]',
-    accent: 'bg-gradient-to-br from-surface via-surface to-surface-2 border-l-4 border border-primary border-l-primary'
+  const getVariantClasses = () => {
+    switch (variant) {
+      case 'gradient':
+        return 'bg-gradient-to-br from-surface-2 to-surface via-surface border border-primary/10';
+      case 'outline':
+        return 'bg-transparent border border-primary/30';
+      case 'filled':
+        return 'bg-primary/10 border border-primary/20';
+      case 'glass':
+        return 'bg-surface/70 backdrop-blur-lg border border-primary/10';
+      case 'glow':
+        return 'bg-surface border border-primary/20 shadow-glow-sm';
+      case 'accent':
+        return 'bg-surface border-l-4 border-accent border-y border-r border-primary/10';
+      default:
+        return 'bg-surface border border-primary/10';
+    }
   };
-
-  const interactiveStyles = interactive 
-    ? 'cursor-pointer transition-all duration-300'
-    : '';
-
-  const hoverStyles = hoverable 
-    ? 'hover:border-primary/50 hover:bg-opacity-95'
-    : '';
 
   const getHoverAnimationProps = () => {
     if (!withHoverAnimation) return {};
-    
+
     switch (hoverAnimationType) {
       case 'lift':
         return {
-          whileHover: { y: -5, transition: { duration: 0.3 } },
-          whileTap: { y: 0, scale: 0.98 },
+          whileHover: { y: -4, boxShadow: '0 10px 20px rgba(0,0,0,0.1)' },
+          transition: { duration: 0.2 }
         };
       case 'scale':
         return {
-          whileHover: { scale: 1.02, transition: { duration: 0.3 } },
-          whileTap: { scale: 0.98 },
+          whileHover: { scale: 1.02 },
+          transition: { duration: 0.2 }
         };
       case 'glow':
         return {
-          whileHover: { boxShadow: '0 0 20px var(--shadow-glow-primary)', transition: { duration: 0.3 } },
+          whileHover: { boxShadow: '0 0 20px rgba(46, 160, 87, 0.3)' },
+          transition: { duration: 0.3 }
         };
       case 'border':
         return {
-          whileHover: { borderColor: 'var(--color-primary-500)', transition: { duration: 0.3 } },
+          whileHover: { borderColor: 'rgba(46, 160, 87, 0.5)' },
+          transition: { duration: 0.3 }
         };
       default:
         return {};
     }
   };
 
-  const initialAnimationProps = withInitialAnimation ? {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.5 }
-  } : {};
+  const getInitialAnimationProps = () => {
+    if (!withInitialAnimation) return {};
+
+    return {
+      initial: { opacity: 0, y: 10 },
+      animate: { opacity: 1, y: 0 },
+      transition: { duration: 0.4, ease: 'easeOut' }
+    };
+  };
+
+  const hoverClasses = hoverable
+    ? 'transition-all duration-300 ease-in-out hover:shadow-card-hover hover:border-primary/30'
+    : '';
+
+  const interactiveClasses = interactive ? 'cursor-pointer active:scale-[0.98]' : '';
+
+  const cardClasses = cn(
+    'rounded-xl overflow-hidden transition-colors duration-300',
+    getVariantClasses(),
+    hoverClasses,
+    interactiveClasses,
+    className
+  );
 
   return (
     <motion.div
-      className={cn(baseStyles, variants[variant], interactiveStyles, hoverStyles, className)}
+      className={cardClasses}
       onClick={onClick}
       {...getHoverAnimationProps()}
-      {...initialAnimationProps}
+      {...getInitialAnimationProps()}
     >
-      {variant === 'glow' && (
-        <div className="absolute inset-0 bg-primary opacity-5 blur-xl -z-10 rounded-xl"></div>
-      )}
-      
       {children}
     </motion.div>
   );

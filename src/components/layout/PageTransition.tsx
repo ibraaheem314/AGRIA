@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 
 interface PageTransitionProps {
   children: React.ReactNode;
-  className?: string;
-  transitionType?: 'fade' | 'slide' | 'scale' | 'none';
+  transitionType?: 'fade' | 'slide' | 'scale';
 }
 
 /**
@@ -15,44 +14,39 @@ interface PageTransitionProps {
  *   {children}
  * </PageTransition>
  */
-const PageTransition: React.FC<PageTransitionProps> = ({
-  children,
-  className = '',
-  transitionType = 'fade'
+const PageTransition: React.FC<PageTransitionProps> = ({ 
+  children, 
+  transitionType = 'fade' 
 }) => {
-  // Animation variants for different transition types
-  const variants = {
+  const transitions = {
     fade: {
       initial: { opacity: 0 },
       animate: { opacity: 1 },
       exit: { opacity: 0 },
+      transition: { duration: 0.3 }
     },
     slide: {
-      initial: { opacity: 0, x: -20 },
-      animate: { opacity: 1, x: 0 },
-      exit: { opacity: 0, x: 20 },
+      initial: { x: 20, opacity: 0 },
+      animate: { x: 0, opacity: 1 },
+      exit: { x: -20, opacity: 0 },
+      transition: { duration: 0.3 }
     },
     scale: {
-      initial: { opacity: 0, scale: 0.95 },
-      animate: { opacity: 1, scale: 1 },
-      exit: { opacity: 0, scale: 1.05 },
-    },
-    none: {
-      initial: {},
-      animate: {},
-      exit: {},
+      initial: { scale: 0.95, opacity: 0 },
+      animate: { scale: 1, opacity: 1 },
+      exit: { scale: 0.95, opacity: 0 },
+      transition: { duration: 0.3 }
     }
   };
 
-  const selectedVariant = variants[transitionType];
-  
+  const selectedTransition = transitions[transitionType];
+
   return (
     <motion.div
-      initial={selectedVariant.initial}
-      animate={selectedVariant.animate}
-      exit={selectedVariant.exit}
-      transition={{ duration: 0.4, ease: 'easeInOut' }}
-      className={className}
+      initial={selectedTransition.initial}
+      animate={selectedTransition.animate}
+      exit={selectedTransition.exit}
+      transition={selectedTransition.transition}
     >
       {children}
     </motion.div>

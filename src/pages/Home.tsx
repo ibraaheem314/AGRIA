@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { ChevronUp } from 'lucide-react';
 
 import Hero from '../components/Hero';
 import Features from '../components/Features';
@@ -11,84 +12,82 @@ import Partner from '../components/Partner';
 import AIAssistant from '../components/ai/AIAssistant';
 
 const Home = () => {
+  // Function to handle smooth scrolling to sections
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      window.scrollTo({
+        top: element.offsetTop - 80, // Adjustment for navbar
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Function to handle URL anchors
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.substring(1);
+      if (hash) {
+        setTimeout(() => {
+          scrollToSection(hash);
+        }, 100);
+      }
+    };
+
+    // Apply on initial load
+    handleHashChange();
+
+    // Listen for URL changes
+    window.addEventListener('hashchange', handleHashChange);
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []);
+
   return (
-    <div className="relative overflow-hidden">
-      {/* Animated background with hexagonal pattern */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-[#0B0F0E]">
-        <div className="absolute inset-0 opacity-10 bg-grid-pattern"></div>
-        
-        {/* Gradient blobs */}
-        <motion.div 
-          className="absolute -top-20 left-1/4 w-[500px] h-[500px] rounded-full bg-primary/10 filter blur-[120px]"
-          initial={{ opacity: 0.3 }}
-          animate={{ 
-            opacity: [0.4, 0.6, 0.4],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{ 
-            duration: 15,
-            repeat: Infinity,
-            repeatType: "reverse"
-          }}
-        />
-        <motion.div 
-          className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-secondary/15 filter blur-[140px]"
-          initial={{ opacity: 0.2 }}
-          animate={{ 
-            opacity: [0.3, 0.5, 0.3],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{ 
-            duration: 20,
-            repeat: Infinity,
-            repeatType: "reverse",
-            delay: 2
-          }}
-        />
-        <motion.div 
-          className="absolute top-1/2 left-1/2 w-[450px] h-[450px] rounded-full bg-violet-500/10 filter blur-[130px]"
-          initial={{ opacity: 0.2 }}
-          animate={{ 
-            opacity: [0.2, 0.4, 0.2],
-            scale: [1, 1.15, 1],
-          }}
-          transition={{ 
-            duration: 18,
-            repeat: Infinity,
-            repeatType: "reverse",
-            delay: 5
-          }}
-        />
-      </div>
-      
-      {/* Content with smooth transitions */}
+    <div className="bg-dark text-white">
+      {/* Background elements */}
+      <div className="fixed inset-0 bg-grid-pattern opacity-5 pointer-events-none z-0"></div>
+
+      {/* Content */}
       <div className="relative z-10">
         <section id="hero">
       <Hero />
         </section>
 
-        <section id="features" className="relative">
+        <section id="features" className="py-20">
         <Features />
       </section>
 
-        <section id="how-it-works" className="relative">
+        <section id="how-it-works" className="py-20">
         <HowItWorks />
       </section>
 
-        <section id="why">
+        <section id="why" className="py-20">
         <WhyAgriTech />
       </section>
 
-        <section id="partners">
+        <section id="partners" className="py-20">
           <Partner />
         </section>
         
-        <section id="pricing" className="relative">
+        <section id="pricing" className="py-20">
         <Pricing />
       </section>
 
-        <Footer />
+      <Footer />
       </div>
+
+      {/* Back to top button */}
+      <motion.button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        whileHover={{ y: -3, boxShadow: '0 0 15px rgba(130, 90, 195, 0.5)' }}
+        className="fixed bottom-10 right-10 bg-primary text-white p-3 rounded-full shadow-glow-sm z-40 hidden lg:flex lg:items-center lg:justify-center transition-all duration-300"
+      >
+        <ChevronUp size={20} />
+      </motion.button>
 
       <AIAssistant />
     </div>

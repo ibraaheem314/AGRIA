@@ -10,6 +10,8 @@ import Home from './pages/Home';
 import Contact from './pages/Contact';
 import WhyAgriTech from './pages/WhyAgriTech';
 import Login from './pages/Login';
+import Platform from './pages/Platform';
+import About from './pages/About';
 
 import Dashboard from './pages/Dashboard';
 import Farms from './pages/Farms';
@@ -28,9 +30,11 @@ function App() {
         {/* 🌿 Marketing public pages */}
         <Route element={<MarketingLayout />}>
           <Route index element={<Home />} />
+          <Route path="/platform" element={<Platform />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/why" element={<WhyAgriTech />} />
-            <Route path="/login" element={<Login />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/login" element={<Login />} />
         </Route>
 
           {/* 📊 Dashboard app pages - protected routes */}

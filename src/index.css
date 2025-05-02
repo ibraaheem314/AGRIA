@@ -138,11 +138,25 @@
 }
 
 :root {
-  /* Base colors */
-  --color-primary: 38, 179, 127;
-  --color-secondary: 0, 179, 152;
-  --color-dark: 11, 15, 14;
-  --color-darker: 7, 10, 9;
+  /* Nouvelle palette de couleurs */
+  --primary: 130, 90, 195;      /* Violet-bleu */
+  --primary-light: 150, 120, 215;
+  --secondary: 60, 180, 160;   /* Turquoise */
+  --accent: 255, 160, 70;      /* Orange vif */
+  --background: 10, 10, 15;    /* Noir profond avec nuance bleue */
+  --foreground: 240, 240, 245; /* Blanc avec légère teinte bleutée */
+  --muted: 30, 30, 40;         /* Gris foncé avec teinte bleue */
+  --muted-light: 70, 70, 90;   /* Gris clair avec teinte bleue */
+  
+  /* Définition des couleurs dans les variables standard */
+  --color-primary: rgb(var(--primary));
+  --color-primary-light: rgb(var(--primary-light));
+  --color-secondary: rgb(var(--secondary));
+  --color-accent: rgb(var(--accent));
+  --color-bg: rgb(var(--background));
+  --color-fg: rgb(var(--foreground));
+  --color-muted: rgb(var(--muted));
+  --color-muted-light: rgb(var(--muted-light));
   
   /* UI colors */
   --color-success: 34, 197, 94;
@@ -166,11 +180,12 @@
 }
 
 body {
-  background-color: #0B0F0E;
-  color: white;
+  @apply bg-black text-white antialiased;
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   min-height: 100vh;
-  }
+}
 
 @keyframes pulse-glow {
   0%, 100% {
@@ -188,4 +203,56 @@ body {
 ::selection {
   background-color: rgba(38, 179, 127, 0.4);
   color: white;
+}
+
+/* Style personnalisé pour la scrollbar */
+.styled-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.styled-scrollbar::-webkit-scrollbar-track {
+  background: rgb(var(--muted));
+  }
+
+.styled-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(var(--primary), 0.6);
+  border-radius: 3px;
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--primary), 0.8);
+}
+
+/* Pattern de grille subtil pour les arrière-plans */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(rgba(var(--primary), 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--primary), 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Effet de verre dépoli pour les cartes et éléments UI */
+.bg-glass {
+  background: rgba(var(--muted), 0.3);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(var(--primary), 0.1);
+}
+
+/* Animation de dégradé subtile */
+.bg-gradient-animate {
+  background: linear-gradient(
+    -45deg,
+    rgba(var(--primary), 0.3),
+    rgba(var(--secondary), 0.3),
+    rgba(var(--accent), 0.3)
+  );
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }

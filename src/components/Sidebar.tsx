@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Home,
   LayoutDashboard,
   Cloud,
   ShoppingCart,
@@ -10,88 +9,110 @@ import {
   User,
   Menu,
   X,
+  Leaf,
+  LineChart,
+  Settings,
+  ChevronLeft
 } from 'lucide-react';
 
-const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+interface SidebarProps {
+  isOpen: boolean;
+  onToggle: () => void;
+}
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
-
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
   const navItems = [
-    { path: '/dashboard', name: 'Dashboard', icon: <LayoutDashboard size={20} /> },
-    { path: '/farms', name: 'Farms', icon: <Home size={20} /> },
-    { path: '/weather', name: 'Weather', icon: <Cloud size={20} /> },
+    { path: '/dashboard', name: 'Tableau de bord', icon: <LayoutDashboard size={20} /> },
+    { path: '/farms', name: 'Exploitations', icon: <Leaf size={20} /> },
+    { path: '/weather', name: 'Météo', icon: <Cloud size={20} /> },
     { path: '/marketplace', name: 'Marketplace', icon: <ShoppingCart size={20} /> },
-    { path: '/resources', name: 'Resources', icon: <BookOpen size={20} /> },
-    { path: '/profile', name: 'Profile', icon: <User size={20} /> },
+    { path: '/resources', name: 'Ressources', icon: <BookOpen size={20} /> },
+    { path: '/analytics', name: 'Analyses', icon: <LineChart size={20} /> },
+    { path: '/profile', name: 'Profil', icon: <User size={20} /> },
   ];
 
   return (
     <>
       {/* Mobile menu toggle */}
       <button
-        onClick={toggleSidebar}
-        className="md:hidden fixed top-4 left-4 z-30 bg-primary text-black p-2 rounded-md"
+        onClick={onToggle}
+        className="md:hidden fixed top-4 left-4 z-30 bg-primary text-white p-2 rounded-md shadow-glow-sm"
       >
-        <Menu size={20} />
+        {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
       {/* Sidebar */}
       <motion.div
-        className={`fixed inset-y-0 left-0 z-20 w-64 bg-[#0B0F0E] text-white shadow-lg transform ${
+        className={`fixed md:sticky top-0 left-0 z-20 w-60 h-screen bg-surface border-r border-primary/15 text-white shadow-lg transform ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0 transition-transform duration-300 ease-in-out`}
-        initial={false}
+        initial={{ x: -60 }}
+        animate={{ x: 0 }}
+        transition={{ duration: 0.3 }}
       >
         <div className="flex flex-col h-full">
           {/* Logo + Close on mobile */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-800">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-primary/10 bg-surface-2">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="bg-primary text-black p-2 rounded-md">
-                <Home size={20} />
+              <div className="bg-primary text-white p-2 rounded-md shadow-glow-sm">
+                <Leaf size={20} />
               </div>
-              <span className="ml-2 text-lg font-semibold text-white">AgriTech</span>
+              <span className="ml-2 text-lg font-light text-white">AgriTech</span>
             </Link>
             <button
-              onClick={toggleSidebar}
-              className="md:hidden text-gray-400 hover:text-white"
+              onClick={onToggle}
+              className="md:hidden text-text-secondary hover:text-white transition-colors"
             >
               <X size={20} />
+            </button>
+            
+            {/* Toggle button visible only on desktop */}
+            <button
+              onClick={onToggle}
+              className="hidden md:flex text-text-secondary hover:text-white transition-colors"
+            >
+              <ChevronLeft size={18} className={`transition-transform duration-300 ${isOpen ? '' : 'rotate-180'}`} />
             </button>
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto thin-scrollbar bg-gradient-to-b from-surface-2 to-surface">
             {navItems.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) =>
-                  `flex items-center px-4 py-3 rounded-lg transition-colors ${
+                  `flex items-center px-4 py-3 rounded-lg transition-all duration-200 ${
                     isActive
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-gray-400 hover:bg-white/10'
+                      ? 'bg-primary/15 text-primary font-medium shadow-glow-sm border-l-2 border-primary'
+                      : 'text-text-secondary hover:bg-primary/5 hover:text-white'
                   }`
                 }
+                onClick={() => {
+                  if (window.innerWidth < 768) {
+                    onToggle();
+                  }
+                }}
               >
-                <span className="mr-3">{item.icon}</span>
-                <span>{item.name}</span>
+                <span className="mr-3 transition-all duration-200">{item.icon}</span>
+                <span className="transition-all duration-200">{item.name}</span>
               </NavLink>
             ))}
           </nav>
 
           {/* User Info */}
-          <div className="px-6 py-4 border-t border-neutral-800">
-            <div className="flex items-center">
-              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-                <User size={16} />
+          <div className="p-4 mt-auto border-t border-primary/10 bg-surface-2 backdrop-blur-sm">
+            <div className="flex items-center p-2">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <User size={18} />
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-white">John Farmer</p>
-                <p className="text-xs text-gray-400">Farm Manager</p>
+                <p className="text-sm font-medium text-white">Jean Dupont</p>
+                <p className="text-xs text-text-secondary">Expert Agricole</p>
               </div>
+              <button className="ml-auto p-2 text-text-secondary hover:text-primary transition-colors">
+                <Settings size={18} />
+              </button>
             </div>
           </div>
         </div>
@@ -100,8 +121,8 @@ const Sidebar = () => {
       {/* Overlay mobile */}
       {isOpen && (
         <div
-          className="md:hidden fixed inset-0 z-10 bg-black/50 transition-opacity"
-          onClick={toggleSidebar}
+          className="md:hidden fixed inset-0 z-10 bg-black/60 backdrop-blur-sm transition-opacity"
+          onClick={onToggle}
         />
       )}
     </>

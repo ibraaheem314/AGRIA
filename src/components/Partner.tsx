@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { CheckCircle } from 'lucide-react';
 
 // Définir les types pour les partenaires
 interface Partner {
@@ -9,6 +10,8 @@ interface Partner {
 }
 
 const Partner = () => {
+  const [selectedType, setSelectedType] = useState<string | null>(null);
+  
   // Données des partenaires
   const partners: Partner[] = [
     {
@@ -53,6 +56,11 @@ const Partner = () => {
     }
   ];
 
+  // Filtrer les partenaires si un type est sélectionné
+  const filteredPartners = selectedType
+    ? partners.filter(partner => partner.type === selectedType)
+    : partners;
+
   // Regrouper les partenaires par type
   const partnersByType = partners.reduce((acc, partner) => {
     if (!acc[partner.type]) {
@@ -83,28 +91,39 @@ const Partner = () => {
     }
   };
 
+  // Fonction pour obtenir la couleur en fonction du type
+  const getTypeColor = (type: string) => {
+    switch(type) {
+      case 'Institutionnel':
+        return 'border-secondary text-secondary';
+      case 'Technologique':
+        return 'border-primary text-primary';
+      case 'Recherche':
+        return 'border-accent text-accent';
+      case 'Distribution':
+        return 'border-green-500 text-green-500';
+      default:
+        return 'border-gray-400 text-gray-400';
+    }
+  };
+
   return (
-    <section className="relative overflow-hidden">
-      <div className="container mx-auto px-6 relative z-10">
+    <section className="relative bg-dark py-24 overflow-hidden">
+      {/* Éléments décoratifs */}
+      <div className="absolute -top-20 -right-20 w-80 h-80 bg-primary/10 rounded-full blur-[100px]" />
+      <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-secondary/10 rounded-full blur-[100px]" />
+      
+      <div className="container mx-auto px-6 relative">
         {/* Titre de la section */}
         <div className="mb-16 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="inline-block bg-primary/20 text-primary font-medium px-4 py-2 rounded-full mb-4"
-          >
-            Nos partenaires
-          </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-3xl md:text-4xl font-bold mb-6 text-white"
+            className="text-4xl sm:text-5xl md:text-6xl font-light mb-5 text-white"
           >
-            Un écosystème d'innovation
+            Nos <span className="text-primary bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">partenaires</span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -119,17 +138,34 @@ const Partner = () => {
 
         {/* Filtres pour les types de partenaires */}
         <motion.div 
-          className="flex flex-wrap justify-center gap-3 mb-12"
+          className="flex flex-wrap justify-center gap-4 mb-16"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
         >
+          <motion.button
+            variants={itemVariants}
+            className={`px-6 py-2 border transition-all duration-300 text-sm tracking-wide ${
+              selectedType === null 
+                ? 'border-primary bg-primary/10 text-white' 
+                : 'border-white/20 text-white hover:border-primary/50 hover:bg-primary/5'
+            }`}
+            onClick={() => setSelectedType(null)}
+          >
+            Tous
+          </motion.button>
+          
           {Object.keys(partnersByType).map((type, index) => (
             <motion.button
               key={type}
               variants={itemVariants}
-              className="px-5 py-2 rounded-full bg-[#151918] text-gray-300 hover:bg-primary/20 hover:text-primary transition-all duration-300 border border-neutral-800"
+              className={`px-6 py-2 border transition-all duration-300 text-sm tracking-wide ${
+                selectedType === type 
+                  ? `${getTypeColor(type)} bg-${type === 'Institutionnel' ? 'secondary' : type === 'Recherche' ? 'accent' : 'primary'}/10` 
+                  : 'border-white/20 text-white hover:border-primary/50 hover:bg-primary/5'
+              }`}
+              onClick={() => setSelectedType(type)}
             >
               {type}
             </motion.button>
@@ -138,27 +174,29 @@ const Partner = () => {
 
         {/* Logos des partenaires */}
         <motion.div 
-          className="grid grid-cols-2 md:grid-cols-4 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
         >
-          {partners.map((partner, index) => (
+          {filteredPartners.map((partner, index) => (
             <motion.div
               key={partner.name}
               variants={itemVariants}
-              className="bg-[#151918] border border-neutral-800 rounded-lg p-6 flex flex-col items-center justify-center hover:border-primary/50 transition-all duration-300"
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
+              className={`bg-dark/80 backdrop-blur-sm p-8 flex flex-col items-center justify-center group hover:bg-glass transition-all duration-300 border-t border-b-0 ${getTypeColor(partner.type)}`}
+              whileHover={{ y: -5, boxShadow: '0 10px 25px -5px rgba(130, 90, 195, 0.2)' }}
             >
-              <div className="h-16 w-full flex items-center justify-center mb-4">
-                {/* Fallback si les images ne sont pas disponibles */}
-                <div className="w-32 h-12 bg-gradient-to-r from-neutral-800 to-neutral-700 rounded flex items-center justify-center text-white font-medium">
+              <div className="h-16 w-full flex items-center justify-center mb-5 relative">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 flex items-center justify-center text-white font-light group-hover:scale-110 transition-transform duration-300">
                   {partner.name.split(' ').map(word => word[0]).join('')}
                 </div>
+                <div className="absolute h-px w-1/2 bg-gradient-to-r from-transparent via-primary/30 to-transparent bottom-0"></div>
               </div>
-              <h4 className="text-sm text-white text-center font-medium mb-1">{partner.name}</h4>
-              <span className="text-xs text-primary">{partner.type}</span>
+              <h4 className="text-sm text-white text-center font-light mb-1">{partner.name}</h4>
+              <span className={`mt-1 text-xs ${getTypeColor(partner.type)} flex items-center`}>
+                <span className="mr-1">{partner.type}</span>
+              </span>
             </motion.div>
           ))}
         </motion.div>
@@ -169,15 +207,22 @@ const Partner = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-16 max-w-4xl mx-auto bg-gradient-to-r from-primary/20 to-primary/5 rounded-xl p-8 text-center border border-primary/30"
+          className="mt-24 max-w-4xl mx-auto bg-gradient-to-r from-primary/5 to-secondary/5 p-8 border border-primary/20 backdrop-blur-sm"
         >
-          <h3 className="text-2xl font-bold mb-4 text-white">Devenir partenaire</h3>
-          <p className="text-gray-300 mb-6">
-            Vous souhaitez rejoindre notre écosystème et contribuer à l'avenir de l'agriculture intelligente ?
-          </p>
-          <button className="bg-primary text-white font-medium px-8 py-3 rounded-lg hover:bg-primary/90 transition">
-            Contactez-nous
-          </button>
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+            <div className="w-16 h-16 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center">
+              <CheckCircle className="text-primary w-8 h-8" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-light text-white mb-3">Devenir partenaire</h3>
+              <p className="text-gray-400 mb-6">
+                Vous souhaitez rejoindre notre écosystème et contribuer à l'avenir de l'agriculture intelligente ? Nous sommes toujours à la recherche de nouvelles collaborations innovantes.
+              </p>
+              <button className="bg-white text-dark font-light px-8 py-3 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-white transition-all duration-300 shadow-sm hover:shadow-glow-primary">
+                Contactez-nous
+              </button>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>

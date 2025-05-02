@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Zap, Send, X, Bot, Leaf } from 'lucide-react';
-import Button from '../ui/Button';
+import Button from '../../shared/components/Button';
 import { motion, AnimatePresence } from 'framer-motion';
-import useChatbot from '../../hooks/useChatbot';
+import useChatbot from '../hooks/useChatbot';
 
 interface Message {
   id: number;
@@ -256,4 +256,4 @@ const AIAssistant: React.FC = () => {
   );
 };
 
-export default AIAssistant;
+export default AIAssistant; 

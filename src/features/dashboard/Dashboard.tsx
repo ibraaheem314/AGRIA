@@ -3,11 +3,11 @@ import {
   Activity, Users, Cloud, BarChart2, 
   Droplets, Leaf, MapPin, RefreshCw, ThermometerSun, Wind
 } from 'lucide-react';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
-import DataCard from '../components/ui/DataCard';
-import { getWeatherData } from '../../lib/api/weather';
-import { getClimateData } from '../../lib/api/climate';
+import Card from '../shared/components/Card';
+import Button from '../shared/components/Button';
+import DataCard from '../shared/components/DataCard';
+import { getWeatherData } from '../weather/api/weatherApi';
+import { getClimateData } from '../climate/api/climateApi';
 
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -336,4 +336,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Dashboard; 
