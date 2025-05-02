@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Work+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Typography */
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Font weights */
+  --font-light: 300;
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  
+  /* Typography sizes */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 1.875rem;  /* 30px */
+  --text-4xl: 2.25rem;   /* 36px */
+  --text-5xl: 3rem;      /* 48px */
+  --text-6xl: 3.75rem;   /* 60px */
+  --text-7xl: 4.5rem;    /* 72px */
+  --text-8xl: 6rem;      /* 96px */
+  
+  /* Line heights */
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+  
+  /* Letter spacing */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+}
+
+/* Apply typography to common elements */
+body {
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-regular);
+  line-height: var(--leading-normal);
+  color: #f8f9fa;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: var(--font-light);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+}
+
+h1, .h1 {
+  font-size: var(--text-5xl);
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+}
+
+h2, .h2 {
+  font-size: var(--text-3xl);
+  margin-bottom: 1rem;
+}
+
+h3, .h3 {
+  font-size: var(--text-2xl);
+  margin-bottom: 0.75rem;
+}
+
+h4, .h4 {
+  font-size: var(--text-xl);
+  margin-bottom: 0.5rem;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+.text-display {
+  font-family: var(--font-display);
+  font-weight: var(--font-light);
+  letter-spacing: var(--tracking-tight);
+}
+
+.text-weight-light {
+  font-weight: var(--font-light);
+}
+
+.text-weight-normal {
+  font-weight: var(--font-regular);
+}
+
+.text-weight-medium {
+  font-weight: var(--font-medium);
+}
+
+.text-weight-semibold {
+  font-weight: var(--font-semibold);
+}
+
+.text-weight-bold {
+  font-weight: var(--font-bold);
+}
+
+/* Hero text styles */
+.hero-title {
+  font-size: clamp(2.5rem, 8vw, var(--text-7xl));
+  line-height: 1.1;
+  font-weight: var(--font-light);
+  letter-spacing: var(--tracking-tight);
+}
+
+/* Responsive typography */
+@media (max-width: 768px) {
+  h1, .h1 {
+    font-size: var(--text-4xl);
+  }
+  
+  h2, .h2 {
+    font-size: var(--text-2xl);
+  }
+  
+  h3, .h3 {
+    font-size: var(--text-xl);
+  }
+} 

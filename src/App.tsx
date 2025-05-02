@@ -1,58 +1,53 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-import DashboardLayout from './components/layout/DashboardLayout';
-import MarketingLayout from './components/layout/MarketingLayout';
-import { AuthProvider } from './contexts/AuthContext';
-import ProtectedRoute from './components/auth/ProtectedRoute';
+// Shared Layouts
+import DashboardLayout from './features/dashboard/DashboardLayout';
 
+// Feature Pages
+import Dashboard from './features/dashboard/Dashboard';
+import AIAssistant from './features/ai/components/AIAssistant';
+
+// Landing Page
 import Home from './pages/Home';
-import Contact from './pages/Contact';
-import WhyAgriTech from './pages/WhyAgriTech';
+
+// Auth Pages
 import Login from './pages/Login';
-import Platform from './pages/Platform';
-import About from './pages/About';
 
-import Dashboard from './pages/Dashboard';
-import Farms from './pages/Farms';
-import Marketplace from './pages/Marketplace';
-import Resources from './pages/Resources';
-import Profile from './pages/Profile';
-import WeatherPage from './pages/WeatherPage';
-
+// Other Pages
 import NotFound from './pages/NotFound';
 
-function App() {
+const App: React.FC = () => {
   return (
-    <AuthProvider>
-    <Router>
+    <BrowserRouter>
+      {/* Global Components */}
+      <AIAssistant />
+      
       <Routes>
-        {/* 🌿 Marketing public pages */}
-        <Route element={<MarketingLayout />}>
-          <Route index element={<Home />} />
-          <Route path="/platform" element={<Platform />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/why" element={<WhyAgriTech />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/login" element={<Login />} />
-        </Route>
-
-          {/* 📊 Dashboard app pages - protected routes */}
-          <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+        {/* Public Routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        
+        {/* Dashboard Routes */}
+        <Route path="/" element={<DashboardLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/farms" element={<Farms />} />
-          <Route path="/marketplace" element={<Marketplace />} />
-          <Route path="/resources" element={<Resources />} />
-            <Route path="/weather" element={<WeatherPage />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/weather" element={<div>Weather page coming soon</div>} />
+          <Route path="/maps" element={<div>Maps page coming soon</div>} />
+          <Route path="/analytics" element={<div>Analytics page coming soon</div>} />
+          <Route path="/crops" element={<div>Crops page coming soon</div>} />
+          <Route path="/farms" element={<div>Farms page coming soon</div>} />
+          <Route path="/team" element={<div>Team page coming soon</div>} />
+          <Route path="/community" element={<div>Community page coming soon</div>} />
+          <Route path="/settings" element={<div>Settings page coming soon</div>} />
+          <Route path="/help" element={<div>Help page coming soon</div>} />
         </Route>
-
-        {/* 🔍 Fallback */}
-        <Route path="*" element={<NotFound />} />
+        
+        {/* Fallback Routes */}
+        <Route path="/404" element={<NotFound />} />
+        <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
-    </Router>
-    </AuthProvider>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;
