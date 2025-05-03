@@ -9,8 +9,10 @@ import WhyAgriTech from '../pages/WhyAgriTech';
 import Footer from '../components/Footer';
 import Pricing from '../components/Pricing';
 import Partner from '../components/Partner';
-import Impact from '../components/Impact';
 import AIAssistant from '../components/ai/AIAssistant';
+import AgriMethod from '../components/AgriMethod';
+import FarmFeatures from '../components/FarmFeatures';
+import PilotFarm from '../components/PilotFarm';
 
 const Home = () => {
   // Function to handle smooth scrolling to sections
@@ -35,7 +37,7 @@ const Home = () => {
       }
     };
 
-    // Set light theme to match our new design
+    // Set light theme
     document.documentElement.setAttribute('data-theme', 'light');
 
     // Apply on initial load
@@ -49,7 +51,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="bg-white text-gray-900">
+    <div className="bg-white text-gray-800">
       {/* Content */}
       <motion.div 
         className="relative"
@@ -70,11 +72,19 @@ const Home = () => {
           <Features />
         </section>
 
-        <section id="impact">
-          <Impact />
+        <section id="agri-method">
+          <AgriMethod />
         </section>
 
-        <section id="how-it-works" className="relative bg-gray-50">
+        <section id="farm-features">
+          <FarmFeatures />
+        </section>
+
+        <section id="pilot-farm">
+          <PilotFarm />
+        </section>
+
+        <section id="how-it-works">
           <HowItWorks />
         </section>
 
@@ -82,7 +92,7 @@ const Home = () => {
           <WhyAgriTech />
         </section>
 
-        <section id="partners" className="relative bg-gray-50">
+        <section id="partners">
           <Partner />
         </section>
         
@@ -98,8 +108,8 @@ const Home = () => {
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        whileHover={{ y: -3, boxShadow: '0 10px 25px rgba(0,0,0,0.08)' }}
-        className="fixed bottom-10 right-10 bg-white text-green-600 p-3 rounded-full border border-gray-200 shadow-md z-40 hidden lg:flex lg:items-center lg:justify-center transition-all duration-300 hover:bg-green-600 hover:text-white"
+        whileHover={{ y: -3, boxShadow: '0 0 15px rgba(34, 197, 94, 0.5)' }}
+        className="fixed bottom-10 right-10 bg-primary text-white p-3 rounded-full shadow-glow-sm z-40 hidden lg:flex lg:items-center lg:justify-center transition-all duration-300"
       >
         <ChevronUp size={20} />
       </motion.button>
@@ -109,4 +119,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Home; 

@@ -105,128 +105,135 @@ const Sidebar = () => {
       {/* Mobile menu toggle */}
       <button
         onClick={toggleSidebar}
-        className="md:hidden fixed top-4 left-4 z-30 bg-primary hover:bg-primary-600 text-white p-2 rounded-md shadow-glow-sm transition-all"
+        className="md:hidden fixed top-4 left-4 z-30 bg-green-600 hover:bg-green-700 text-white p-2 rounded-md shadow-sm transition-all"
       >
         <Menu size={20} />
       </button>
 
       {/* Sidebar */}
       <div
-        className={`fixed md:sticky top-0 left-0 z-20 w-64 h-screen bg-neutral-900/95 backdrop-blur-sm border-r border-soil-light/20 text-white shadow-lg transform ${
+        className={`fixed md:sticky top-0 left-0 z-20 w-64 h-screen bg-white/95 backdrop-blur-sm border-r border-gray-200 text-gray-800 shadow-lg transform ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0 transition-transform duration-300 ease-in-out`}
       >
         <div className="flex flex-col h-full">
           {/* Logo + Close on mobile */}
-          <div className="flex items-center justify-between p-4 border-b border-soil-light/20 bg-soil-dark/30">
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white relative">
+            <div className="absolute top-0 left-0 w-full h-1 bg-green-600"></div>
             <Link to="/" className="flex items-center space-x-2">
-              <div className="bg-primary p-2 rounded-lg shadow-glow-sm flex items-center justify-center">
+              <div className="bg-green-600 p-2 rounded-lg shadow-sm flex items-center justify-center">
                 <Sprout size={20} className="text-white" />
               </div>
               <div className="ml-2">
-                <span className="text-lg font-medium text-white">AgriTech</span>
-                <span className="block text-xs text-primary/80 font-medium">Maraîchage saisonnier</span>
+                <span className="text-lg font-medium text-gray-800">AgriTech</span>
+                <span className="block text-xs text-gray-600 font-medium">Maraîchage saisonnier</span>
               </div>
             </Link>
             <button
               onClick={toggleSidebar}
-              className="md:hidden text-text-tertiary hover:text-white transition-colors"
+              className="md:hidden text-gray-600 hover:text-gray-800 hover:bg-gray-100 p-1.5 rounded-full transition-colors"
             >
               <X size={20} />
             </button>
           </div>
 
           {/* Season indicator */}
-          <div className="px-4 py-3 bg-neutral-900/70 border-b border-soil-light/10">
+          <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 shadow-inner">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                {currentSeasonIcon()}
-                <span className="text-sm font-medium text-text-secondary">Saison: {currentSeason}</span>
+                <span>{currentSeasonIcon()}</span>
+                <span className="text-sm font-medium text-gray-700">Saison: {currentSeason}</span>
               </div>
-              <div className="flex items-center space-x-1">
-                <span className={`w-2 h-2 rounded-full ${currentSeason === 'Printemps' ? 'bg-season-spring ring-1 ring-season-spring' : 'bg-season-spring/30'}`}></span>
-                <span className={`w-2 h-2 rounded-full ${currentSeason === 'Été' ? 'bg-season-summer ring-1 ring-season-summer' : 'bg-season-summer/30'}`}></span>
-                <span className={`w-2 h-2 rounded-full ${currentSeason === 'Automne' ? 'bg-season-autumn ring-1 ring-season-autumn' : 'bg-season-autumn/30'}`}></span>
-                <span className={`w-2 h-2 rounded-full ${currentSeason === 'Hiver' ? 'bg-season-winter ring-1 ring-season-winter' : 'bg-season-winter/30'}`}></span>
+              <div className="flex items-center space-x-1.5">
+                <span className={`w-2 h-2 rounded-full ${currentSeason === 'Printemps' ? 'bg-season-spring ring-1 ring-season-spring shadow-sm' : 'bg-season-spring/40'}`}></span>
+                <span className={`w-2 h-2 rounded-full ${currentSeason === 'Été' ? 'bg-season-summer ring-1 ring-season-summer shadow-sm' : 'bg-season-summer/40'}`}></span>
+                <span className={`w-2 h-2 rounded-full ${currentSeason === 'Automne' ? 'bg-season-autumn ring-1 ring-season-autumn shadow-sm animate-pulse' : 'bg-season-autumn/40'}`}></span>
+                <span className={`w-2 h-2 rounded-full ${currentSeason === 'Hiver' ? 'bg-season-winter ring-1 ring-season-winter shadow-sm' : 'bg-season-winter/40'}`}></span>
               </div>
             </div>
           </div>
 
           {/* Quick stats */}
-          <div className="px-4 py-3 bg-soil-dark/10 border-b border-soil-light/10 flex justify-between">
+          <div className="px-4 py-3 bg-white border-b border-gray-200 flex justify-between">
             <div className="text-center">
-              <div className="flex items-center justify-center text-primary">
+              <div className="flex items-center justify-center text-blue-600">
                 <Droplets size={16} />
               </div>
-              <span className="text-xs block mt-1 font-medium">52%</span>
-              <span className="text-[10px] text-text-tertiary">Humidité</span>
+              <span className="text-xs block mt-1 font-medium data-value text-gray-800">52%</span>
+              <span className="text-[10px] text-gray-500">Humidité</span>
             </div>
             <div className="text-center">
-              <div className="flex items-center justify-center text-accent">
+              <div className="flex items-center justify-center text-amber-600">
                 <Thermometer size={16} />
               </div>
-              <span className="text-xs block mt-1 font-medium">12°C</span>
-              <span className="text-[10px] text-text-tertiary">Temp.</span>
+              <span className="text-xs block mt-1 font-medium data-value text-gray-800">12°C</span>
+              <span className="text-[10px] text-gray-500">Temp.</span>
             </div>
             <div className="text-center">
-              <div className="flex items-center justify-center text-season-autumn">
+              <div className="flex items-center justify-center text-green-600">
                 <Sprout size={16} />
               </div>
-              <span className="text-xs block mt-1 font-medium">5</span>
-              <span className="text-[10px] text-text-tertiary">Cultures</span>
+              <span className="text-xs block mt-1 font-medium data-value text-gray-800">5</span>
+              <span className="text-[10px] text-gray-500">Cultures</span>
             </div>
           </div>
 
           {/* Navigation Links */}
           <nav className="flex-1 py-3 overflow-y-auto custom-scrollbar">
             <div className="space-y-1 px-3">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={({ isActive }) =>
+            {navItems.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) =>
                     `flex items-center px-3 py-2.5 rounded-md transition-all duration-200 ${
-                      isActive
-                        ? 'bg-primary text-white font-medium shadow-glow-sm'
-                        : 'text-text-secondary hover:bg-soil-dark/40 hover:text-white'
-                    }`
-                  }
+                    isActive
+                        ? 'bg-green-600 text-white font-medium shadow-sm'
+                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                  }`
+                }
                   onClick={() => setIsOpen(false)}
-                >
+              >
                   <span className="mr-3 flex-shrink-0">{item.icon}</span>
                   <span className="text-sm">{item.name}</span>
-                </NavLink>
-              ))}
+              </NavLink>
+            ))}
             </div>
             
             <div className="mt-6 px-3">
-              <div className="text-xs font-semibold text-text-tertiary uppercase tracking-wider px-3 py-2">
+              <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 py-2">
                 Ressources
               </div>
               <div className="mt-2 space-y-1">
-                <a href="#" className="flex items-center px-3 py-2.5 rounded-md text-text-secondary hover:bg-soil-dark/40 hover:text-white transition-all">
-                  <BookOpen size={18} className="mr-3" />
+                <Link
+                  to="/ressources/guide"
+                  className="flex items-center px-3 py-2.5 rounded-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-all"
+                >
+                  <BookOpen size={18} className="mr-3 text-green-600" />
                   <span className="text-sm">Guide du maraîcher</span>
-                </a>
-                <a href="#" className="flex items-center px-3 py-2.5 rounded-md text-text-secondary hover:bg-soil-dark/40 hover:text-white transition-all">
-                  <Calendar size={18} className="mr-3" />
+                </Link>
+                <Link
+                  to="/ressources/calendrier-semis"
+                  className="flex items-center px-3 py-2.5 rounded-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-all"
+                >
+                  <Calendar size={18} className="mr-3 text-green-600" />
                   <span className="text-sm">Calendrier de semis</span>
-                </a>
+                </Link>
               </div>
             </div>
           </nav>
 
           {/* User Info */}
-          <div className="p-4 border-t border-soil-light/20 bg-soil-dark/30">
+          <div className="p-4 border-t border-gray-200 bg-gray-50">
             <div className="flex items-center">
-              <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center text-primary">
+              <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center text-green-600 shadow-sm">
                 <User size={16} />
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-white">Jean Dupont</p>
-                <p className="text-xs text-text-tertiary">Maraîcher · Île-de-France</p>
+                <p className="text-sm font-medium text-gray-800">Jean Dupont</p>
+                <p className="text-xs text-gray-500">Maraîcher · Île-de-France</p>
               </div>
-              <button className="ml-auto p-2 text-text-tertiary hover:text-primary transition-colors rounded-full hover:bg-soil-dark/50">
+              <button className="ml-auto p-2 text-gray-600 hover:text-green-600 transition-colors rounded-full hover:bg-gray-100">
                 <Settings size={16} />
               </button>
             </div>

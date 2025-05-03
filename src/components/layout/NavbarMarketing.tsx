@@ -20,28 +20,30 @@ const NavbarMarketing = () => {
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-primary-800/90 backdrop-blur-sm shadow-lg border-b border-primary-700/30' : 'bg-transparent py-6'
+        scrolled 
+          ? 'bg-white/95 backdrop-blur-sm shadow-lg border-b border-gray-200' 
+          : 'bg-gradient-to-b from-black/50 to-transparent py-6'
       }`}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
         <Link to="/" className="flex items-center group">
-          <div className="mr-2 w-10 h-10 bg-primary rounded-lg flex items-center justify-center shadow-lg transition-all duration-300 group-hover:shadow-glow-primary">
+          <div className="mr-2 w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center shadow-lg transition-all duration-300 group-hover:shadow-green-500/30">
             <Leaf size={20} className="text-white" />
           </div>
-          <span className="text-white text-xl font-light tracking-wide">AGRITECH</span>
+          <span className={`text-xl font-medium tracking-wide ${scrolled ? 'text-green-800' : 'text-white'}`}>AGRITECH</span>
         </Link>
 
         <nav className="hidden md:flex items-center space-x-8">
-          <Link to="/platform" className="text-white/90 uppercase text-sm tracking-wider hover:text-white transition-colors font-light">
+          <Link to="/platform" className={`uppercase text-sm tracking-wider transition-colors font-medium ${scrolled ? 'text-gray-800 hover:text-green-600' : 'text-white/90 hover:text-white'}`}>
             Plateforme
           </Link>
-          <Link to="/resources" className="text-white/90 uppercase text-sm tracking-wider hover:text-white transition-colors font-light">
+          <Link to="/resources" className={`uppercase text-sm tracking-wider transition-colors font-medium ${scrolled ? 'text-gray-800 hover:text-green-600' : 'text-white/90 hover:text-white'}`}>
             Ressources
           </Link>
-          <Link to="/about" className="text-white/90 uppercase text-sm tracking-wider hover:text-white transition-colors font-light">
+          <Link to="/about" className={`uppercase text-sm tracking-wider transition-colors font-medium ${scrolled ? 'text-gray-800 hover:text-green-600' : 'text-white/90 hover:text-white'}`}>
             À propos
           </Link>
-          <Link to="/contact" className="text-white/90 uppercase text-sm tracking-wider hover:text-white transition-colors font-light">
+          <Link to="/contact" className={`uppercase text-sm tracking-wider transition-colors font-medium ${scrolled ? 'text-gray-800 hover:text-green-600' : 'text-white/90 hover:text-white'}`}>
             Contact
           </Link>
         </nav>
@@ -50,7 +52,11 @@ const NavbarMarketing = () => {
           <Button 
             variant="primary" 
             size="sm"
-            className="hidden md:flex bg-white text-primary-700 hover:bg-white/90 hover:shadow-lg transition-all duration-300"
+            className={`hidden md:flex transition-all duration-300 ${
+              scrolled 
+                ? 'bg-green-600 text-white hover:bg-green-700' 
+                : 'bg-white text-green-700 hover:bg-white/90'
+            }`}
             onClick={() => navigate('/demo')}
           >
             Accédez à la demo
@@ -58,13 +64,19 @@ const NavbarMarketing = () => {
           <Button 
             variant="outline" 
             size="sm"
-            className="hidden md:flex border-white/30 text-white hover:bg-white/10 transition-all duration-300"
+            className={`hidden md:flex transition-all duration-300 ${
+              scrolled 
+                ? 'border-green-600 text-green-700 hover:bg-green-50' 
+                : 'border-white/30 text-white hover:bg-white/10'
+            }`}
             onClick={() => navigate('/login')}
           >
             Mon compte
           </Button>
           <button 
-            className="md:hidden text-white p-2"
+            className={`md:hidden p-2 rounded-lg ${
+              scrolled ? 'text-green-700 hover:bg-green-50' : 'text-white hover:bg-white/10'
+            }`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -74,41 +86,41 @@ const NavbarMarketing = () => {
 
       {/* Menu mobile */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-primary-800/95 backdrop-blur-md px-4 py-5 border-t border-primary-700/30 animate-in">
+        <div className="md:hidden bg-white shadow-lg px-4 py-5 border-t border-gray-200 animate-in">
           <div className="space-y-4">
             <Link 
               to="/platform" 
-              className="block py-3 text-white hover:text-primary-200 transition-colors"
+              className="block py-3 text-gray-800 hover:text-green-600 transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
               Plateforme
             </Link>
             <Link 
               to="/resources" 
-              className="block py-3 text-white hover:text-primary-200 transition-colors"
+              className="block py-3 text-gray-800 hover:text-green-600 transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
               Ressources
             </Link>
             <Link
               to="/about" 
-              className="block py-3 text-white hover:text-primary-200 transition-colors"
+              className="block py-3 text-gray-800 hover:text-green-600 transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
               À propos
             </Link>
             <Link
               to="/contact"
-              className="block py-3 text-white hover:text-primary-200 transition-colors"
+              className="block py-3 text-gray-800 hover:text-green-600 transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
               Contact
             </Link>
-            <div className="pt-4 flex flex-col gap-3 border-t border-primary-700/30 mt-4">
+            <div className="pt-4 flex flex-col gap-3 border-t border-gray-200 mt-4">
               <Button 
                 variant="primary" 
                 size="sm"
-                className="w-full bg-white text-primary-700 hover:bg-white/90 transition-all duration-300"
+                className="w-full bg-green-600 text-white hover:bg-green-700 transition-all duration-300"
                 onClick={() => {
                   navigate('/demo');
                   setMobileMenuOpen(false);
@@ -119,7 +131,7 @@ const NavbarMarketing = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                className="w-full border-white/30 hover:border-white/50 hover:bg-white/10 transition-all duration-300"
+                className="w-full border-green-600 text-green-700 hover:bg-green-50 transition-all duration-300"
                 onClick={() => {
                   navigate('/login');
                   setMobileMenuOpen(false);

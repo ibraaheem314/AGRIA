@@ -53,22 +53,22 @@ const DataCard: React.FC<DataCardProps> = ({
           <div className="w-2/3 h-5 bg-primary/5 rounded animate-pulse"></div>
           <div className="w-1/2 h-8 bg-primary/5 rounded animate-pulse"></div>
           <div className="w-full h-4 bg-primary/5 rounded animate-pulse"></div>
-        </div>
+          </div>
       ) : (
         <>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-medium text-text-secondary">{title}</h3>
+            <h3 className="text-sm font-medium text-text-secondary label-text">{title}</h3>
             <div className={iconClasses}>
               {icon}
             </div>
           </div>
           
           <div className="mb-2">
-            <div className="text-2xl font-bold">{value}</div>
+            <div className="text-2xl font-bold data-value">{value}</div>
             
             {trend && (
               <div className="flex items-center mt-1">
-                <div className={`flex items-center ${trend.isPositive ? 'text-green-500' : 'text-red-500'}`}>
+                <div className={`flex items-center ${trend.isPositive ? 'indicator-up' : 'indicator-down'}`}>
                   {trend.isPositive ? (
                     <ArrowUp size={14} className="mr-1" />
                   ) : (
@@ -77,14 +77,14 @@ const DataCard: React.FC<DataCardProps> = ({
                   <span className="text-xs font-medium">{trend.value}%</span>
                 </div>
                 {trend.label && (
-                  <span className="text-xs text-text-tertiary ml-1">{trend.label}</span>
+                  <span className="text-xs text-text-secondary ml-1">{trend.label}</span>
                 )}
               </div>
             )}
           </div>
           
           {description && (
-            <div className="text-xs text-text-tertiary">{description}</div>
+            <div className="text-xs text-text-secondary">{description}</div>
           )}
         </>
       )}

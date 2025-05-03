@@ -223,244 +223,366 @@ const AgricultureDataPage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-text">Données Agricoles</h1>
-          <p className="text-text-secondary mt-1">
-            Visualisez et analysez vos données de cultures et conditions météorologiques
-          </p>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <button className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md bg-surface-2 hover:bg-surface-3 text-text">
-            <Filter size={16} className="mr-1.5" />
-            Filtres
-          </button>
-          <button className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md bg-surface-2 hover:bg-surface-3 text-text">
-            <DownloadCloud size={16} className="mr-1.5" />
-            Exporter
-          </button>
-          <button className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md bg-primary hover:bg-primary-darker text-white">
-            <RefreshCw size={16} className="mr-1.5" />
-            Actualiser
-          </button>
+      {/* En-tête */}
+      <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-full h-1 bg-green-600"></div>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-medium text-gray-800">Données Agricoles</h1>
+            <p className="text-gray-500 mt-1">
+              Visualisez et analysez vos données de cultures et conditions météorologiques
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <button className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 text-sm">
+              <Filter size={16} className="mr-1.5 text-gray-500" />
+              Filtres
+            </button>
+            <button className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 text-sm">
+              <DownloadCloud size={16} className="mr-1.5 text-gray-500" />
+              Exporter
+            </button>
+            <button className="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white text-sm transition-colors">
+              <RefreshCw size={16} className="mr-1.5" />
+              Actualiser
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Onglets */}
-      <div className="flex border-b border-border mb-6">
-        <button
-          onClick={() => setActiveTab('crops')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 ${
-            activeTab === 'crops'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-text-secondary hover:text-text hover:border-border'
-          }`}
-        >
-          <div className="flex items-center">
-            <Layers size={16} className="mr-1.5" />
-            Cultures
-          </div>
-        </button>
-        <button
-          onClick={() => setActiveTab('weather')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 ${
-            activeTab === 'weather'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-text-secondary hover:text-text hover:border-border'
-          }`}
-        >
-          <div className="flex items-center">
-            <BarChart size={16} className="mr-1.5" />
-            Météo & Conditions
-          </div>
-        </button>
-      </div>
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="border-b border-gray-200">
+          <nav className="flex -mb-px">
+            <button
+              className={`
+                py-4 px-6 font-medium text-sm border-b-2 focus:outline-none
+                ${activeTab === 'crops'
+                  ? 'border-green-600 text-green-700'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }
+              `}
+              onClick={() => setActiveTab('crops')}
+            >
+              <Layers size={16} className="inline-block mr-2" />
+              Cultures
+            </button>
+            <button
+              className={`
+                py-4 px-6 font-medium text-sm border-b-2 focus:outline-none
+                ${activeTab === 'weather'
+                  ? 'border-green-600 text-green-700'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }
+              `}
+              onClick={() => setActiveTab('weather')}
+            >
+              <BarChart size={16} className="inline-block mr-2" />
+              Météo & Environnement
+            </button>
+          </nav>
+        </div>
 
-      {/* Contenu des onglets */}
-      {activeTab === 'crops' ? (
-        <DataTable
-          data={cropData}
-          columns={cropColumns}
-          title="Liste des cultures"
-          subtitle="Aperçu de toutes les cultures en cours et leur état"
-          loading={loading}
-          pagination={true}
-          itemsPerPage={10}
-          exportable={true}
-          searchable={true}
-          onRowClick={handleRowClick}
-          emptyMessage="Aucune donnée de culture disponible"
-          className="mb-6"
-        />
-      ) : (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 mb-6">
-            <div className="bg-surface rounded-lg border border-border shadow-sm p-4">
-              <h3 className="text-sm font-medium text-text-secondary mb-2">Température moyenne</h3>
-              <div className="flex items-end justify-between">
-                <div className="text-2xl font-bold text-text">21.4°C</div>
-                <div className="text-sm text-green-500 flex items-center">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M18 15l-6-6-6 6" />
-                  </svg>
-                  2.1°C
+        <div className="p-6">
+          {activeTab === 'crops' ? (
+            <>
+              {/* Panneau des cultures */}
+              <div className="mb-6 flex flex-col md:flex-row gap-3 items-start md:items-center justify-between">
+                <h2 className="text-lg font-medium text-gray-800">Données des cultures</h2>
+                <div className="flex gap-2">
+                  <select className="bg-gray-50 border border-gray-300 text-gray-800 rounded-lg py-2 px-3 focus:border-green-600 focus:ring-green-600 focus:ring-1 focus:outline-none text-sm">
+                    <option value="all">Toutes les cultures</option>
+                    <option value="ble">Blé</option>
+                    <option value="mais">Maïs</option>
+                    <option value="orge">Orge</option>
+                  </select>
+                  <select className="bg-gray-50 border border-gray-300 text-gray-800 rounded-lg py-2 px-3 focus:border-green-600 focus:ring-green-600 focus:ring-1 focus:outline-none text-sm">
+                    <option value="all">Tous les champs</option>
+                    <option value="nord">Parcelles Nord</option>
+                    <option value="sud">Parcelles Sud</option>
+                  </select>
                 </div>
               </div>
-            </div>
-            <div className="bg-surface rounded-lg border border-border shadow-sm p-4">
-              <h3 className="text-sm font-medium text-text-secondary mb-2">Précipitations (7j)</h3>
-              <div className="flex items-end justify-between">
-                <div className="text-2xl font-bold text-text">24.5 mm</div>
-                <div className="text-sm text-red-500 flex items-center">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M6 9l6 6 6-6" />
-                  </svg>
-                  8.3 mm
-                </div>
-              </div>
-            </div>
-            <div className="bg-surface rounded-lg border border-border shadow-sm p-4">
-              <h3 className="text-sm font-medium text-text-secondary mb-2">Humidité moyenne</h3>
-              <div className="flex items-end justify-between">
-                <div className="text-2xl font-bold text-text">58.2%</div>
-                <div className="text-sm text-green-500 flex items-center">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M18 15l-6-6-6 6" />
-                  </svg>
-                  3.5%
-                </div>
-              </div>
-            </div>
-            <div className="bg-surface rounded-lg border border-border shadow-sm p-4">
-              <h3 className="text-sm font-medium text-text-secondary mb-2">Humidité du sol</h3>
-              <div className="flex items-end justify-between">
-                <div className="text-2xl font-bold text-text">42.7%</div>
-                <div className="text-sm text-red-500 flex items-center">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M6 9l6 6 6-6" />
-                  </svg>
-                  5.2%
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div className="bg-surface rounded-lg border border-border shadow-sm p-4 mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-medium text-text">Tendances météorologiques</h3>
-              <div className="flex gap-2">
-                <select
-                  value={selectedMetric}
-                  onChange={(e) => setSelectedMetric(e.target.value as any)}
-                  className="text-sm border border-border rounded-md bg-surface-2 px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-text"
-                >
-                  <option value="temperature">Température</option>
-                  <option value="precipitation">Précipitations</option>
-                  <option value="humidity">Humidité</option>
-                  <option value="soilMoisture">Humidité du sol</option>
-                </select>
-                <select
-                  value={selectedTimeframe}
-                  onChange={(e) => setSelectedTimeframe(e.target.value as any)}
-                  className="text-sm border border-border rounded-md bg-surface-2 px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-text"
-                >
-                  <option value="daily">Journalier</option>
-                  <option value="weekly">Hebdomadaire</option>
-                  <option value="monthly">Mensuel</option>
-                </select>
+              {/* Statistiques résumées */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-start">
+                    <div className="p-2 bg-green-100 rounded-lg text-green-700">
+                      <Layers size={20} />
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-gray-500">Total des cultures</p>
+                      <p className="text-xl font-medium text-gray-800">{cropData.length}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-start">
+                    <div className="p-2 bg-blue-100 rounded-lg text-blue-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-gray-500">Santé moyenne</p>
+                      <p className="text-xl font-medium text-gray-800">
+                        {cropData.length > 0
+                          ? `${Math.round(cropData.reduce((sum, crop) => sum + crop.healthScore, 0) / cropData.length)}%`
+                          : '0%'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-start">
+                    <div className="p-2 bg-yellow-100 rounded-lg text-yellow-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-gray-500">Superficie cultivée</p>
+                      <p className="text-xl font-medium text-gray-800">
+                        {cropData.length > 0
+                          ? `${cropData.reduce((sum, crop) => sum + crop.area, 0).toFixed(1)} ha`
+                          : '0 ha'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-start">
+                    <div className="p-2 bg-indigo-100 rounded-lg text-indigo-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-gray-500">Rendement projeté</p>
+                      <p className="text-xl font-medium text-gray-800">
+                        {cropData.length > 0
+                          ? `${cropData.reduce((sum, crop) => sum + crop.estimatedYield, 0).toFixed(1)} t`
+                          : '0 t'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            
-            <div className="h-80">
+
+              {/* Tableau des cultures */}
+              <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                {loading ? (
+                  <div className="py-20 flex justify-center items-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-600"></div>
+                    <span className="ml-3 text-gray-600">Chargement des données...</span>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          {cropColumns.map((column) => (
+                            <th
+                              key={column.id}
+                              scope="col"
+                              className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                                column.align === 'right' ? 'text-right' : ''
+                              }`}
+                            >
+                              {column.header}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {cropData.map((row) => (
+                          <tr
+                            key={row.id}
+                            className="hover:bg-gray-50 cursor-pointer"
+                            onClick={() => handleRowClick(row)}
+                          >
+                            {cropColumns.map((column) => (
+                              <td
+                                key={`${row.id}-${column.id}`}
+                                className={`px-6 py-4 whitespace-nowrap text-sm text-gray-600 ${
+                                  column.align === 'right' ? 'text-right' : ''
+                                }`}
+                              >
+                                {column.accessor(row)}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Panneau météo */}
+              <div className="mb-6 flex flex-col md:flex-row gap-3 items-start md:items-center justify-between">
+                <h2 className="text-lg font-medium text-gray-800">Données météorologiques</h2>
+                <div className="flex flex-wrap gap-2">
+                  <div className="bg-white border border-gray-300 rounded-lg overflow-hidden p-0.5 flex text-sm">
+                    <button
+                      className={`px-3 py-1.5 ${
+                        selectedMetric === 'soilMoisture'
+                          ? 'bg-green-600 text-white'
+                          : 'hover:bg-gray-100 text-gray-700'
+                      }`}
+                      onClick={() => setSelectedMetric('soilMoisture')}
+                    >
+                      Humidité du sol
+                    </button>
+                    <button
+                      className={`px-3 py-1.5 ${
+                        selectedMetric === 'temperature'
+                          ? 'bg-green-600 text-white'
+                          : 'hover:bg-gray-100 text-gray-700'
+                      }`}
+                      onClick={() => setSelectedMetric('temperature')}
+                    >
+                      Température
+                    </button>
+                    <button
+                      className={`px-3 py-1.5 ${
+                        selectedMetric === 'precipitation'
+                          ? 'bg-green-600 text-white'
+                          : 'hover:bg-gray-100 text-gray-700'
+                      }`}
+                      onClick={() => setSelectedMetric('precipitation')}
+                    >
+                      Précipitations
+                    </button>
+                    <button
+                      className={`px-3 py-1.5 ${
+                        selectedMetric === 'humidity'
+                          ? 'bg-green-600 text-white'
+                          : 'hover:bg-gray-100 text-gray-700'
+                      }`}
+                      onClick={() => setSelectedMetric('humidity')}
+                    >
+                      Humidité de l'air
+                    </button>
+                  </div>
+
+                  <select
+                    className="bg-gray-50 border border-gray-300 text-gray-800 rounded-lg py-2 px-3 focus:border-green-600 focus:ring-green-600 focus:ring-1 focus:outline-none text-sm"
+                    value={selectedTimeframe}
+                    onChange={(e) => setSelectedTimeframe(e.target.value as any)}
+                  >
+                    <option value="daily">Quotidien</option>
+                    <option value="weekly">Hebdomadaire</option>
+                    <option value="monthly">Mensuel</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Statistiques météo */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-start">
+                    <div className="p-2 bg-yellow-100 rounded-lg text-yellow-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-gray-500">Temp. moyenne</p>
+                      <p className="text-xl font-medium text-gray-800">
+                        {weatherData.length > 0
+                          ? `${(weatherData.reduce((sum, data) => sum + data.temperature, 0) / weatherData.length).toFixed(1)}°C`
+                          : '0°C'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-start">
+                    <div className="p-2 bg-blue-100 rounded-lg text-blue-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-gray-500">Précip. totales</p>
+                      <p className="text-xl font-medium text-gray-800">
+                        {weatherData.length > 0
+                          ? `${weatherData.reduce((sum, data) => sum + data.precipitation, 0).toFixed(1)} mm`
+                          : '0 mm'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-start">
+                    <div className="p-2 bg-indigo-100 rounded-lg text-indigo-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-gray-500">Humidité moyenne</p>
+                      <p className="text-xl font-medium text-gray-800">
+                        {weatherData.length > 0
+                          ? `${(weatherData.reduce((sum, data) => sum + data.humidity, 0) / weatherData.length).toFixed(0)}%`
+                          : '0%'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-start">
+                    <div className="p-2 bg-green-100 rounded-lg text-green-700">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-gray-500">Vitesse du vent</p>
+                      <p className="text-xl font-medium text-gray-800">
+                        {weatherData.length > 0
+                          ? `${(weatherData.reduce((sum, data) => sum + data.windSpeed, 0) / weatherData.length).toFixed(1)} km/h`
+                          : '0 km/h'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Graphiques météo */}
               {loading ? (
-                <div className="h-full flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <div className="py-20 flex justify-center items-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-600"></div>
+                  <span className="ml-3 text-gray-600">Chargement des données...</span>
                 </div>
               ) : (
-                <WeatherChart
-                  data={weatherData}
-                  metric={selectedMetric}
-                  timeframe={selectedTimeframe}
-                  type="line"
-                  onMetricChange={setSelectedMetric}
-                  onTimeframeChange={setSelectedTimeframe}
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Tableau des prévisions détaillées */}
-          <DataTable
-            data={weatherData}
-            columns={[
-              {
-                id: 'date',
-                header: 'Date',
-                accessor: (row) => formatDate(row.date),
-                sortable: true,
-              },
-              {
-                id: 'temperature',
-                header: 'Température (°C)',
-                accessor: (row) => (
-                  <span className={getTemperatureColor(row.temperature)}>
-                    {row.temperature.toFixed(1)}
-                  </span>
-                ),
-                sortable: true,
-                align: 'right',
-              },
-              {
-                id: 'precipitation',
-                header: 'Précipitations (mm)',
-                accessor: (row) => row.precipitation.toFixed(1),
-                sortable: true,
-                align: 'right',
-              },
-              {
-                id: 'humidity',
-                header: 'Humidité (%)',
-                accessor: (row) => row.humidity.toFixed(1),
-                sortable: true,
-                align: 'right',
-              },
-              {
-                id: 'soilMoisture',
-                header: 'Humidité du sol (%)',
-                accessor: (row) => (
-                  <div className="flex items-center justify-end">
-                    <div className="w-20 bg-surface-3 rounded-full h-2 mr-2">
-                      <div
-                        className="h-2 rounded-full bg-blue-500"
-                        style={{ width: `${row.soilMoisture}%` }}
-                      ></div>
-                    </div>
-                    <span>{row.soilMoisture.toFixed(1)}</span>
+                <div className="bg-white border border-gray-200 rounded-lg p-4 h-96">
+                  {/* Placeholder pour le composant WeatherChart */}
+                  <div className="h-full bg-gray-50 rounded-lg flex items-center justify-center">
+                    <p className="text-gray-500">Graphique météorologique</p>
+                    {/* <WeatherChart 
+                      data={weatherData} 
+                      metric={selectedMetric}
+                      timeframe={selectedTimeframe}
+                    /> */}
                   </div>
-                ),
-                sortable: true,
-                align: 'right',
-              },
-              {
-                id: 'windSpeed',
-                header: 'Vent (km/h)',
-                accessor: (row) => row.windSpeed.toFixed(1),
-                sortable: true,
-                align: 'right',
-              },
-            ]}
-            title="Données météorologiques détaillées"
-            subtitle="Historique des 30 derniers jours"
-            loading={loading}
-            pagination={true}
-            itemsPerPage={10}
-            exportable={true}
-            searchable={true}
-            emptyMessage="Aucune donnée météorologique disponible"
-          />
+                </div>
+              )}
+            </>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

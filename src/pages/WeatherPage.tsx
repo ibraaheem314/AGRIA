@@ -244,232 +244,217 @@ const WeatherPage = () => {
   
   return (
     <div className="container mx-auto px-4 py-6">
-      <PageHeader 
-        title="Météo" 
-        description={`Conditions et prévisions pour ${city.name}`}
-      />
-      
-      {/* Barre de recherche et position */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="relative flex-1">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-            <input
-              type="text"
-              placeholder="Rechercher une ville"
-              className="pl-10 pr-3 py-2 w-full bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+      {/* En-tête avec recherche et titre */}
+      <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-full h-1 bg-green-600"></div>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-medium text-gray-800">Météo</h1>
+            <p className="text-gray-500 mt-1">Conditions et prévisions pour {city.name}</p>
+          </div>
+          <div className="w-full md:w-auto flex items-center">
+            <div className="relative flex-grow md:w-64">
+              <input
+                type="text"
+                placeholder="Rechercher une ville..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-800 pr-8 focus:border-green-600 focus:ring-green-600 focus:ring-1 focus:outline-none"
+              />
+              {searchQuery && (
+                <button 
+                  className="absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  onClick={() => setSearchQuery('')}
+                >
+                  <X size={18} />
+                </button>
+              )}
+              <button 
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"
+              >
+                <Search size={18} />
+              </button>
+            </div>
+            <Button 
+              onClick={getCurrentLocation}
+              variant="outline" 
+              className="ml-2 border-gray-300 text-gray-700 hover:bg-green-50 hover:border-green-600 hover:text-green-700"
+            >
+              <MapPin size={16} className="mr-1" />
+              Ma position
+            </Button>
           </div>
         </div>
-        
-        <Button
-          variant="outline"
-          className="flex items-center gap-1"
-          onClick={getCurrentLocation}
-        >
-          <MapPin size={16} />
-          <span>Ma position</span>
-        </Button>
       </div>
       
       {/* Contenu principal */}
-      <div className={loading ? "opacity-75 pointer-events-none transition-opacity" : ""}>
-        {error && (
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500">
-            {error}
-          </div>
-        )}
-        
-        {/* Widget météo principal et prévisions */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Widget météo principal */}
-          <div className="lg:col-span-1">
-            <Card className="p-4 h-full">
-              <div className="flex flex-col">
-                <div className="mb-4 flex justify-between items-start">
-                  <div>
-                    <h3 className="text-lg font-medium">Météo actuelle</h3>
-                    <p className="text-sm text-gray-500">
-                      {weatherData ? `${weatherData.cityName}, ${weatherData.country}` : 'Chargement...'}
-                    </p>
-                  </div>
-                  <div className="text-xs px-2 py-1 rounded-full bg-primary/20 text-primary-600 flex items-center gap-1">
-                    <Clock size={12} />
-                    {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </div>
-                </div>
-                
-                {weatherData && (
-                  <>
-                    <div className="flex items-center mb-4">
-                      <div className="mr-3 text-4xl">
-                        {weatherData.icon ? getWeatherIcon(weatherData.icon) : <Sun className="text-yellow-400" size={48} />}
-                      </div>
-                      <div>
-                        <div className="text-3xl font-semibold">{Math.round(weatherData.temperature)}°C</div>
-                        <div className="text-gray-500 capitalize">{weatherData.description}</div>
-                      </div>
-                      <div className="ml-auto text-right">
-                        <div className="text-sm text-gray-500">Ressenti</div>
-                        <div className="text-lg font-medium">{Math.round(weatherData.feelsLike)}°C</div>
-                      </div>
-                    </div>
-                    
-                    <div className="mb-6 relative">
-                      <div className="flex justify-between text-xs text-gray-400 mb-1">
-                        <div className="flex items-center">
-                          <Sunrise size={14} className="mr-1 text-yellow-500" />
-                          <span>Lever {formatTime(weatherData.sunrise)}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <span>Coucher {formatTime(weatherData.sunset)}</span>
-                          <Sunset size={14} className="ml-1 text-orange-500" />
-                        </div>
-                      </div>
-                      
-                      <div className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500" 
-                          style={{ width: `${getDayProgress()}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-3 gap-3 text-sm">
-                      <div className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors rounded-lg p-2 flex items-center">
-                        <Wind size={18} className="text-blue-500 mr-2" />
-                        <div>
-                          <div className="text-gray-500">Vent</div>
-                          <div>{Math.round(weatherData.windSpeed * 3.6)} km/h {getWindDirection(weatherData.windDirection)}</div>
-                        </div>
-                      </div>
-                      
-                      <div className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors rounded-lg p-2 flex items-center">
-                        <Droplets size={18} className="text-blue-500 mr-2" />
-                        <div>
-                          <div className="text-gray-500">Humidité</div>
-                          <div>{weatherData.humidity}%</div>
-                        </div>
-                      </div>
-                      
-                      <div className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors rounded-lg p-2 flex items-center">
-                        <Thermometer size={18} className="text-yellow-500 mr-2" />
-                        <div>
-                          <div className="text-gray-500">Pression</div>
-                          <div>{weatherData.pressure} hPa</div>
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                )}
-                
-                {!weatherData && !loading && (
-                  <div className="py-8 text-center text-gray-500">
-                    Impossible de récupérer les données météo
-                  </div>
-                )}
-                
-                {loading && (
-                  <div className="py-8 flex justify-center items-center">
-                    <Loader className="animate-spin mr-2" size={20} />
-                    <span>Chargement...</span>
-                  </div>
-                )}
-              </div>
-            </Card>
-          </div>
-          
-          {/* Prévisions horaires */}
-          <div className="lg:col-span-2">
-            <Card className="p-4 h-full">
-              <h3 className="text-lg font-medium mb-4">Prévisions</h3>
-              {forecast.length > 0 ? (
-                <div className="flex space-x-3 overflow-x-auto py-2">
-                  {forecast.map((item, i) => (
-                    <div key={i} className="flex flex-col items-center min-w-[5rem] bg-gray-100 dark:bg-gray-800 p-3 rounded-lg">
-                      <div className="text-sm text-gray-500">{formatTime(item.dt)}</div>
-                      <div className="my-2">
-                        {getWeatherIcon(item.icon, 24)}
-                      </div>
-                      <div className="text-lg font-medium">{Math.round(item.temp)}°C</div>
-                      <div className="text-xs text-gray-500 mt-1">{Math.round(item.pop * 100)}%</div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="h-40 flex items-center justify-center text-gray-500">
-                  {loading ? (
-                    <div className="flex items-center">
-                      <Loader className="animate-spin mr-2" size={20} />
-                      <span>Chargement...</span>
-                    </div>
-                  ) : (
-                    <span>Aucune prévision disponible</span>
-                  )}
-                </div>
-              )}
-            </Card>
-          </div>
+      {loading ? (
+        <div className="flex items-center justify-center h-64">
+          <Loader className="animate-spin text-green-600" size={48} />
         </div>
-        
-        {/* Carte météo - toujours affichée */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-3">Carte Météo</h2>
-          <ModernWeatherMap
-            lat={city.lat}
-            lon={city.lon}
-            apiKey={weatherApiKey}
-            className="h-[400px] w-full rounded-xl overflow-hidden"
-          />
+      ) : error ? (
+        <div className="bg-red-50 text-red-700 p-4 rounded-xl border border-red-200 mb-6">
+          <p className="font-medium">Erreur: {error}</p>
+          <p className="mt-2">Veuillez réessayer plus tard ou vérifier votre connexion.</p>
         </div>
-        
-        {/* NOUVELLE SECTION: Graphiques d'évolution à la place des détails météo */}
-        <div className="mb-6">
-          <div className="flex items-center mb-3">
-            <h2 className="text-xl font-semibold mr-2">Évolution des conditions météo</h2>
-            <BarChart2 className="text-primary w-5 h-5" />
-          </div>
-          
-          {forecast.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Graphique de température */}
-              <TemperatureChart 
-                forecast={forecast} 
-                title="Évolution de la température"
-              />
-              
-              {/* Graphique d'humidité */}
-              <HumidityChart 
-                forecast={forecast} 
-                title="Évolution de l'humidité"
-              />
-            </div>
-          ) : (
-            <Card className="p-6 text-center">
-              <div className="py-8 text-gray-500">
-                {loading ? (
+      ) : weatherData ? (
+        <>
+          {/* Météo actuelle */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div className="lg:col-span-1">
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                <div className="p-6">
                   <div className="flex flex-col items-center">
-                    <Loader className="animate-spin mb-3" size={24} />
-                    <span>Chargement des données pour les graphiques...</span>
+                    <div className="flex items-center justify-center mb-4">
+                      {getWeatherIcon(weatherData.icon, 80)}
+                    </div>
+                    <h2 className="text-3xl font-bold text-gray-800 mb-1">
+                      {Math.round(weatherData.temperature)}°C
+                    </h2>
+                    <p className="text-gray-600 capitalize mb-4">{weatherData.description}</p>
+                    
+                    <div className="w-full space-y-4 mt-4">
+                      <div className="flex justify-between items-center border-b pb-3 border-gray-100">
+                        <div className="flex items-center">
+                          <Thermometer size={18} className="mr-2 text-green-600" />
+                          <span className="text-gray-600 text-sm">Ressenti</span>
+                        </div>
+                        <span className="font-medium text-gray-800">{Math.round(weatherData.feelsLike)}°C</span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center border-b pb-3 border-gray-100">
+                        <div className="flex items-center">
+                          <Wind size={18} className="mr-2 text-green-600" />
+                          <span className="text-gray-600 text-sm">Vent</span>
+                        </div>
+                        <span className="font-medium text-gray-800">{Math.round(weatherData.windSpeed * 3.6)} km/h {getWindDirection(weatherData.windDirection)}</span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center border-b pb-3 border-gray-100">
+                        <div className="flex items-center">
+                          <Droplets size={18} className="mr-2 text-green-600" />
+                          <span className="text-gray-600 text-sm">Humidité</span>
+                        </div>
+                        <span className="font-medium text-gray-800">{weatherData.humidity}%</span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                          <Umbrella size={18} className="mr-2 text-green-600" />
+                          <span className="text-gray-600 text-sm">Précipitations</span>
+                        </div>
+                        <span className="font-medium text-gray-800">{weatherData.rain1h ? `${weatherData.rain1h} mm` : "0 mm"}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Lever et coucher du soleil */}
+                <div className="bg-gray-50 border-t border-gray-200 p-4">
+                  <div className="flex items-center justify-center">
+                    <div className="flex items-center mr-6">
+                      <Sunrise size={18} className="mr-2 text-yellow-500" />
+                      <span className="text-sm text-gray-700">{formatTime(weatherData.sunrise)}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Sunset size={18} className="mr-2 text-orange-500" />
+                      <span className="text-sm text-gray-700">{formatTime(weatherData.sunset)}</span>
+                    </div>
+                  </div>
+                  
+                  {/* Barre de progression du jour */}
+                  <div className="mt-2 h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400" 
+                      style={{ width: `${getDayProgress()}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Prévisions horaires */}
+            <div className="lg:col-span-2">
+              <Card className="p-4 h-full">
+                <h3 className="text-lg font-medium mb-4">Prévisions</h3>
+                {forecast.length > 0 ? (
+                  <div className="flex space-x-3 overflow-x-auto py-2">
+                    {forecast.map((item, i) => (
+                      <div key={i} className="flex flex-col items-center min-w-[5rem] bg-gray-100 dark:bg-gray-800 p-3 rounded-lg">
+                        <div className="text-sm text-gray-500">{formatTime(item.dt)}</div>
+                        <div className="my-2">
+                          {getWeatherIcon(item.icon, 24)}
+                        </div>
+                        <div className="text-lg font-medium">{Math.round(item.temp)}°C</div>
+                        <div className="text-xs text-gray-500 mt-1">{Math.round(item.pop * 100)}%</div>
+                      </div>
+                    ))}
                   </div>
                 ) : (
-                  <span>Données d'évolution non disponibles</span>
+                  <div className="h-40 flex items-center justify-center text-gray-500">
+                    {loading ? (
+                      <div className="flex items-center">
+                        <Loader className="animate-spin mr-2" size={20} />
+                        <span>Chargement...</span>
+                      </div>
+                    ) : (
+                      <span>Aucune prévision disponible</span>
+                    )}
+                  </div>
                 )}
+              </Card>
+            </div>
+          </div>
+          
+          {/* Carte météo - toujours affichée */}
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-3">Carte Météo</h2>
+            <ModernWeatherMap
+              lat={city.lat}
+              lon={city.lon}
+              apiKey={weatherApiKey}
+              className="h-[400px] w-full rounded-xl overflow-hidden"
+            />
+          </div>
+          
+          {/* NOUVELLE SECTION: Graphiques d'évolution à la place des détails météo */}
+          <div className="mb-6">
+            <div className="flex items-center mb-3">
+              <h2 className="text-xl font-semibold mr-2">Évolution des conditions météo</h2>
+              <BarChart2 className="text-primary w-5 h-5" />
+            </div>
+            
+            {forecast.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Graphique de température */}
+                <TemperatureChart 
+                  forecast={forecast} 
+                  title="Évolution de la température"
+                />
+                
+                {/* Graphique d'humidité */}
+                <HumidityChart 
+                  forecast={forecast} 
+                  title="Évolution de l'humidité"
+                />
               </div>
-            </Card>
-          )}
-        </div>
-      </div>
-      
-      {/* Indicateur de chargement global */}
-      {loading && (
-        <div className="fixed bottom-6 right-6 bg-card border border-border shadow-lg rounded-lg p-3 flex items-center gap-2">
-          <Loader className="animate-spin" size={16} />
-          <span>Mise à jour des données...</span>
-        </div>
-      )}
+            ) : (
+              <Card className="p-6 text-center">
+                <div className="py-8 text-gray-500">
+                  {loading ? (
+                    <div className="flex flex-col items-center">
+                      <Loader className="animate-spin mb-3" size={24} />
+                      <span>Chargement des données pour les graphiques...</span>
+                    </div>
+                  ) : (
+                    <span>Données d'évolution non disponibles</span>
+                  )}
+                </div>
+              </Card>
+            )}
+          </div>
+        </>
+      ) : null}
     </div>
   );
 };

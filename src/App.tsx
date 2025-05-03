@@ -19,6 +19,8 @@ import Marketplace from './pages/Marketplace';
 import Resources from './pages/Resources';
 import Profile from './pages/Profile';
 import WeatherPage from './pages/WeatherPage';
+import FieldsPage from './pages/FieldsPage';
+import AgricultureDataPage from './pages/AgricultureDataPage';
 
 import NotFound from './pages/NotFound';
 
@@ -41,10 +43,20 @@ function App() {
           <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/farms" element={<Farms />} />
-          <Route path="/marketplace" element={<Marketplace />} />
-          <Route path="/resources" element={<Resources />} />
-            <Route path="/weather" element={<WeatherPage />} />
+          <Route path="/cultures" element={<AgricultureDataPage />} />
+          <Route path="/parcelles" element={<FieldsPage />} />
+          <Route path="/materiels" element={<Resources />} />
+          <Route path="/stocks" element={<Resources />} />
+          <Route path="/meteo" element={<WeatherPage />} />
+          <Route path="/calendrier" element={<Resources />} />
+          <Route path="/marche" element={<Marketplace />} />
+          <Route path="/ressources" element={<Resources />} />
+          <Route path="/ressources/guide" element={<Resources />} />
+          <Route path="/ressources/calendrier-semis" element={<Resources />} />
+          <Route path="/analyses" element={<AgricultureDataPage />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/weather" element={<WeatherPage />} />
         </Route>
 
         {/* 🔍 Fallback */}

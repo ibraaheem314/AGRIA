@@ -1,0 +1,353 @@
+:root {
+  /* Système de couleurs principal - base sombre inspirée d'AMINI avec touche agricole */
+  --color-black: #050505;
+  --color-dark: #0A0A0A;
+  --color-dark-surface: #101010;
+  --color-dark-elevated: #141414;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-strong: rgba(255, 255, 255, 0.15);
+  
+  /* Palette principale - Vert agricole premium */
+  --color-green-50: #ECFDF3;
+  --color-green-100: #DAFBE7;
+  --color-green-200: #B6F5CF;
+  --color-green-300: #83E9AC;
+  --color-green-400: #4ADA85;
+  --color-green-500: #22C55E; /* Vert signature plus vibrant */
+  --color-green-600: #1BA153;
+  --color-green-700: #168047;
+  --color-green-800: #13693B;
+  --color-green-900: #115735;
+  --color-green-950: #072F1A;
+  
+  /* Palette secondaire - Accent terreux */
+  --color-earth-50: #FBF8F1;
+  --color-earth-100: #F6EFE0;
+  --color-earth-200: #EBD9B4;
+  --color-earth-300: #DFC18C;
+  --color-earth-400: #D1A76A;
+  --color-earth-500: #BE8C4A; /* Accent terreux chaud */
+  --color-earth-600: #A17339;
+  --color-earth-700: #805B2E;
+  --color-earth-800: #624525;
+  --color-earth-900: #4B351E;
+  --color-earth-950: #2C1F13;
+
+  /* Palette tertiaire - Bleu technologique */
+  --color-blue-50: #EEFAFF;
+  --color-blue-100: #DCF5FE;
+  --color-blue-200: #B9EBFD;
+  --color-blue-300: #85DCFC;
+  --color-blue-400: #46C8F9;
+  --color-blue-500: #0EA5E9; /* Bleu vif pour tech/innovation */
+  --color-blue-600: #0284C7;
+  --color-blue-700: #0369A1;
+  --color-blue-800: #075985;
+  --color-blue-900: #0C4A6E;
+  --color-blue-950: #082F49;
+  
+  /* Palette d'accent - Nuances dorées */
+  --color-gold-50: #FFFCF1;
+  --color-gold-100: #FFF8DC;
+  --color-gold-200: #FEEEB9;
+  --color-gold-300: #FEE18D;
+  --color-gold-400: #FDC94B;
+  --color-gold-500: #EAB308; /* Or blé riche */
+  --color-gold-600: #CA8A04;
+  --color-gold-700: #A16207;
+  --color-gold-800: #854D0E;
+  --color-gold-900: #713F12;
+  --color-gold-950: #422006;
+  
+  /* Gris neutres chauds - Pour interface */
+  --color-gray-50: #F9F9F8;
+  --color-gray-100: #F2F2F0;
+  --color-gray-200: #E5E5E2;
+  --color-gray-300: #D1D0CC;
+  --color-gray-400: #ADACA7;
+  --color-gray-500: #86857F;
+  --color-gray-600: #6C6B64;
+  --color-gray-700: #55544F;
+  --color-gray-800: #3D3C39;
+  --color-gray-900: #28272A;
+  --color-gray-950: #18181C;
+  
+  /* Couleurs sémantiques fonctionnelles */
+  --color-success: var(--color-green-500);
+  --color-warning: var(--color-gold-500);
+  --color-error: #F43F5E; /* Rose vif pour meilleur contraste */
+  --color-info: var(--color-blue-500);
+  
+  /* Couleurs de texte - Optimisées pour lisibilité */
+  --color-text-primary: rgba(255, 255, 255, 1);
+  --color-text-secondary: rgba(255, 255, 255, 0.9);
+  --color-text-tertiary: rgba(255, 255, 255, 0.75);
+  --color-text-disabled: rgba(255, 255, 255, 0.5);
+  
+  /* Dégradés sophistiqués */
+  --gradient-green: linear-gradient(135deg, var(--color-green-400), var(--color-green-600));
+  --gradient-gold: linear-gradient(135deg, var(--color-gold-400), var(--color-gold-600));
+  --gradient-earth: linear-gradient(135deg, var(--color-earth-400), var(--color-earth-600));
+  --gradient-dark: linear-gradient(180deg, var(--color-dark), var(--color-black));
+  --gradient-premium: linear-gradient(135deg, var(--color-blue-500), var(--color-green-500));
+  --gradient-data: linear-gradient(135deg, #0EA5E9, #6366F1);
+  --gradient-innovation: linear-gradient(135deg, #6366F1, #8B5CF6);
+  
+  /* Ombres et effets de profondeur */
+  --shadow-sm: 0px 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0px 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0px 12px 32px rgba(0, 0, 0, 0.45);
+  --shadow-green: 0px 4px 16px rgba(34, 197, 94, 0.25);
+  --shadow-gold: 0px 4px 16px rgba(234, 179, 8, 0.2);
+  --shadow-blue: 0px 4px 16px rgba(14, 165, 233, 0.25);
+  
+  /* Valeurs RGB pour effets dynamiques */
+  --color-primary-rgb: 34, 197, 94; /* vert */
+  --color-accent-rgb: 234, 179, 8;  /* or */
+  --color-earth-rgb: 190, 140, 74;  /* terre */
+  --color-blue-rgb: 14, 165, 233;   /* bleu */
+  
+  /* Variables saisonnières */
+  --color-spring: var(--color-green-400);
+  --color-summer: var(--color-gold-500);
+  --color-autumn: var(--color-earth-500);
+  --color-winter: var(--color-blue-400);
+}
+
+/* Classes de texte avec dégradés */
+.text-gradient-green {
+  background: var(--gradient-green);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.text-gradient-gold {
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.text-gradient-premium {
+  background: var(--gradient-premium);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.text-gradient-data {
+  background: var(--gradient-data);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.text-gradient-innovation {
+  background: var(--gradient-innovation);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Classes de fond avec dégradés */
+.bg-gradient-green {
+  background: var(--gradient-green);
+}
+
+.bg-gradient-gold {
+  background: var(--gradient-gold);
+}
+
+.bg-gradient-earth {
+  background: var(--gradient-earth);
+}
+
+.bg-gradient-premium {
+  background: var(--gradient-premium);
+}
+
+.bg-gradient-data {
+  background: var(--gradient-data);
+}
+
+.bg-gradient-innovation {
+  background: var(--gradient-innovation);
+}
+
+/* Motifs et textures */
+.bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.1'/%3E%3C/svg%3E");
+}
+
+.bg-grid-pattern {
+  background-size: 24px 24px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+.bg-dot-pattern {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.bg-grain-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grainFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grainFilter)' opacity='0.08'/%3E%3C/svg%3E");
+}
+
+/* Classes utilitaires pour les couleurs */
+.border-subtle {
+  border-color: var(--color-border);
+}
+
+.border-strong {
+  border-color: var(--color-border-strong);
+}
+
+.text-primary {
+  color: var(--color-text-primary);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-tertiary {
+  color: var(--color-text-tertiary);
+}
+
+.text-green {
+  color: var(--color-green-500);
+}
+
+.text-gold {
+  color: var(--color-gold-500);
+}
+
+.text-blue {
+  color: var(--color-blue-500);
+}
+
+.text-earth {
+  color: var(--color-earth-500);
+}
+
+.bg-surface {
+  background-color: var(--color-dark-surface);
+}
+
+.bg-elevated {
+  background-color: var(--color-dark-elevated);
+}
+
+/* Ombres avec lueur */
+.shadow-glow-green {
+  box-shadow: 0 0 20px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.shadow-glow-gold {
+  box-shadow: 0 0 20px rgba(var(--color-accent-rgb), 0.2);
+}
+
+.shadow-glow-blue {
+  box-shadow: 0 0 20px rgba(var(--color-blue-rgb), 0.2);
+}
+
+.shadow-glow-earth {
+  box-shadow: 0 0 20px rgba(var(--color-earth-rgb), 0.2);
+}
+
+.shadow-glow-sm {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.shadow-glow-md {
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
+}
+
+/* Classes pour indicateurs */
+.indicator-up {
+  color: var(--color-success);
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+}
+
+.indicator-down {
+  color: var(--color-error);
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(244, 63, 94, 0.4);
+}
+
+.indicator-neutral {
+  color: var(--color-warning);
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(234, 179, 8, 0.4);
+}
+
+/* Typographie optimisée */
+.label-text {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--color-text-secondary);
+}
+
+.icon-highlight {
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
+}
+
+/* Styles de texte AMINI-like */
+.title-premium {
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.subtitle-premium {
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+}
+
+/* Composants stylisés */
+.card-premium {
+  background-color: var(--color-dark-surface);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+}
+
+.card-premium:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Bouton de style AMINI */
+.btn-premium {
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50px;
+  padding: 0.75rem 1.75rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: all 0.3s ease;
+}
+
+.btn-premium:hover {
+  background: #0a0a0a;
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+} 

@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { 
   Activity, Users, Cloud, 
   Droplets, Leaf, MapPin, RefreshCw,
-  Code, Terminal, Server, Calendar,
-  Shovel, Sun, Tractor, Sprout, PackageCheck
+  Calendar, Shovel, Sun, Tractor, 
+  Sprout, PackageCheck, ChevronRight, 
+  AlertTriangle, ArrowUp, ArrowDown
 } from 'lucide-react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
-import DataCard from '../components/ui/DataCard';
 
 // Interface personnalisée pour les composants d'icônes
 interface CustomIconProps extends React.SVGProps<SVGSVGElement> {
@@ -54,66 +54,30 @@ const Dashboard = () => {
     { name: 'Choux', status: 'Croissance', health: 85, icon: <Seeds size={16} /> },
   ];
 
-  // Widgets disponibles à afficher sur le dashboard
-  const availableWidgets = [
-    { id: 'weather', name: 'Météo locale', icon: <Cloud size={16} /> },
-    { id: 'soil', name: 'Analyse de sol', icon: <Droplets size={16} /> },
-    { id: 'tasks', name: 'Tâches à venir', icon: <Shovel size={16} /> },
-    { id: 'calendar', name: 'Calendrier', icon: <Calendar size={16} /> },
-    { id: 'market', name: 'Prix du marché', icon: <Activity size={16} /> },
-    { id: 'equipment', name: 'Statut matériel', icon: <Tractor size={16} /> },
+  const upcomingTasks = [
+    { title: 'Récolte potimarrons', icon: <Shovel size={14} />, date: "Aujourd'hui", priority: 'high' },
+    { title: 'Protection contre le gel', icon: <Sun size={14} />, date: "Demain", priority: 'high' },
+    { title: 'Préparation du compost', icon: <Leaf size={14} />, date: "Jeudi", priority: 'medium' },
+    { title: 'Marché local', icon: <Users size={14} />, date: "Samedi", priority: 'medium' },
   ];
-
-  const CodeSnippet = () => (
-    <div className="bg-code-bg rounded-md overflow-hidden text-sm font-mono">
-      <div className="flex items-center justify-between px-4 py-2 bg-neutral-900 border-b border-neutral-800">
-        <div className="text-white font-semibold">monitor.js</div>
-        <div className="flex space-x-2">
-          <button className="text-text-tertiary hover:text-white transition-colors">
-            <Terminal size={14} />
-          </button>
-          <button className="text-text-tertiary hover:text-white transition-colors">
-            <Code size={14} />
-          </button>
-        </div>
-      </div>
-      <div className="p-4">
-        <pre className="text-code">
-          <code>
-            <span className="text-blue-400">const</span> <span className="text-yellow-300">monitor</span> = <span className="text-purple-400">require</span>(<span className="text-green-300">'agritech-monitor'</span>);{'\n\n'}
-            <span className="text-blue-400">const</span> <span className="text-yellow-300">farm</span> = <span className="text-blue-400">new</span> monitor.Farm{'{'}
-            {'\n  '}name: <span className="text-green-300">'Main Farm'</span>,
-            {'\n  '}location: <span className="text-orange-300">[48.8566, 2.3522]</span>,
-            {'\n  '}sensors: <span className="text-orange-300">['moisture', 'temperature']</span>
-            {'\n'}{'})'};{'\n\n'}
-            farm.<span className="text-yellow-300">on</span>(<span className="text-green-300">'data'</span>, <span className="text-purple-400">data</span> {'=>'} {'{'}
-            {'\n  '}console.<span className="text-yellow-300">log</span>(<span className="text-green-300">`Temperature: </span>${'{'}data.temperature{'}'}°C<span className="text-green-300">`</span>);
-            {'\n  '}console.<span className="text-yellow-300">log</span>(<span className="text-green-300">`Soil moisture: </span>${'{'}data.moisture{'}'}%<span className="text-green-300">`</span>);
-            {'\n'}{'})'};{'\n\n'}
-            farm.<span className="text-yellow-300">connect</span>();
-          </code>
-        </pre>
-      </div>
-    </div>
-  );
 
   return (
     <div className="container mx-auto px-4 py-6">
       {/* Header avec bannière de saison */}
-      <div className="bg-neutral-900/70 backdrop-blur-sm border border-soil-light/20 rounded-xl p-4 mb-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-full h-1 bg-season-autumn opacity-70"></div>
+      <div className="bg-white border border-gray-200 rounded-xl p-4 mb-8 relative overflow-hidden shadow-sm">
+        <div className="absolute top-0 right-0 w-full h-1 bg-green-600"></div>
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-medium text-white">Tableau de bord</h1>
-            <p className="text-text-secondary mt-1">
-              <span className="text-season-autumn font-medium">Saison: {currentSeason}</span> · Vue d'ensemble de vos activités maraîchères
+            <h1 className="text-3xl font-medium text-gray-800">Tableau de bord</h1>
+            <p className="text-gray-500 mt-1">
+              <span className="text-green-600 font-medium">Saison: {currentSeason}</span> · Vue d'ensemble de vos activités maraîchères
             </p>
           </div>
           <div className="flex space-x-3">
             <Button 
               variant="outline" 
               size="sm"
-              className="border-soil-light/30 hover:border-primary"
+              className="border-gray-300 hover:border-green-600 text-gray-700"
             >
               Personnaliser
             </Button>
@@ -122,6 +86,7 @@ const Dashboard = () => {
               size="sm" 
               onClick={refreshData}
               loading={isLoading}
+              className="bg-green-600 hover:bg-green-700"
               icon={<RefreshCw size={16} />}
             >
               Rafraîchir
@@ -130,278 +95,311 @@ const Dashboard = () => {
         </div>
       </div>
       
-      {/* Key Metrics */}
+      {/* Indicateurs de la saison */}
       <section className="mb-8">
-        <h2 className="text-lg font-medium mb-4 flex items-center">
-          <Leaf size={18} className="mr-2 text-season-autumn" />
+        <h2 className="text-lg font-medium mb-4 flex items-center text-gray-800">
+          <Leaf size={18} className="mr-2 text-green-600" />
           <span>Indicateurs de la saison</span>
         </h2>
-        
+          
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <DataCard
-            title="Santé des cultures"
-            value="88%"
-            icon={<Sprout size={18} />}
-            color="success"
-            loading={isLoading}
-            trend={{ value: -4, isPositive: false, label: "vs semaine dernière" }}
-            description="5 cultures d'automne en cours"
-          />
+          {/* Santé des cultures */}
+          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-start mb-3">
+              <span className="text-gray-600 text-sm">Santé des cultures</span>
+              <div className="p-2 bg-green-50 rounded-lg">
+                <Sprout size={18} className="text-green-600" />
+              </div>
+            </div>
+            <div className="flex items-baseline">
+              <span className="text-3xl font-bold text-gray-800">88%</span>
+            </div>
+            <div className="flex items-center mt-1 text-red-500 text-xs">
+              <ArrowDown size={14} />
+              <span>4% vs semaine dernière</span>
+            </div>
+            <p className="text-gray-500 text-xs mt-2">5 cultures d'automne en cours</p>
+          </div>
           
-          <DataCard
-            title="Précipitations"
-            value="32mm"
-            icon={<Cloud size={18} />}
-            color="info"
-            loading={isLoading}
-            trend={{ value: 8, isPositive: true, label: "vs moyenne" }}
-            description="Conditions favorables pour l'automne"
-          />
+          {/* Précipitations */}
+          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-start mb-3">
+              <span className="text-gray-600 text-sm">Précipitations</span>
+              <div className="p-2 bg-blue-50 rounded-lg">
+                <Cloud size={18} className="text-blue-600" />
+              </div>
+            </div>
+            <div className="flex items-baseline">
+              <span className="text-3xl font-bold text-gray-800">32mm</span>
+            </div>
+            <div className="flex items-center mt-1 text-green-500 text-xs">
+              <ArrowUp size={14} />
+              <span>8% vs moyenne</span>
+            </div>
+            <p className="text-gray-500 text-xs mt-2">Conditions favorables pour l'automne</p>
+          </div>
           
-          <DataCard
-            title="Température moyenne"
-            value="12°C"
-            icon={<Sun size={18} />}
-            color="warning"
-            loading={isLoading}
-            trend={{ value: -3, isPositive: false, label: "vs semaine dernière" }}
-            description="Prévision: baisse à 8°C cette semaine"
-          />
+          {/* Température */}
+          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-start mb-3">
+              <span className="text-gray-600 text-sm">Température moyenne</span>
+              <div className="p-2 bg-amber-50 rounded-lg">
+                <Sun size={18} className="text-amber-600" />
+              </div>
+            </div>
+            <div className="flex items-baseline">
+              <span className="text-3xl font-bold text-gray-800">12°C</span>
+            </div>
+            <div className="flex items-center mt-1 text-red-500 text-xs">
+              <ArrowDown size={14} />
+              <span>3% vs semaine dernière</span>
+            </div>
+            <p className="text-gray-500 text-xs mt-2">Prévision: baisse à 8°C cette semaine</p>
+          </div>
           
-          <DataCard
-            title="Humidité du sol"
-            value="52%"
-            icon={<Droplets size={18} />}
-            color="primary"
-            loading={isLoading}
-            trend={{ value: 10, isPositive: true }}
-            description="Plage optimale: 45-60% pour l'automne"
-          />
+          {/* Humidité */}
+          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-start mb-3">
+              <span className="text-gray-600 text-sm">Humidité du sol</span>
+              <div className="p-2 bg-green-50 rounded-lg">
+                <Droplets size={18} className="text-green-600" />
+              </div>
+            </div>
+            <div className="flex items-baseline">
+              <span className="text-3xl font-bold text-gray-800">52%</span>
+            </div>
+            <div className="flex items-center mt-1 text-green-500 text-xs">
+              <ArrowUp size={14} />
+              <span>10%</span>
+            </div>
+            <p className="text-gray-500 text-xs mt-2">Plage optimale: 45-60% pour l'automne</p>
+          </div>
         </div>
       </section>
 
-      {/* Current Crops */}
+      {/* Cultures en cours */}
       <section className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-medium flex items-center">
-            <Sprout size={18} className="mr-2 text-season-autumn" />
+          <h2 className="text-lg font-medium flex items-center text-gray-800">
+            <Sprout size={18} className="mr-2 text-green-600" />
             <span>Cultures en cours</span>
           </h2>
           <Button 
             variant="outline" 
             size="xs" 
-            className="border-soil-light/20 hover:border-soil-light/50"
+            className="border-gray-300 text-gray-700 hover:border-green-600"
           >
             Voir toutes les cultures
           </Button>
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <Card className="lg:col-span-2 p-4 border border-soil-light/20 bg-neutral-900/80 backdrop-blur-sm">
+          <div className="lg:col-span-2 p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-medium">État des cultures saisonnières</h3>
-              <div className="bg-season-autumn/10 border border-season-autumn/20 px-3 py-1 rounded-full text-xs font-medium text-season-autumn">
+              <h3 className="font-medium text-gray-800">État des cultures saisonnières</h3>
+              <div className="bg-green-50 border border-green-200 px-3 py-1 rounded-full text-xs font-medium text-green-600">
                 {currentSeason} 2023
               </div>
             </div>
-            
+
             <div className="space-y-3">
               {seasonalCrops.map((crop, i) => (
                 <div 
                   key={i} 
-                  className="flex items-center p-3 border border-soil-light/20 rounded-md bg-soil-dark/10 hover:border-season-autumn/40 hover:bg-soil-dark/20 transition-all duration-200"
+                  className="flex items-center p-3 border border-gray-200 rounded-md bg-gray-50 hover:border-green-300 hover:bg-green-50 transition-all duration-200"
                 >
                   <div className={`
                     w-2 h-2 rounded-full flex-shrink-0
-                    ${crop.health > 90 ? 'bg-green-500' : crop.health > 80 ? 'bg-yellow-500' : 'bg-red-500'}
+                    ${crop.health > 90 ? 'bg-green-500' : crop.health > 80 ? 'bg-amber-500' : 'bg-red-500'}
                   `}></div>
                   <div className="ml-3 mr-auto">
-                    <div className="text-sm font-medium">{crop.name}</div>
-                    <div className="text-xs text-text-tertiary">{crop.status}</div>
+                    <div className="text-sm font-medium text-gray-800">{crop.name}</div>
+                    <div className="text-xs text-gray-500">{crop.status}</div>
                   </div>
-                  <div className="flex-shrink-0 text-text-tertiary mr-4">
+                  <div className="flex-shrink-0 text-green-600 mr-4">
                     {crop.icon}
                   </div>
-                  <div className="text-sm font-medium">
+                  <div className="text-sm font-medium text-gray-800">
                     {crop.health}%
                   </div>
                 </div>
               ))}
             </div>
-          </Card>
+          </div>
           
-          {/* Tasks List */}
-          <Card className="p-4 border border-soil-light/20 bg-neutral-900/80 backdrop-blur-sm">
+          {/* Tâches à venir */}
+          <div className="p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-medium">Tâches à venir</h3>
-              <Button variant="outline" size="xs">Voir toutes</Button>
+              <h3 className="font-medium text-gray-800">Tâches à venir</h3>
+              <Button 
+                variant="outline" 
+                size="xs"
+                className="border-gray-300 text-gray-700 hover:border-green-600"
+              >
+                Voir toutes
+              </Button>
             </div>
             
             <div className="space-y-2">
-              {[
-                { title: 'Récolte potimarrons', icon: <Shovel size={14} />, date: "Aujourd'hui", priority: 'high' },
-                { title: 'Protection contre le gel', icon: <Sun size={14} />, date: "Demain", priority: 'high' },
-                { title: 'Préparation du compost', icon: <Leaf size={14} />, date: "Jeudi", priority: 'medium' },
-                { title: 'Marché local', icon: <Users size={14} />, date: "Samedi", priority: 'medium' },
-              ].map((task, i) => (
+              {upcomingTasks.map((task, i) => (
                 <div 
                   key={i} 
-                  className="flex items-center p-2 border border-soil-light/20 rounded-md bg-soil-dark/10 hover:border-soil-light/40 hover:bg-soil-dark/20 transition-all duration-200"
+                  className="flex items-center p-2 border border-gray-200 rounded-md bg-gray-50 hover:border-green-300 hover:bg-green-50 transition-all duration-200"
                 >
                   <div className={`
                     w-2 h-2 rounded-full flex-shrink-0
-                    ${task.priority === 'high' ? 'bg-red-500' : task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'}
+                    ${task.priority === 'high' ? 'bg-red-500' : task.priority === 'medium' ? 'bg-amber-500' : 'bg-green-500'}
                   `}></div>
                   <div className="ml-3 mr-auto">
-                    <div className="text-sm font-medium">{task.title}</div>
-                    <div className="text-xs text-text-tertiary">{task.date}</div>
+                    <div className="text-sm font-medium text-gray-800">{task.title}</div>
+                    <div className="text-xs text-gray-500">{task.date}</div>
                   </div>
-                  <div className="flex-shrink-0 text-text-tertiary">
+                  <div className="flex-shrink-0 text-green-600">
                     {task.icon}
                   </div>
                 </div>
               ))}
             </div>
-          </Card>
+          </div>
         </div>
       </section>
 
-      {/* Seasonal Calendar */}
+      {/* Calendrier cultural */}
       <section className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-medium flex items-center">
-            <Calendar size={18} className="mr-2 text-season-autumn" />
+          <h2 className="text-lg font-medium flex items-center text-gray-800">
+            <Calendar size={18} className="mr-2 text-green-600" />
             <span>Calendrier cultural</span>
           </h2>
           <Button 
             variant="outline" 
             size="xs" 
-            className="border-soil-light/20 hover:border-soil-light/50"
+            className="border-gray-300 text-gray-700 hover:border-green-600"
           >
             Voir calendrier complet
           </Button>
         </div>
         
-        <Card className="p-4 border border-soil-light/20 bg-neutral-900/80 backdrop-blur-sm">
+        <div className="p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-medium">Période actuelle: Fin Octobre - Début Novembre</h3>
-            <div className="bg-soil-dark/50 px-3 py-1 rounded-full text-xs">
+            <h3 className="font-medium text-gray-800">Période actuelle: Fin Octobre - Début Novembre</h3>
+            <div className="bg-gray-100 px-3 py-1 rounded-full text-xs text-gray-700">
               Phase: Plantation d'hiver / Récolte d'automne
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="border border-soil-light/20 rounded-md p-3 bg-soil-dark/10">
-              <h4 className="text-sm font-medium mb-2 text-season-autumn">À semer maintenant</h4>
+            <div className="border border-gray-200 rounded-md p-3 bg-gray-50">
+              <h4 className="text-sm font-medium mb-2 text-green-600">À semer maintenant</h4>
               <ul className="space-y-1 text-sm">
-                <li className="flex items-center"><Seeds size={12} className="mr-2 text-text-tertiary" /> Fèves</li>
-                <li className="flex items-center"><Seeds size={12} className="mr-2 text-text-tertiary" /> Ail</li>
-                <li className="flex items-center"><Seeds size={12} className="mr-2 text-text-tertiary" /> Oignons blancs</li>
+                <li className="flex items-center"><Seeds size={12} className="mr-2 text-gray-500" /> Fèves</li>
+                <li className="flex items-center"><Seeds size={12} className="mr-2 text-gray-500" /> Ail</li>
+                <li className="flex items-center"><Seeds size={12} className="mr-2 text-gray-500" /> Oignons blancs</li>
               </ul>
             </div>
             
-            <div className="border border-soil-light/20 rounded-md p-3 bg-soil-dark/10">
-              <h4 className="text-sm font-medium mb-2 text-accent">À récolter maintenant</h4>
+            <div className="border border-gray-200 rounded-md p-3 bg-gray-50">
+              <h4 className="text-sm font-medium mb-2 text-amber-600">À récolter maintenant</h4>
               <ul className="space-y-1 text-sm">
-                <li className="flex items-center"><Leaf size={12} className="mr-2 text-text-tertiary" /> Courges d'hiver</li>
-                <li className="flex items-center"><Leaf size={12} className="mr-2 text-text-tertiary" /> Potimarrons</li>
-                <li className="flex items-center"><Leaf size={12} className="mr-2 text-text-tertiary" /> Derniers haricots</li>
-                <li className="flex items-center"><Leaf size={12} className="mr-2 text-text-tertiary" /> Choux</li>
+                <li className="flex items-center"><Leaf size={12} className="mr-2 text-gray-500" /> Courges d'hiver</li>
+                <li className="flex items-center"><Leaf size={12} className="mr-2 text-gray-500" /> Potimarrons</li>
+                <li className="flex items-center"><Leaf size={12} className="mr-2 text-gray-500" /> Derniers haricots</li>
+                <li className="flex items-center"><Leaf size={12} className="mr-2 text-gray-500" /> Choux</li>
               </ul>
             </div>
             
-            <div className="border border-soil-light/20 rounded-md p-3 bg-soil-dark/10">
-              <h4 className="text-sm font-medium mb-2 text-primary">Travaux du moment</h4>
+            <div className="border border-gray-200 rounded-md p-3 bg-gray-50">
+              <h4 className="text-sm font-medium mb-2 text-blue-600">Travaux du moment</h4>
               <ul className="space-y-1 text-sm">
-                <li className="flex items-center"><Shovel size={12} className="mr-2 text-text-tertiary" /> Préparer les protections hivernales</li>
-                <li className="flex items-center"><Shovel size={12} className="mr-2 text-text-tertiary" /> Nettoyer les parcelles récoltées</li>
-                <li className="flex items-center"><Shovel size={12} className="mr-2 text-text-tertiary" /> Apport de compost</li>
+                <li className="flex items-center"><Shovel size={12} className="mr-2 text-gray-500" /> Préparer les protections hivernales</li>
+                <li className="flex items-center"><Shovel size={12} className="mr-2 text-gray-500" /> Nettoyer les parcelles récoltées</li>
+                <li className="flex items-center"><Shovel size={12} className="mr-2 text-gray-500" /> Apport de compost</li>
               </ul>
             </div>
           </div>
-        </Card>
+        </div>
       </section>
 
       {/* Matériel et équipements */}
       <section className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-medium flex items-center">
-            <Tractor size={18} className="mr-2 text-secondary" />
+          <h2 className="text-lg font-medium flex items-center text-gray-800">
+            <Tractor size={18} className="mr-2 text-green-600" />
             <span>Équipements et matériel</span>
           </h2>
           <Button 
-            variant="outline" 
+            variant="outline"
             size="xs" 
-            className="border-soil-light/20 hover:border-soil-light/50"
+            className="border-gray-300 text-gray-700 hover:border-green-600"
           >
             Gérer le matériel
           </Button>
         </div>
         
-        <Card className="p-4 border border-soil-light/20 bg-neutral-900/80 backdrop-blur-sm">
+        <div className="p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="border border-soil-light/20 rounded-md p-3 bg-soil-dark/10 hover:border-secondary/30 transition-all">
+            <div className="border border-gray-200 rounded-md p-3 bg-gray-50 hover:border-green-300 hover:bg-green-50 transition-all">
               <div className="flex justify-between items-start">
-                <h4 className="text-sm font-medium text-secondary">Tracteur</h4>
-                <span className="px-2 py-0.5 text-xs rounded-full bg-green-500/20 text-green-500 border border-green-500/20">Actif</span>
+                <h4 className="text-sm font-medium text-gray-800">Tracteur</h4>
+                <span className="px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-600 border border-green-200">Actif</span>
               </div>
-              <div className="mt-2 text-xs text-text-tertiary">
+              <div className="mt-2 text-xs text-gray-500">
                 Dernière utilisation: 24 octobre
               </div>
-              <div className="mt-1 text-xs">Prochain entretien dans 45 jours</div>
+              <div className="mt-1 text-xs text-gray-700">Prochain entretien dans 45 jours</div>
             </div>
             
-            <div className="border border-soil-light/20 rounded-md p-3 bg-soil-dark/10 hover:border-secondary/30 transition-all">
+            <div className="border border-gray-200 rounded-md p-3 bg-gray-50 hover:border-green-300 hover:bg-green-50 transition-all">
               <div className="flex justify-between items-start">
-                <h4 className="text-sm font-medium text-secondary">Motoculteur</h4>
-                <span className="px-2 py-0.5 text-xs rounded-full bg-green-500/20 text-green-500 border border-green-500/20">Actif</span>
+                <h4 className="text-sm font-medium text-gray-800">Motoculteur</h4>
+                <span className="px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-600 border border-green-200">Actif</span>
               </div>
-              <div className="mt-2 text-xs text-text-tertiary">
+              <div className="mt-2 text-xs text-gray-500">
                 Dernière utilisation: 10 octobre
               </div>
-              <div className="mt-1 text-xs">Prochain entretien dans 30 jours</div>
+              <div className="mt-1 text-xs text-gray-700">Prochain entretien dans 30 jours</div>
             </div>
             
-            <div className="border border-soil-light/20 rounded-md p-3 bg-soil-dark/10 hover:border-secondary/30 transition-all">
+            <div className="border border-gray-200 rounded-md p-3 bg-gray-50 hover:border-green-300 hover:bg-green-50 transition-all">
               <div className="flex justify-between items-start">
-                <h4 className="text-sm font-medium text-secondary">Système d'irrigation</h4>
-                <span className="px-2 py-0.5 text-xs rounded-full bg-green-500/20 text-green-500 border border-green-500/20">Actif</span>
+                <h4 className="text-sm font-medium text-gray-800">Système d'irrigation</h4>
+                <span className="px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-600 border border-green-200">Actif</span>
               </div>
-              <div className="mt-2 text-xs text-text-tertiary">
+              <div className="mt-2 text-xs text-gray-500">
                 Dernière utilisation: Aujourd'hui
               </div>
-              <div className="mt-1 text-xs">Contrôle planifié dans 7 jours</div>
+              <div className="mt-1 text-xs text-gray-700">Contrôle planifié dans 7 jours</div>
             </div>
             
-            <div className="border border-soil-light/20 rounded-md p-3 bg-soil-dark/10 hover:border-secondary/30 transition-all">
+            <div className="border border-gray-200 rounded-md p-3 bg-gray-50 hover:border-green-300 hover:bg-green-50 transition-all">
               <div className="flex justify-between items-start">
-                <h4 className="text-sm font-medium text-secondary">Semoir</h4>
-                <span className="px-2 py-0.5 text-xs rounded-full bg-yellow-500/20 text-yellow-500 border border-yellow-500/20">En maintenance</span>
+                <h4 className="text-sm font-medium text-gray-800">Semoir</h4>
+                <span className="px-2 py-0.5 text-xs rounded-full bg-amber-100 text-amber-600 border border-amber-200">En maintenance</span>
               </div>
-              <div className="mt-2 text-xs text-text-tertiary">
+              <div className="mt-2 text-xs text-gray-500">
                 Dernière utilisation: 5 octobre
               </div>
-              <div className="mt-1 text-xs">Disponible le 3 novembre</div>
+              <div className="mt-1 text-xs text-gray-700">Disponible le 3 novembre</div>
             </div>
           </div>
-        </Card>
+        </div>
       </section>
 
       {/* Location Info */}
       <section>
-        <Card className="p-4 border border-soil-light/20 bg-neutral-900/80 backdrop-blur-sm">
+        <div className="p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
           <div className="flex items-center">
-            <MapPin className="w-5 h-5 text-season-autumn mr-3" />
+            <MapPin className="w-5 h-5 text-green-600 mr-3" />
             <div>
-              <div className="text-sm text-text-tertiary">Emplacement actif</div>
-              <div className="font-medium">Ferme maraîchère - Région Île-de-France</div>
+              <div className="text-sm text-gray-500">Emplacement actif</div>
+              <div className="font-medium text-gray-800">Ferme maraîchère - Région Île-de-France</div>
             </div>
-            <div className="ml-auto flex items-center px-3 py-1 bg-soil-dark/50 rounded-full text-xs">
-              <Cloud size={12} className="mr-1" />
-              <span>Prévision: Pluie légère demain</span>
+            <div className="ml-auto flex items-center px-3 py-1 bg-gray-100 rounded-full text-xs">
+              <Cloud size={12} className="mr-1 text-blue-600" />
+              <span className="text-gray-700">Prévision: Pluie légère demain</span>
             </div>
           </div>
-        </Card>
+        </div>
       </section>
     </div>
   );

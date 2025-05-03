@@ -104,7 +104,7 @@ const Contact = () => {
         </motion.div>
 
         <div className="flex flex-col lg:flex-row gap-12">
-          {/* Formulaire */}
+        {/* Formulaire */}
           <motion.div 
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -151,15 +151,15 @@ const Contact = () => {
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <User size={18} className="text-text-tertiary" />
                     </div>
-                    <input
-                      type="text"
+              <input
+                type="text"
                       name="lastName"
                       placeholder="Votre nom"
                       className="w-full pl-10 p-3 bg-surface/80 border border-neutral-800 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-colors"
                       value={formData.lastName}
                       onChange={handleChange}
-                      required
-                    />
+                required
+              />
                   </div>
                 </div>
               </div>
@@ -179,8 +179,8 @@ const Contact = () => {
                     onChange={handleChange}
                   />
                 </div>
-              </div>
-              
+            </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2">
                   <label className="block text-text-secondary font-medium">Email</label>
@@ -188,18 +188,18 @@ const Contact = () => {
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <Mail size={18} className="text-text-tertiary" />
                     </div>
-                    <input
-                      type="email"
+              <input
+                type="email"
                       name="email"
                       placeholder="votre@email.com"
                       className="w-full pl-10 p-3 bg-surface/80 border border-neutral-800 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-colors"
                       value={formData.email}
                       onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-                
+                required
+              />
+            </div>
+          </div>
+
                 <div className="space-y-2">
                   <label className="block text-text-secondary font-medium">Téléphone</label>
                   <div className="relative">
@@ -242,15 +242,15 @@ const Contact = () => {
                   <div className="absolute top-3 left-3 pointer-events-none">
                     <MessageSquare size={18} className="text-text-tertiary" />
                   </div>
-                  <textarea
+            <textarea
                     name="message"
                     rows={6}
                     placeholder="Comment pouvons-nous vous aider ?"
                     className="w-full pl-10 p-3 bg-surface/80 border border-neutral-800 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-colors"
                     value={formData.message}
                     onChange={handleChange}
-                    required
-                  ></textarea>
+              required
+            ></textarea>
                 </div>
               </div>
               
@@ -267,8 +267,8 @@ const Contact = () => {
                 <label htmlFor="acceptTerms" className="text-text-secondary">
                   J'accepte les <a href="#" className="text-primary hover:underline">conditions d'utilisation</a> et la <a href="#" className="text-primary hover:underline">politique de confidentialité</a>
                 </label>
-              </div>
-              
+          </div>
+
               <div>
                 <Button 
                   type="submit" 
@@ -287,11 +287,11 @@ const Contact = () => {
                   ) : (
                     <>
                       <Send size={18} />
-                      Envoyer le message
+              Envoyer le message
                     </>
                   )}
-                </Button>
-              </div>
+            </Button>
+          </div>
             </form>
           </motion.div>
           

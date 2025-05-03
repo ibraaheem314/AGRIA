@@ -34,28 +34,28 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-dark to-darker">
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
-          <div className="mx-auto h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 border border-primary/20">
-            <LogIn className="h-8 w-8 text-primary" />
+          <div className="mx-auto h-16 w-16 rounded-2xl bg-primary/20 flex items-center justify-center mb-4 border border-primary/30 shadow-glow-sm">
+            <LogIn className="h-8 w-8 text-primary icon-highlight" />
           </div>
-          <h2 className="text-3xl font-light text-white mb-2">Connectez-vous</h2>
-          <p className="text-text-secondary">Accédez à votre compte AgriTech</p>
+          <h2 className="text-3xl font-medium text-white mb-2 text-on-dark">Connectez-vous</h2>
+          <p className="text-white/85 font-light">Accédez à votre compte AgriTech</p>
         </div>
         
-        <div className="bg-surface/30 backdrop-blur-sm rounded-xl shadow-glow-sm p-8 border border-primary/10">
+        <div className="bg-surface/50 backdrop-blur-md rounded-xl shadow-glow-sm p-8 border border-primary/20">
           {error && (
-            <div className="mb-6 p-4 rounded-md bg-red-900/20 border border-red-800/30 text-red-500">
+            <div className="mb-6 p-4 rounded-md bg-red-900/30 border border-red-700/40 text-red-400 font-medium">
               {error}
             </div>
           )}
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
                 Adresse e-mail
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <MailCheck size={18} className="text-text-tertiary" />
+                  <MailCheck size={18} className="text-white/60 icon-highlight" />
                 </div>
                 <input
                   id="email"
@@ -65,19 +65,19 @@ const Login = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-3 border border-primary/20 rounded-md bg-dark shadow-sm focus:ring-primary focus:border-primary text-white focus:outline-none"
+                  className="block w-full pl-10 pr-3 py-3 border border-primary/30 rounded-md bg-dark/80 shadow-sm focus:ring-primary focus:border-primary text-white focus:outline-none"
                   placeholder="votre@email.com"
                 />
               </div>
             </div>
             
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-text-secondary mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
                 Mot de passe
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock size={18} className="text-text-tertiary" />
+                  <Lock size={18} className="text-white/60 icon-highlight" />
                 </div>
                 <input
                   id="password"
@@ -87,7 +87,7 @@ const Login = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-3 border border-primary/20 rounded-md bg-dark shadow-sm focus:ring-primary focus:border-primary text-white focus:outline-none"
+                  className="block w-full pl-10 pr-3 py-3 border border-primary/30 rounded-md bg-dark/80 shadow-sm focus:ring-primary focus:border-primary text-white focus:outline-none"
                   placeholder="••••••••"
                 />
               </div>
@@ -101,15 +101,15 @@ const Login = () => {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 text-primary focus:ring-primary border-neutral-700 rounded"
+                  className="h-4 w-4 text-primary focus:ring-primary border-neutral-600 rounded"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-text-secondary">
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-white/80">
                   Se souvenir de moi
                 </label>
               </div>
               
               <div className="text-sm">
-                <a href="#" className="font-medium text-primary hover:text-primary-400">
+                <a href="#" className="font-medium text-primary hover:text-primary-400 hover:underline">
                   Mot de passe oublié?
                 </a>
               </div>
@@ -119,7 +119,7 @@ const Login = () => {
               <Button
                 variant="primary"
                 type="submit"
-                className="w-full py-3 flex items-center justify-center gap-2 hover:shadow-glow-primary transition-all"
+                className="w-full py-3 flex items-center justify-center gap-2 hover:shadow-glow-primary transition-all font-medium"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -143,28 +143,28 @@ const Login = () => {
             <div className="mt-4 text-center">
               <div className="relative py-3">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-primary/10"></div>
+                  <div className="w-full border-t border-primary/20"></div>
                 </div>
                 <div className="relative flex justify-center">
-                  <span className="px-4 bg-surface/30 text-xs text-text-tertiary">ou</span>
+                  <span className="px-4 bg-surface/80 text-xs text-white/70 font-medium">ou</span>
                 </div>
               </div>
               
               <Button
                 variant="outline"
-                className="w-full mt-4 border-primary/30 hover:bg-primary/5 hover:border-primary"
+                className="w-full mt-4 border-primary/30 hover:bg-primary/10 hover:border-primary/60 font-medium"
                 onClick={handleDemoLogin}
               >
-                <User size={16} className="mr-2" />
+                <User size={16} className="mr-2 icon-highlight" />
                 Accéder en mode démo
               </Button>
             </div>
           </form>
           
           <div className="mt-6 text-center text-sm">
-            <p className="text-text-secondary">
+            <p className="text-white/80">
               Pas encore de compte?{' '}
-              <Link to="/dashboard" className="text-primary hover:text-primary-400 font-medium">
+              <Link to="/dashboard" className="text-primary hover:text-primary-400 font-medium hover:underline">
                 Inscrivez-vous
               </Link>
             </p>

@@ -4,19 +4,19 @@ import { cn } from '../../lib/utils';
 import { Loader2 } from 'lucide-react';
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded-md font-medium transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:pointer-events-none", 
+  "inline-flex items-center justify-center rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:pointer-events-none", 
   {
     variants: {
       variant: {
-        primary: "bg-primary hover:bg-primary-600 text-white shadow-sm hover:shadow-glow-sm",
-        secondary: "bg-secondary hover:bg-secondary-600 text-white shadow-sm",
-        accent: "bg-accent hover:bg-accent-600 text-white shadow-sm",
-        outline: "bg-transparent border border-neutral-700 text-text-secondary hover:border-primary hover:text-white",
-        ghost: "bg-transparent hover:bg-neutral-800 text-text-secondary hover:text-white",
-        link: "bg-transparent underline-offset-4 hover:underline text-primary p-0 height-auto",
-        season: "border border-season-autumn/30 bg-season-autumn/10 text-season-autumn hover:bg-season-autumn/20 hover:border-season-autumn/40",
-        danger: "bg-red-600 hover:bg-red-700 text-white shadow-sm",
-        success: "bg-success hover:bg-success-600 text-white shadow-sm",
+        primary: "bg-primary hover:bg-primary-600 text-white shadow-sm hover:shadow-glow-sm font-medium",
+        secondary: "bg-secondary hover:bg-secondary-600 text-white shadow-sm font-medium",
+        accent: "bg-accent hover:bg-accent-600 text-white shadow-sm font-medium",
+        outline: "bg-transparent border border-white/30 text-white hover:border-primary/60 hover:text-white",
+        ghost: "bg-transparent hover:bg-white/10 text-white/80 hover:text-white",
+        link: "bg-transparent underline-offset-4 hover:underline text-primary hover:text-primary-400 p-0 height-auto",
+        season: "border border-season-autumn/40 bg-season-autumn/15 text-season-autumn hover:bg-season-autumn/25 hover:border-season-autumn/50 font-medium",
+        danger: "bg-red-600 hover:bg-red-700 text-white shadow-sm font-medium",
+        success: "bg-success hover:bg-success-600 text-white shadow-sm font-medium",
       },
       size: {
         xs: "text-xs px-2 py-1 rounded",
@@ -62,7 +62,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {loading ? (
           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
         ) : icon ? (
-          <span className="mr-2">{icon}</span>
+          <span className="mr-2 icon-highlight">{icon}</span>
         ) : null}
         {children}
       </button>

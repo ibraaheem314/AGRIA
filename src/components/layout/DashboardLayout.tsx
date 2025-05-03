@@ -41,10 +41,10 @@ const DashboardLayout = () => {
         };
       default:
         return {
-          icon: <Leaf size={16} className="text-primary mr-2" />,
-          bgColor: 'bg-primary/5',
-          borderColor: 'border-primary/20',
-          textColor: 'text-primary'
+          icon: <Leaf size={16} className="text-green-600 mr-2" />,
+          bgColor: 'bg-green-600/5',
+          borderColor: 'border-green-600/20',
+          textColor: 'text-green-600'
         };
     }
   };
@@ -52,25 +52,18 @@ const DashboardLayout = () => {
   const seasonStyles = getSeasonStyles();
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-dark relative">
-      {/* Background pattern - grid */}
-      <div className="fixed inset-0 pointer-events-none opacity-10">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50 relative overflow-hidden">
+      {/* Overlay principal qui couvre tout l'écran avec la bonne couleur de fond */}
+      <div className="fixed inset-0 bg-gray-50 z-0"></div>
+      
+      {/* Background pattern - subtle grid */}
+      <div className="fixed inset-0 pointer-events-none opacity-5 z-0">
         <div className="absolute top-0 left-0 w-full h-full bg-grid-pattern" />
       </div>
       
-      {/* Background pattern - garden */}
-      <div className="fixed inset-0 pointer-events-none opacity-15">
-        <div className="absolute top-0 left-0 w-full h-full bg-garden-pattern" />
-      </div>
-      
-      {/* Soil texture overlay */}
-      <div className="fixed inset-0 pointer-events-none opacity-20">
-        <div className="absolute top-0 left-0 w-full h-full bg-soil-texture" />
-      </div>
-
-      {/* Wave pattern at the bottom */}
-      <div className="fixed bottom-0 left-0 right-0 pointer-events-none">
-        <div className="w-full h-24 bg-wave-pattern opacity-20" />
+      {/* Subtle dots pattern */}
+      <div className="fixed inset-0 pointer-events-none opacity-5 z-0">
+        <div className="absolute top-0 left-0 w-full h-full bg-dots-pattern" />
       </div>
 
       {/* Sidebar */}
@@ -86,7 +79,7 @@ const DashboardLayout = () => {
       </div>
 
       {/* Season indicator */}
-      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-20 bg-neutral-900/90 backdrop-blur-sm py-2 px-4 rounded-full border border-soil-light/30 shadow-glow-sm">
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-20 bg-white py-2 px-4 rounded-full border border-gray-200 shadow-sm">
         <div className="flex items-center">
           {seasonStyles.icon}
           <span className={`text-xs ${seasonStyles.textColor} font-medium`}>Saison actuelle: {currentSeason}</span>
@@ -99,8 +92,8 @@ const DashboardLayout = () => {
         </div>
       </div>
 
-      {/* Gradient overlay at the bottom */}
-      <div className="fixed bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-darker to-transparent pointer-events-none z-10" />
+      {/* Subtle gradient overlay at the bottom */}
+      <div className="fixed bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-100/50 to-transparent pointer-events-none z-10" />
     </div>
   );
 };

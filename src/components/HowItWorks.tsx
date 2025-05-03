@@ -1,44 +1,48 @@
 import React, { useRef } from 'react';
 import { MapPin, BarChart, CloudLightning, AlertCircle } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import Button from './ui/Button';
 
 interface Step {
   number: number;
   title: string;
   description: string;
   icon: React.ReactNode;
-  color: 'primary' | 'secondary';
+  gradient: string;
+  color: string;
 }
 
 const steps: Step[] = [
   {
     number: 1,
-    title: "Map Your Fields",
-    description: "Easily map your fields on our interactive map. Import GeoJSON files or manually trace your plots with precision.",
+    title: "Cartographiez vos parcelles",
+    description: "Délimitez facilement vos champs sur notre carte interactive. Importez des fichiers GeoJSON ou tracez manuellement vos parcelles avec précision.",
     icon: <MapPin className="h-8 w-8" />,
-    color: "primary"
+    gradient: "from-green-500/20 to-green-600/10",
+    color: "green-600"
   },
   {
     number: 2,
-    title: "Configure Your Alerts",
-    description: "Set up notification preferences for extreme weather conditions, changes in vegetation indices, or detected anomalies.",
+    title: "Configurez vos alertes",
+    description: "Paramétrez vos préférences de notification pour les conditions météo extrêmes, les changements d'indices de végétation ou les anomalies détectées.",
     icon: <AlertCircle className="h-8 w-8" />,
-    color: "secondary"
+    gradient: "from-blue-500/20 to-blue-600/10",
+    color: "blue-600"
   },
   {
     number: 3,
-    title: "Monitor Your Crops",
-    description: "Access updated satellite data, NDVI indices and weather forecasts for each plot. Visualize the evolution of your crops over time.",
+    title: "Suivez vos cultures",
+    description: "Accédez aux données satellite actualisées, aux indices NDVI et aux prévisions météo pour chaque parcelle. Visualisez l'évolution de vos cultures.",
     icon: <BarChart className="h-8 w-8" />,
-    color: "primary"
+    gradient: "from-green-500/20 to-green-600/10",
+    color: "green-600"
   },
   {
     number: 4,
-    title: "Receive Targeted Alerts",
-    description: "Be informed in real time of weather risks, water stress or other anomalies specifically affecting your plots.",
+    title: "Recevez des alertes ciblées",
+    description: "Soyez informé en temps réel des risques météorologiques, du stress hydrique ou d'autres anomalies affectant spécifiquement vos parcelles.",
     icon: <CloudLightning className="h-8 w-8" />,
-    color: "secondary"
+    gradient: "from-blue-500/20 to-blue-600/10",
+    color: "blue-600"
   }
 ];
 
@@ -50,77 +54,14 @@ const HowItWorks = () => {
   });
   
   // Parallax values for different elements
-  const backgroundScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
   const titleY = useTransform(scrollYProgress, [0, 0.3], ['-5%', '0%']);
   
   return (
-    <section className="py-24 bg-primary-50 relative overflow-hidden" ref={containerRef}>
-      {/* Top curved divider */}
-      <div className="absolute top-0 left-0 right-0 h-24">
-        <svg className="absolute -top-1 w-full h-24 text-white fill-current" viewBox="0 0 1440 96" preserveAspectRatio="none">
-          <path d="M0,96 L1440,96 L1440,0 C1120,32 720,16 360,32 C180,40 90,32 0,0 L0,96 Z"></path>
-        </svg>
-      </div>
-      
-      {/* Background patterns with parallax */}
-      <motion.div 
-        className="absolute inset-0 bg-pattern-diagonal opacity-10 pointer-events-none"
-        style={{ scale: backgroundScale }}
-      ></motion.div>
-      
-      {/* Enhanced background elements */}
-      <motion.div 
-        className="absolute top-0 left-0 w-1/3 h-1/4 bg-primary-100 opacity-40 blur-3xl rounded-br-full"
-        style={{ 
-          y: useTransform(scrollYProgress, [0, 1], ['0%', '10%']),
-          x: useTransform(scrollYProgress, [0, 1], ['0%', '5%'])
-        }}
-      ></motion.div>
-      
-      <motion.div 
-        className="absolute bottom-0 right-0 w-1/4 h-1/4 bg-primary-200 opacity-60 blur-3xl rounded-tl-full"
-        style={{ 
-          y: useTransform(scrollYProgress, [0, 1], ['0%', '-10%']),
-          x: useTransform(scrollYProgress, [0, 1], ['0%', '-5%'])
-        }}
-      ></motion.div>
-      
-      <motion.div
-        className="absolute top-1/3 right-1/4 w-16 h-16 opacity-30 pointer-events-none"
-        style={{ y: useTransform(scrollYProgress, [0, 1], ['20%', '-20%']) }}
-      >
-        <motion.div 
-          className="w-full h-full rounded-full bg-primary-400"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.6, 0.3]
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-      </motion.div>
-      
-      <motion.div
-        className="absolute bottom-1/3 left-1/4 w-12 h-12 opacity-30 pointer-events-none"
-        style={{ y: useTransform(scrollYProgress, [0, 1], ['-20%', '20%']) }}
-      >
-        <motion.div 
-          className="w-full h-full rounded-full bg-secondary-400"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3]
-          }}
-          transition={{
-            duration: 4,
-            delay: 1,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-      </motion.div>
+    <section className="py-24 bg-white relative overflow-hidden" ref={containerRef}>
+      {/* Motifs décoratifs type AMINI */}
+      <div className="absolute left-0 top-0 w-[600px] h-[600px] rounded-full border border-green-500/10 opacity-40" style={{ transform: 'translate(-300px, -300px)' }} />
+      <div className="absolute right-0 bottom-0 w-[500px] h-[500px] rounded-full border border-blue-500/10 opacity-40" style={{ transform: 'translate(250px, 250px)' }} />
+      <div className="absolute top-1/2 right-1/4 w-[300px] h-[300px] rounded-full border border-green-500/5 opacity-30" />
       
       <div className="container mx-auto px-4 relative z-10">
         <motion.div 
@@ -131,122 +72,111 @@ const HowItWorks = () => {
           viewport={{ once: true, margin: "-100px" }}
           style={{ y: titleY }}
         >
-          <div className="inline-block bg-white text-primary-700 px-4 py-1 rounded-full text-sm font-medium mb-4 shadow-sm">HOW IT WORKS</div>
-          <h2 className="text-4xl md:text-5xl font-light mb-6 text-gray-800">
-            A Simple Approach to Precision Agriculture
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-green-100 text-green-800 mb-8">
+            <span className="text-sm font-semibold">Comment ça marche</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-green-900 mb-6">
+            Une approche <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-blue-600">simple</span> de l'agriculture de précision
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            A simple and effective approach to monitor your crops and optimize your agricultural production.
+            Une méthode efficace pour suivre vos cultures et optimiser votre production agricole en quelques étapes simples.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+        {/* Timeline et steps */}
+        <div className="max-w-5xl mx-auto mb-20">
           {steps.map((step, index) => (
             <motion.div 
               key={index} 
-              className="relative"
+              className="flex flex-col md:flex-row items-start mb-16 md:mb-8 relative"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true, margin: "-50px" }}
             >
-              {/* Step number and connecting line */}
-              <div className="flex items-center mb-6">
+              {/* Ligne de connexion verticale */}
+              {index < steps.length - 1 && (
+                <div className="absolute left-8 top-16 bottom-0 w-0.5 bg-gray-200 -z-10 hidden md:block">
+                  <motion.div 
+                    className="absolute top-0 bottom-0 w-0.5 bg-green-300"
+                    initial={{ height: 0 }}
+                    whileInView={{ height: "100%" }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    viewport={{ once: true }}
+                  ></motion.div>
+                </div>
+              )}
+              
+              {/* Numéro d'étape */}
+              <div className="mr-8 mb-4 md:mb-0">
                 <motion.div 
-                  className={`flex-shrink-0 w-12 h-12 rounded-full bg-${step.color} text-white flex items-center justify-center font-medium text-lg mr-3 shadow-md`}
-                  whileHover={{ scale: 1.1 }}
+                  className="w-16 h-16 rounded-full bg-white border-2 border-green-500 flex items-center justify-center font-bold text-lg text-green-600 shadow-lg"
+                  whileHover={{ scale: 1.1, borderColor: "#22c55e" }}
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
                   {step.number}
                 </motion.div>
-                {index < steps.length - 1 && (
-                  <div className="h-0.5 flex-grow bg-gray-200 relative">
-                    <motion.div 
-                      className={`absolute inset-0 bg-${step.color}-400`}
-                      initial={{ width: 0 }}
-                      whileInView={{ width: "100%" }}
-                      transition={{ duration: 0.8, delay: 0.3 + index * 0.1 }}
-                      viewport={{ once: true }}
-                    ></motion.div>
-                  </div>
-                )}
               </div>
               
-              {/* Step card with 3D hover effect */}
+              {/* Contenu de l'étape */}
               <motion.div 
-                className="bg-white p-8 h-full rounded-xl shadow-sm border border-gray-100 perspective relative"
+                className="flex-1 bg-white p-8 rounded-2xl shadow-sm border border-gray-100"
                 whileHover={{ 
-                  rotateX: 5,
-                  rotateY: 5,
-                  z: 10,
-                  boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
-                  scale: 1.02
+                  y: -5,
+                  boxShadow: "0 15px 30px rgba(0,0,0,0.08)",
+                  borderColor: "#e5e7eb"
                 }}
                 transition={{ duration: 0.2 }}
               >
-                {/* Highlight effect on hover */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white to-primary-100/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl pointer-events-none"></div>
-                
-                <motion.div 
-                  className={`bg-${step.color}-50 w-16 h-16 flex items-center justify-center rounded-xl mb-5 relative`}
-                  whileHover={{ rotate: [0, -5, 5, 0], transition: { duration: 0.5 } }}
-                >
-                  {/* Animated background pulse effect */}
-                  <motion.div 
-                    className={`absolute inset-0 bg-${step.color}-100 rounded-xl`}
-                    animate={{
-                      scale: [1, 1.15, 1],
-                      opacity: [0.8, 0.3, 0.8]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
-                  
-                  <div className={`text-${step.color}-600 relative z-10`}>
-                    {step.icon}
+                <div className="flex items-start">
+                  <div className={`p-3 rounded-xl bg-gradient-to-br ${step.gradient} mr-4 shadow-sm`}>
+                    <div className={`text-${step.color}`}>
+                      {step.icon}
+                    </div>
                   </div>
-                </motion.div>
-                
-                <h3 className="text-xl font-medium text-gray-800 mb-3">{step.title}</h3>
-                <p className="text-gray-600">{step.description}</p>
-                
-                {/* Animated indicator */}
-                <motion.div 
-                  className={`w-8 h-0.5 bg-${step.color}-200 mt-5`}
-                  whileHover={{
-                    width: "30%", 
-                    backgroundColor: `var(--color-${step.color}-500)`
-                  }}
-                  transition={{ duration: 0.3 }}
-                ></motion.div>
+                  
+                  <div>
+                    <h3 className="text-xl font-bold text-green-900 mb-3">{step.title}</h3>
+                    <p className="text-gray-600">{step.description}</p>
+                  </div>
+                </div>
               </motion.div>
             </motion.div>
           ))}
         </div>
         
+        {/* Section finale avec image + CTA */}
         <motion.div 
-          className="mt-16 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
+          className="mt-24 grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <Button 
-            className="bg-primary hover:bg-primary-600 text-white py-6 px-8 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            Get started now
-          </Button>
+          <div className="relative">
+            <div className="absolute w-full h-full bg-gradient-to-br from-green-200/30 to-blue-200/30 rounded-3xl -z-10 transform translate-x-3 translate-y-3 rotate-1"></div>
+            <img 
+              src="/images/dashboard.jpg" 
+              alt="Tableau de bord agricole" 
+              className="rounded-3xl shadow-xl w-full object-cover h-[400px] bg-gray-100" 
+            />
+            <div className="absolute -bottom-5 -right-5 w-20 h-20 rounded-full bg-gradient-to-r from-green-500 to-green-600 shadow-xl flex items-center justify-center">
+              <BarChart className="w-10 h-10 text-white" />
+            </div>
+          </div>
+          
+          <div>
+            <h3 className="text-3xl font-bold text-green-900 mb-6">
+              Prêt à transformer votre exploitation ?
+            </h3>
+            <p className="text-gray-600 mb-8">
+              Notre plateforme vous donne accès à des outils de pointe pour une agriculture de précision, sans complexité technique. Commencez dès aujourd'hui et voyez la différence sur vos cultures.
+            </p>
+            <a href="#" className="inline-flex items-center px-8 py-4 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 transition-colors duration-300 shadow-md">
+              Démarrer maintenant
+            </a>
+          </div>
         </motion.div>
-      </div>
-      
-      {/* Bottom curved divider */}
-      <div className="absolute bottom-0 left-0 right-0 h-24">
-        <svg className="absolute -bottom-1 w-full h-24 text-white fill-current" viewBox="0 0 1440 96" preserveAspectRatio="none">
-          <path d="M0,0 L1440,0 L1440,96 C1280,64 1120,48 720,48 C320,48 160,32 0,0 L0,0 Z"></path>
-        </svg>
       </div>
     </section>
   );
