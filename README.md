@@ -1,8 +1,8 @@
-# AgriTech - Plateforme d'Agriculture Durable
+# AGRIA - Plateforme d'Agriculture Durable
 
 ## À propos du projet
 
-AgriTech est une plateforme web moderne dédiée à l'agriculture durable, offrant aux agriculteurs des outils intelligents pour optimiser leurs pratiques agricoles, réduire leur impact environnemental et améliorer leurs rendements.
+AGRIA est une plateforme web moderne dédiée à l'agriculture durable, offrant aux agriculteurs des outils intelligents pour optimiser leurs pratiques agricoles, réduire leur impact environnemental et améliorer leurs rendements.
 
 La plateforme combine différentes sources de données en temps réel (météo, qualité de l'air, données climatiques) et utilise l'intelligence artificielle pour fournir des analyses et des recommandations personnalisées.
 
