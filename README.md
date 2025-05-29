@@ -1,4 +1,4 @@
-# AGRIA - Plateforme d'Agriculture Durable
+# AGRIA - Plateforme d'Agriculture Durable (Loading...)
 
 ## À propos du projet
 
@@ -12,7 +12,6 @@ La plateforme combine différentes sources de données en temps réel (météo, 
 - **Suivi météorologique et climatique** en temps réel avec visualisation des données
 - **Assistant IA (AgriBot)** pour répondre aux questions sur l'agriculture durable
 - **Analyse de sol et recommandations** basées sur les données de terrain
-- **Suivi des ressources** (eau, énergie, empreinte carbone)
 - **Planification de tâches** avec priorisation intelligente
 - **Marketplace** pour l'achat de produits et services agricoles durables
 
