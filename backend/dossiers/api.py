@@ -103,6 +103,7 @@ def projects(request):
 class CampaignCreateSerializer(serializers.Serializer):
     label = serializers.CharField(min_length=2, max_length=120)
     request_id = serializers.UUIDField()
+    copy_from = serializers.IntegerField(required=False, allow_null=True)
 
 
 @api_view(["POST"])
@@ -112,11 +113,19 @@ def project_campaigns(request, project_id: int):
         raise NotFound("Projet introuvable.")
     data = CampaignCreateSerializer(data=request.data)
     data.is_valid(raise_exception=True)
-    campaign, created = services.create_campaign(
-        project=project,
-        label=data.validated_data["label"].strip(),
-        request_id=data.validated_data["request_id"],
-    )
+    copy_from = None
+    if data.validated_data.get("copy_from"):
+        copy_from = project.campaigns.filter(pk=data.validated_data["copy_from"]).first()
+        if copy_from is None:
+            raise serializers.ValidationError({"copy_from": "Campagne introuvable dans ce projet."})
+    with transaction.atomic():
+        campaign, created = services.create_campaign(
+            project=project,
+            label=data.validated_data["label"].strip(),
+            request_id=data.validated_data["request_id"],
+            copy_from=copy_from,
+            author=request.user,
+        )
     return Response(
         dossier_payload(campaign, request.user),
         status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,

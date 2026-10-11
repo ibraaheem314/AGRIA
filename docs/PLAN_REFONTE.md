@@ -2,7 +2,7 @@
 
 Date : 11 octobre 2026. Périmètre de cette livraison : documentation et spécification F1–F6 du [produit](PRODUIT.md).
 
-**Les suppressions et corrections ci-dessous sont planifiées, pas exécutées.** Le dépôt contient déjà des modifications et suppressions non commitées. Ne pas les confondre avec cette livraison.
+**Mise à jour du 11/10/2026 : les tâches T0 et T2 à T8 ont été exécutées sur la branche `refonte/fondations` (voir [AVANCEMENT.md](AVANCEMENT.md)). T1 reste ouverte pour la révocation des clés chez les fournisseurs.** Le texte ci-dessous est conservé comme plan d'origine. Le dépôt contient déjà des modifications et suppressions non commitées. Ne pas les confondre avec cette livraison.
 
 ## Ordre de priorité
 
@@ -41,7 +41,7 @@ Le recours à un conseiller humain reste possible au pilote ; il ne nécessite p
 
 ## Backlog exécutable
 
-Toutes les tâches T0 à T8 sont **à faire**. Les preuves de l'audit sont des constats, pas des preuves de correction.
+État au 11/10/2026 : T0, T2, T3, T4, T5, T6, T7 et T8 réalisées (preuves dans AVANCEMENT.md) ; T1 partielle (révocation externe en attente). Les preuves de l'audit sont des constats, pas des preuves de correction.
 
 | ID | Priorité / responsable | Dépendance | Travail et critère de fin |
 |---|---|---|---|

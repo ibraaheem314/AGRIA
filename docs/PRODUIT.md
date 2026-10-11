@@ -1,7 +1,7 @@
 # Produit AGRIA : vision, première version et critères de livraison
 
 Version du 11 octobre 2026, après clarification de la cible par le fondateur.
-**Statut : spécification proposée pour la reconstruction ; application non implémentée.**
+**Statut au 11/10/2026 : F1–F6 implémentées sur la branche `refonte/fondations` et vérifiées par des tests logiciels ([AVANCEMENT.md](AVANCEMENT.md)). Aucune validation terrain, agronomique ou commerciale.**
 Le maraîchage est une filière candidate. Culture, zone pilote, canal d'accès et payeur restent à valider.
 
 ## 1. Promesse
@@ -178,7 +178,7 @@ La photo comme justificatif peut être ajoutée si nécessaire au pilote ; elle 
 7. Un utilisateur reprend son projet après redémarrage et obtient une synthèse fidèle.
 8. Un conseiller absent ou une API externe indisponible produit un état explicite, sans faux avis ni faux succès.
 
-Ces scénarios constituent des critères de future implémentation ; ils ne sont pas des tests déjà exécutés.
+Ces huit scénarios ont été exécutés comme tests logiciels le 11/10/2026 (rapport de recette dans [AVANCEMENT.md](AVANCEMENT.md), brique 7). Ils restent à éprouver avec des utilisateurs réels.
 
 ## 10. Mesure de valeur
 

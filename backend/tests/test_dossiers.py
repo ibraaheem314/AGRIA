@@ -274,3 +274,36 @@ def test_les_donnees_survivent_a_un_nouveau_processus_serveur(make_user, session
         result.stdout.strip().splitlines()[-1]
         == '["Projet durable", "declare", {"source": "puits"}]'
     )
+
+
+def test_nouvelle_campagne_reprend_le_lieu_a_reverifier_sans_resultats(porteur):
+    dossier = new_project(porteur, profile="producteur", label="Contre-saison 2026")
+    put_info(porteur, dossier, "eau", "verifie", {"source": "forage"}, "Gestionnaire du forage")
+    put_info(porteur, dossier, "localisation", "declare", {"region": "Thiès"})
+    put_info(porteur, dossier, "culture", "declare", {"nom": "Oignon"})
+    response = porteur.post(
+        f"/api/projects/{dossier['project']['id']}/campaigns",
+        {
+            "label": "Contre-saison 2027",
+            "request_id": str(uuid.uuid4()),
+            "copy_from": dossier["id"],
+        },
+    )
+    assert response.status_code == 201
+    facts = {f["key"]: f["state"] for f in response.json()["facts"]}
+    assert facts["eau"]["status"] == "declare"  # « vérifié » redevient « déclaré »
+    assert facts["eau"]["value"] == {"source": "forage"}
+    assert "à revérifier" in facts["eau"]["source"]
+    assert "Gestionnaire du forage" in facts["eau"]["source"]
+    assert facts["localisation"]["status"] == "declare"
+    assert facts["culture"]["status"] == "non_renseigne"  # hors du lieu : non repris
+
+
+def test_copie_depuis_une_campagne_d_un_autre_projet_refusee(porteur):
+    first = new_project(porteur, name="Premier")
+    second = new_project(porteur, name="Second")
+    response = porteur.post(
+        f"/api/projects/{second['project']['id']}/campaigns",
+        {"label": "Nouvelle", "request_id": str(uuid.uuid4()), "copy_from": first["id"]},
+    )
+    assert response.status_code == 400

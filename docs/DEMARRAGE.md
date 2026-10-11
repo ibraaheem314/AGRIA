@@ -69,6 +69,7 @@ L'attribution d'un dossier à un conseiller se fait par `assign_advisor` ou dans
 ```powershell
 python scripts/dev.py check          # ruff, format, migrations à jour, pytest, eslint, tsc, build
 python scripts/dev.py check --e2e    # + parcours Playwright (ordinateur et téléphone)
+python scripts/recette.py            # redémarrage réel du serveur, sauvegarde puis restauration (bases dédiées)
 ```
 
 Les parcours Playwright recréent une base séparée `agria_e2e` et utilisent les ports 8001 et 5174 : la base de travail n'est pas touchée. En local, ils utilisent le Chrome installé ; en CI, le Chromium de Playwright.

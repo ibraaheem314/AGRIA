@@ -126,3 +126,15 @@ export function useSaveFact(dossierId: number, key: string) {
     },
   })
 }
+
+export function useCreateCampaign(projectId: number) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (body: { label: string; request_id: string; copy_from: number | null }) =>
+      api<Dossier>(`/projects/${projectId}/campaigns`, { method: 'POST', body }),
+    onSuccess: (dossier) => {
+      qc.setQueryData(dossierKey(dossier.id), dossier)
+      return qc.invalidateQueries({ queryKey: ['dossiers'] })
+    },
+  })
+}

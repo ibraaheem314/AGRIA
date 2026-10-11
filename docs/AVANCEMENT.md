@@ -18,7 +18,7 @@ Légende des niveaux de preuve, à ne pas confondre :
 | 4 — Budget transparent | Terminée | Ci-dessous |
 | 5 — Conseiller, relecture, synthèse | Terminée | Ci-dessous |
 | 6 — Parcours complet et polissage | Terminée | Ci-dessous |
-| 7 — Recette et passation | À faire | |
+| 7 — Recette et passation | Terminée | Ci-dessous |
 
 ## Brique 0 — Préserver et établir la base (11/10/2026)
 
@@ -175,3 +175,45 @@ Légende des niveaux de preuve, à ne pas confondre :
 **Reste incomplet :** aucun essai avec des utilisateurs réels, un lecteur d'écran ou une connexion lente représentative du terrain ; pas de mode hors connexion (non promis).
 
 **Décisions :** D-035 à D-037. Guide d'interface réécrit : [INTERFACE.md](INTERFACE.md).
+
+## Brique 7 — Recette et passation (11/10/2026)
+
+**Ajouté pendant la recette :** préparation d'une nouvelle campagne pour un projet existant (scénario « exploitant »), avec reprise facultative des informations du lieu, à revérifier (D-038). Script `scripts/recette.py` : redémarrage et restauration en conditions réelles.
+
+### Rapport de recette — scénarios du cahier des charges
+
+Tous les scénarios ont été exécutés le 11/10/2026 sur le poste de développement (Windows 11, PostgreSQL 18, Chrome). Ce sont des **tests logiciels** : ils ne valent ni validation terrain ni preuve d'utilité.
+
+| # | Scénario | Preuves exécutées | Résultat |
+|---|---|---|---|
+| 1 | Débutant avec informations manquantes | Parcours `dossier.spec` (débutant, « je ne sais pas », reconnexion) et `plan.spec` (inconnue → point expliqué → démarche) ; tests `test_information_inconnue_produit_une_verification_expliquee_et_une_demarche`, `test_je_ne_sais_pas_est_enregistre_sans_valeur` | OK |
+| 2 | Exploitant préparant une nouvelle campagne | Parcours `recette.spec` (profil producteur, nouvelle campagne, lieu repris « à revérifier », campagne précédente intacte) ; tests `test_nouvelle_campagne_reprend_le_lieu_a_reverifier_sans_resultats`, `test_copie_depuis_une_campagne_d_un_autre_projet_refusee` | OK |
+| 3 | Compte non autorisé | Tests de permissions de chaque module (dossier, plan, budget, relecture, export : 404) ; parcours « un autre compte ne peut pas ouvrir le dossier » et refus d'export à un tiers | OK |
+| 4 | Conseiller non attribué | Tests `test_conseiller_non_attribue_ne_voit_rien`, `test_conseiller_voit_uniquement_ses_dossiers`, `test_attribution_close_*` ; parcours `recette.spec` (liste vide, accès direct et API refusés) | OK |
+| 5 | Budget incomplet | 53 tests du budget ; parcours `budget.spec` (« Budget incomplet… ce n'est pas le coût total ») ; synthèse avec statut « incomplet » | OK |
+| 6 | Contexte modifié après relecture | Tests `test_modification_apres_avis_le_rend_a_reexaminer_sans_l_effacer`, `test_avis_refuse_si_le_dossier_a_change_depuis_la_lecture` ; parcours `relecture.spec` (« À réexaminer », instantané consultable) | OK |
+| 7 | Erreur réseau | Réponse perdue puis reprise sans doublon (information, poste de budget) ; hors connexion réel ; session expirée ; refus CSRF transitoire | OK |
+| 8 | Redémarrage | `scripts/recette.py` : arrêt complet puis relance du serveur, données identiques par HTTP ; test de relecture par un autre processus | OK |
+| 9 | Export contrôlé | Test `test_export_telechargeable_a_acces_controle` (porteur et conseiller attribué : 200, autre compte : 404, `no-store`) ; parcours `relecture.spec` | OK |
+| 10 | Restauration d'une sauvegarde | `scripts/recette.py` : `pg_dump` → modification → `pg_restore` dans une base neuve → serveur démarré dessus : état sauvegardé retrouvé, modification postérieure absente. Commandes `dev.py db-backup` / `db-restore` vérifiées, avec refus d'écraser la base de travail sans `--replace` | OK |
+
+### Dernière exécution complète
+
+| Commande | Résultat |
+|---|---|
+| `python scripts/dev.py check --e2e` | ruff, format, migrations à jour, **147 tests pytest**, eslint, TypeScript, build : OK. Playwright : **29 exécutions réussies** (15 scénarios × 2 vues ; 1 ignorée volontairement : le clavier physique sur téléphone) |
+| `python scripts/recette.py` | Redémarrage, restauration, session et CSRF par HTTP réel : OK |
+
+### Passation
+
+- Point d'entrée : [README](../README.md) ; installation et commandes vérifiées : [DEMARRAGE.md](DEMARRAGE.md) ; fonctionnement : [ARCHITECTURE.md](ARCHITECTURE.md) et [INTERFACE.md](INTERFACE.md).
+- Commits relisibles, un par brique, sur `refonte/fondations` ; rien n'a été poussé ni déployé.
+
+### Limites restantes (à traiter avant un pilote)
+
+1. **Révocation des clés** exposées : action externe du titulaire des comptes ([SECURITE.md](SECURITE.md) §3).
+2. **Contenu non relu** : le modèle de préparation doit être relu par un conseiller, puis publié en v2 avec relecteur et date.
+3. **Hébergement non décidé** (D-006) : HTTPS, sauvegardes automatiques, cache partagé pour la limite de tentatives ([SECURITE.md](SECURITE.md) §5).
+4. **Aucune validation terrain** : enquête G1, choix de zone, culture et conseiller, consentement et conservation des données.
+5. Fonctions absentes, non promises : notifications, récupération de mot de passe par email, mode hors connexion, langues autres que le français.
+6. CI GitHub écrite mais jamais exécutée (aucun envoi vers GitHub n'a été fait).

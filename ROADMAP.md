@@ -1,7 +1,7 @@
 # Roadmap AGRIA
 
 Mise à jour : 11 octobre 2026, après clarification des deux profils utilisateurs.
-Phase actuelle : **cadrage de la préparation accompagnée d'une campagne**.
+Phase actuelle : **fondations logicielles livrées (F1–F6 implémentées et vérifiées par tests) ; validation terrain G1 à lancer**.
 Cette version remplace le choix initial irrigation/conservation comme porte d'entrée.
 
 ## Statuts et calendrier
@@ -26,12 +26,12 @@ Les prototypes de parcours et corrections de sécurité peuvent avancer avant G2
 
 ## G0 — Technique immédiate
 
-Statut : à faire.
+Statut : fait dans le dépôt le 11/10/2026, sauf la révocation des clés (action externe).
 
-- [ ] T0 : préserver le travail non commité, y compris fichiers non suivis.
-- [ ] T1 : traiter les clés exposées et vérifier la portée de l'exposition.
-- [ ] T2 : retirer faux succès, conseils de démonstration trompeurs et promesses sans preuve.
-- [ ] T3/T5 : rétablir installation reproductible, lint, typecheck et préparation de CI.
+- [x] T0 : travail non commité préservé (`fba4f93`, branche `archive/prototype-2026-10-11`).
+- [ ] T1 : clés retirées du code et des builds ; **révocation chez les fournisseurs à faire par le titulaire** ([SECURITE.md](docs/SECURITE.md) §3).
+- [x] T2 : faux succès, chiffres et conseils de démonstration retirés avec l'ancien prototype.
+- [x] T3/T5 : installation reproductible, lint, typecheck, tests, build et CI écrite (non exécutée).
 
 Voir le [plan de refonte](docs/PLAN_REFONTE.md). Les entretiens ne dépendent pas du fonctionnement du prototype.
 
@@ -64,7 +64,11 @@ Le pilote manuel ne requiert pas de déployer l'ancienne application. Données p
 
 ## G3 — Version minimale fiable
 
-Statut : conditionnel à G2. Développer en tranches vérifiables :
+Statut : **tranches logicielles réalisées en avance de G1/G2, sur instruction du fondateur (11/10/2026)**. Elles sont
+implémentées et vérifiées par tests, mais pas validées sur le terrain. Le passage G3 → G4 reste conditionné à un
+contenu relu, un conseiller, des participants et un hébergement décidé (D-006). Détail : [AVANCEMENT.md](docs/AVANCEMENT.md).
+
+Tranches prévues (toutes réalisées) :
 
 1. T4 + F1 : accès et dossier durable, contrôlés avec deux comptes.
 2. F2 + F3 : contenu local versionné, revue des conditions et plan d'action.

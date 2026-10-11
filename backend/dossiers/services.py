@@ -27,14 +27,47 @@ def create_project(*, owner, name, profile, campaign_label, request_id) -> tuple
     return project, True
 
 
+# Informations du lieu qu'un producteur peut reprendre d'une campagne à l'autre, à revérifier.
+REUSABLE_KEYS = ("localisation", "acces_terrain", "eau")
+REUSED_STATUS = {
+    "verifie": "declare",
+    "declare": "declare",
+    "estime": "estime",
+    "inconnu": "inconnu",
+}
+
+
 @transaction.atomic
-def create_campaign(*, project, label, request_id) -> tuple[Campaign, bool]:
+def create_campaign(*, project, label, request_id, copy_from=None, author=None):
+    """Nouvelle campagne d'un projet. Rejouer la même requête ne crée rien.
+
+    `copy_from` (campagne du même projet) : reprend seulement les informations du lieu,
+    comme point de départ à revérifier. Une information vérifiée redevient « déclarée » ;
+    démarches, budget et résultats ne sont jamais recopiés.
+    """
     if request_id:
         existing = Campaign.objects.filter(project=project, client_request_id=request_id).first()
         if existing:
             return existing, False
     campaign = Campaign.objects.create(project=project, label=label, client_request_id=request_id)
-    preparation.sync_plan(campaign, project.owner)
+    if copy_from is not None:
+        for fact in copy_from.facts.filter(key__in=REUSABLE_KEYS):
+            origin = (
+                f"Repris de la campagne « {copy_from.label} » où l'information était "
+                f"« {facts.STATUSES[fact.status].lower()} » : à revérifier pour cette campagne."
+            )
+            if fact.source:
+                origin = f"{origin} Source d'origine : {fact.source}"
+            save_fact(
+                campaign=campaign,
+                key=fact.key,
+                status=REUSED_STATUS[fact.status],
+                value=fact.value,
+                source=origin[:1000],
+                expected_version=0,
+                author=author or project.owner,
+            )
+    preparation.sync_plan(campaign, author or project.owner)
     return campaign, True
 
 

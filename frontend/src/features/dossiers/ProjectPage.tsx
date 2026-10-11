@@ -1,9 +1,11 @@
-import { Link } from 'react-router'
-import { Alert, Badge, Card, Loading, PageTitle } from '../../shared/ui'
+import { useRef, useState, type FormEvent } from 'react'
+import { Link, useNavigate } from 'react-router'
+import { ApiError, newRequestId } from '../../shared/api'
+import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { useBudget } from '../budget/api'
 import { budgetSentence } from '../budget/BudgetPage'
 import { formatDateTime } from '../../shared/format'
-import type { Dossier, FactItem } from './api'
+import { useCreateCampaign, type Dossier, type FactItem } from './api'
 import { describeValue, STATUS_LABEL, STATUS_TONE } from './factDisplay'
 import { useCurrentDossier } from './DossierLayout'
 
@@ -52,7 +54,55 @@ export function ProjectPage() {
           </section>
         )
       })}
+
+      {owner && !dossier.archived && <NewCampaignCard dossier={dossier} />}
     </div>
+  )
+}
+
+function NewCampaignCard({ dossier }: { dossier: Dossier }) {
+  const create = useCreateCampaign(dossier.project.id)
+  const navigate = useNavigate()
+  const requestId = useRef(newRequestId())
+  const [open, setOpen] = useState(false)
+  const [label, setLabel] = useState('')
+  const [reuse, setReuse] = useState(true)
+  const error = create.error instanceof ApiError ? create.error : null
+
+  function submit(event: FormEvent) {
+    event.preventDefault()
+    create.mutate(
+      { label, request_id: requestId.current, copy_from: reuse ? dossier.id : null },
+      { onSuccess: (d) => navigate(`/d/${d.id}/projet`, { state: { flash: `Campagne « ${d.label} » créée.` } }) },
+    )
+  }
+
+  return (
+    <Card>
+      <h2 className="font-semibold">Préparer une autre campagne</h2>
+      <p className="mt-1 text-sm text-muted">Pour la saison suivante du même projet. Ce dossier-ci reste inchangé.</p>
+      {!open ? (
+        <Button variant="secondary" className="mt-3" onClick={() => setOpen(true)}>Nouvelle campagne</Button>
+      ) : (
+        <form onSubmit={submit} className="mt-3 space-y-4" noValidate>
+          {error && <Alert tone="danger" role="alert">{error.message}</Alert>}
+          <Field label="Campagne préparée" help="Par exemple : « Contre-saison 2028 »." error={error?.fieldMessage('label')} required>
+            {(p) => <input {...p} className={inputClass} maxLength={120} value={label} onChange={(e) => setLabel(e.target.value)} />}
+          </Field>
+          <label className="flex items-start gap-2">
+            <input type="checkbox" className="mt-1 size-5 accent-brand-700" checked={reuse} onChange={(e) => setReuse(e.target.checked)} />
+            <span>
+              Reprendre les informations sur le lieu (localisation, terrain, eau) comme point de départ. Elles seront
+              marquées « à revérifier » ; démarches, budget et résultats ne sont pas recopiés.
+            </span>
+          </label>
+          <div className="flex gap-3">
+            <Button type="submit" busy={create.isPending}>{error?.network ? 'Réessayer' : 'Créer la campagne'}</Button>
+            <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Annuler</Button>
+          </div>
+        </form>
+      )}
+    </Card>
   )
 }
 

@@ -44,6 +44,18 @@ Par ordre de priorité :
 
 - Le frontend ne reçoit **aucun secret**. Il n'a besoin d'aucune variable d'environnement : en développement, il passe par le proxy Vite vers l'API.
 - Les secrets serveur sont dans `backend/.env`, ignoré par Git ; `backend/.env.example` liste les noms sans valeur réelle.
-- Le serveur refuse de démarrer hors mode développement si `DJANGO_SECRET_KEY` est absente ou si c'est la valeur d'exemple.
+- Le serveur refuse de démarrer, dans tous les modes, si `DJANGO_SECRET_KEY` est absente, trop courte ou égale à la valeur d'exemple.
 - Avant chaque commit touchant la configuration : `git diff --cached` ne doit contenir aucune valeur de `backend/.env`.
 - Pas de compte de démonstration avec mot de passe connu dans le code : les comptes sont créés par commande, avec un mot de passe saisi ou aléatoire.
+
+## 5. Avant tout usage réel (hébergement non décidé)
+
+Aucun déploiement n'a été fait. Liste de contrôle minimale à vérifier sur l'environnement choisi :
+
+- `DJANGO_DEBUG=false`, `DJANGO_SECRET_KEY` propre à l'environnement, `DJANGO_ALLOWED_HOSTS` et `DJANGO_CSRF_TRUSTED_ORIGINS` renseignés ; `python manage.py check --deploy` sans alerte bloquante.
+- HTTPS obligatoire (cookies `Secure` activés hors développement). L'interface et l'API servies sur la même origine (proxy inverse).
+- Base PostgreSQL avec mot de passe, non exposée publiquement ; sauvegardes automatiques **et restauration testée** (`scripts/recette.py` montre la méthode).
+- Limite de tentatives de connexion partagée entre processus : configurer un cache commun (Redis ou base de données) si plusieurs processus serveur.
+- Fichiers statiques de l'administration servis par le proxy (`collectstatic`).
+- Comptes : inscription libre fermée (`AGRIA_ALLOW_SIGNUP=false`) tant que le pilote n'est pas défini ; comptes créés par `create_account`.
+- Données personnelles : informer les participants, définir la durée de conservation et l'accès (D-011, VALIDATION_TERRAIN §2).

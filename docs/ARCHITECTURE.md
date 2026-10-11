@@ -84,6 +84,7 @@ Compte ─┬─ Projet (profil débutant/producteur, is_demo)
 - Un avis porte sur la version que le conseiller a lue : l'interface envoie les versions affichées à l'ouverture du formulaire, et le serveur refuse l'avis (409) si une section du périmètre a changé entre-temps.
 - Un avis est « à réexaminer » dès qu'une section de son périmètre change de version (calcul, jamais de suppression). L'instantané conservé permet de relire exactement la version examinée.
 - Le statut du dossier est calculé : archivé, différé, revu (avec ou sans réserves, seulement si l'avis est à jour), en revue, à compléter, prêt pour une relecture, brouillon.
+- Une nouvelle campagne d'un projet peut reprendre les informations du lieu de la précédente, marquées « à revérifier » (un « vérifié » redevient « déclaré ») ; démarches, budget et résultats ne sont jamais recopiés.
 - Les montants du budget sont calculés par le serveur seul (`budget/calc.py`, en Decimal, sans flottant). Un budget avec un poste incomplet n'est jamais déclaré complet.
 
 ## 4. Accès et sécurité
