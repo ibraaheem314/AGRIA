@@ -20,7 +20,11 @@ Dernière analyse : 11/10/2026, après `git fetch` (lecture seule) du dépôt pu
 
 **Révocations confirmées par le propriétaire : aucune à ce jour.** Une clé absente du code n'est pas une clé révoquée. La validité des anciennes clés n'a pas été testée auprès des fournisseurs, et ne le sera pas.
 
-Branche `refonte/fondations` (courante), fichiers suivis et build actuel : **aucun secret trouvé**.
+Branche `refonte/fondations` (courante), fichiers suivis et build actuel : **aucun secret détecté parmi les valeurs connues et les motifs recherchés**. Ce résultat ne garantit pas l'absence de secrets inconnus.
+
+Limites du contrôle : les valeurs connues proviennent uniquement des fichiers locaux disponibles ; elles ne sont pas disponibles dans la CI. Les motifs ne couvrent pas tous les fournisseurs ni tous les formats. Un build absent est signalé comme non analysé. Les branches distantes sont les références déjà récupérées, pas une interrogation en direct de GitHub. L'historique n'est inclus qu'avec `--historique` et ses résultats sont signalés sans modifier le code de sortie.
+
+Les valeurs homonymes sont toutes conservées, y compris plusieurs définitions dans un même fichier. Le rapport identifie la source, la ligne et le nom de variable, jamais sa valeur.
 
 L'historique Git n'a pas été réécrit et les archives locales n'ont pas été supprimées. Une réécriture ne retirerait d'ailleurs ni les copies ni les clones existants : seule la révocation corrige l'exposition.
 

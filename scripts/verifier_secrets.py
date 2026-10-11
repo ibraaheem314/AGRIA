@@ -39,19 +39,22 @@ PATTERNS = {
 }
 
 
-def known_values() -> dict[str, bytes]:
+def known_values() -> list[tuple[str, bytes]]:
     sources = [ROOT / "backend" / ".env", *ROOT.glob(".local-archive/**/*.env")]
-    values: dict[str, bytes] = {}
+    values: list[tuple[str, bytes]] = []
     for source in sources:
         if not source.exists():
             continue
-        for line in source.read_text(encoding="utf-8", errors="replace").splitlines():
+        lines = source.read_text(encoding="utf-8", errors="replace").splitlines()
+        for number, line in enumerate(lines, start=1):
             if "=" not in line or line.lstrip().startswith("#"):
                 continue
             name, value = line.split("=", 1)
             value = value.strip().strip('"').strip("'")
             if len(value) >= 8 and not PLACEHOLDER.match(value):
-                values[f"{source.name}:{name.strip()}"] = value.encode()
+                # Conserver aussi les anciennes valeurs d'une variable répétée dans un fichier.
+                origin = f"{source.relative_to(ROOT).as_posix()}:{number}:{name.strip()}"
+                values.append((origin, value.encode()))
     return values
 
 
@@ -64,8 +67,10 @@ def git(*args: str) -> bytes:
     ).stdout
 
 
-def scan_blob(label: str, data: bytes, values: dict[str, bytes], findings: list[str]) -> None:
-    for name, value in values.items():
+def scan_blob(
+    label: str, data: bytes, values: list[tuple[str, bytes]], findings: list[str]
+) -> None:
+    for name, value in values:
         if value in data:
             findings.append(f"{label} : valeur de {name}")
     for name, pattern in PATTERNS.items():
@@ -90,7 +95,8 @@ def main() -> int:
 
     values = known_values()
     print(
-        f"Valeurs connues chargées : {len(values)} (noms seulement : {', '.join(sorted(values))})"
+        f"Valeurs connues chargées : {len(values)} "
+        f"(origines et noms seulement : {', '.join(sorted(name for name, _ in values))})"
     )
     findings: list[str] = []
 
@@ -131,7 +137,11 @@ def main() -> int:
     for line in sorted(set(history)):
         print(f"HISTORIQUE  {line}")
     if not findings:
-        print("Aucun secret dans les fichiers suivis, la branche courante ni le build.")
+        print("Aucun secret détecté dans le périmètre bloquant analysé.")
+    print("Les autres branches et l'historique éventuel sont signalés séparément.")
+    print(
+        "Ce contrôle ne garantit pas l'absence de secrets inconnus ou non couverts par ces motifs."
+    )
     return 1 if findings else 0
 
 
