@@ -243,3 +243,9 @@ Ces lots ne modifient pas le périmètre fonctionnel. Ils sécurisent l'environn
 Obstacles rencontrés et levés : l'installateur attendait une élévation UAC pour le lanceur `py.exe` global (installation relancée sans ce lanceur) ; Git Bash convertissait `/quiet` en chemin (installateur relancé depuis PowerShell) ; `cmd.exe` refusait le chemin relatif du Python dans la configuration Playwright (chemin absolu).
 
 Retour arrière possible : `backend/.venv-py310` conservé jusqu'à validation par le propriétaire ([DEMARRAGE.md](DEMARRAGE.md)). CI GitHub : configurée sur 3.12, **non exécutée**.
+
+## Lot 3 — Préparer la vérification distante (11/10/2026)
+
+- CI : actions passées de v4/v5 (exécutées sous Node 20, en fin de vie depuis avril 2026) à v6 (Node 24, version éprouvée) ; droits en lecture seule ; délais maximaux par job ; analyse des motifs de secrets ajoutée au job backend. YAML validé localement.
+- Cohérence avec le local : mêmes contrôles que `scripts/dev.py check --e2e`. Aucune base de travail ni aucun secret métier n'est nécessaire (147 tests réussis avec une base de travail inexistante ; aucun secret GitHub référencé).
+- Résumé de PR : [RESUME_PR.md](RESUME_PR.md). **CI distante non exécutée.**
