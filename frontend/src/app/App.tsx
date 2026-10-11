@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router'
+import { BudgetPage } from '../features/budget/BudgetPage'
 import { LoginPage } from '../features/auth/LoginPage'
 import { RegisterPage } from '../features/auth/RegisterPage'
 import { DossierLayout } from '../features/dossiers/DossierLayout'
@@ -30,6 +31,7 @@ export function App() {
               <Route index element={<TodayPage />} />
               <Route path="projet" element={<ProjectPage />} />
               <Route path="projet/:factKey" element={<FactEditPage />} />
+              <Route path="projet/budget" element={<BudgetPage />} />
               <Route path="plan" element={<PlanPage />} />
               <Route path="plan/:actionId" element={<ActionPage />} />
             </Route>

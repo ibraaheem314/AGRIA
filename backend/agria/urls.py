@@ -3,6 +3,7 @@ from django.urls import path
 
 from accounts import api as accounts_api
 from agria.health import health
+from budget import api as budget_api
 from dossiers import api as dossiers_api
 from preparation import api as preparation_api
 
@@ -37,5 +38,13 @@ urlpatterns = [
     path(
         "api/dossiers/<int:campaign_id>/actions/<int:action_id>/historique",
         preparation_api.action_history,
+    ),
+    # Budget provisoire
+    path("api/dossiers/<int:campaign_id>/budget", budget_api.budget),
+    path("api/dossiers/<int:campaign_id>/budget/historique", budget_api.budget_history),
+    path("api/dossiers/<int:campaign_id>/budget/postes/<int:line_id>", budget_api.budget_line),
+    path(
+        "api/dossiers/<int:campaign_id>/budget/postes/<int:line_id>/retirer",
+        budget_api.budget_line_remove,
     ),
 ]

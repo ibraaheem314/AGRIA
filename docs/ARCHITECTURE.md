@@ -28,6 +28,7 @@ backend/
   dossiers/       projet, campagne (= dossier), informations et leur historique, attribution conseiller, règles d'accès
   preparation/    modèles de contenu versionnés, calcul des points à vérifier, plan et démarches
     content/      fichiers JSON des modèles (source de vérité, relus dans Git)
+  budget/         postes, calcul pur des montants et totaux (calc.py), historique
   tests/          tests pytest par brique
 frontend/
   src/app/        routage, mise en page, garde de connexion
@@ -37,7 +38,7 @@ frontend/
 scripts/dev.py    base locale, .env, sauvegarde/restauration, contrôles, serveur de parcours
 ```
 
-Prévu : modules `budget` (brique 4) et `reviews` (brique 5), sur le même modèle.
+Prévu : module `reviews` (brique 5), sur le même modèle.
 
 ## 3. Modèle de données
 
@@ -49,6 +50,8 @@ Compte ─┬─ Projet (profil débutant/producteur, is_demo)
         │           ├─ Plan (modèle de préparation figé pour ce dossier, plan_version)
         │           │     └─ Démarche (état, motif de blocage, résultat + date, prérequis, row_version)
         │           │           └─ Évènement de démarche (ajout seul)
+        │           ├─ Poste de budget (catégorie, quantité, unité, prix FCFA, état du prix, source, date, retiré)
+        │           │     └─ Évènement de budget (ajout seul, état complet du poste)
         │           └─ Attribution conseiller (active ou close, jamais effacée)
         └─ Modèle de préparation (code, version, contenu JSON, empreinte SHA-256, statut de relecture)
 ```
@@ -65,6 +68,8 @@ Compte ─┬─ Projet (profil débutant/producteur, is_demo)
 | Une requête de création rejouée ne crée rien de plus | `*_unique_request` |
 | Une version de modèle est unique | `template_unique_version` |
 | Un conseiller n'a qu'une attribution active par dossier | `assignment_one_active_per_advisor` |
+| Prix « manquant » si et seulement si aucun prix n'est saisi | `budget_missing_iff_no_price` |
+| Prix « connu » ⇒ source et date ; « estimé » ⇒ source | `budget_known_has_source_and_date`, `budget_estimate_has_source` |
 
 ### Invariants garantis par le code et vérifiés par des tests
 
@@ -72,6 +77,7 @@ Compte ─┬─ Projet (profil débutant/producteur, is_demo)
 - Une modification d'information ajoute, dans la même transaction, les démarches devenues nécessaires. Elle ne modifie, ne supprime et ne recrée jamais une démarche existante.
 - Un modèle chargé est immuable : recharger une même version avec un contenu différent est refusé. Un dossier garde la version du modèle avec laquelle son plan a été créé.
 - Une démarche ne peut être terminée tant qu'un de ses prérequis, présent dans le plan, n'est pas terminé.
+- Les montants du budget sont calculés par le serveur seul (`budget/calc.py`, en Decimal, sans flottant). Un budget avec un poste incomplet n'est jamais déclaré complet.
 
 ## 4. Accès et sécurité
 

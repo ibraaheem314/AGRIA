@@ -1,5 +1,7 @@
 import { Link } from 'react-router'
-import { Badge, Card, PageTitle } from '../../shared/ui'
+import { Alert, Badge, Card, Loading, PageTitle } from '../../shared/ui'
+import { useBudget } from '../budget/api'
+import { budgetSentence } from '../budget/BudgetPage'
 import { formatDateTime } from '../../shared/format'
 import type { Dossier, FactItem } from './api'
 import { describeValue, STATUS_LABEL, STATUS_TONE } from './factDisplay'
@@ -33,6 +35,8 @@ export function ProjectPage() {
           Un dossier complet n'est pas une garantie de faisabilité : il rend visibles ce qui est connu et ce qui reste à vérifier.
         </p>
       </Card>
+
+      <BudgetCard dossierId={dossier.id} />
 
       {dossier.sections.map((section) => {
         const items = dossier.facts.filter((f) => f.section === section.key)
@@ -83,6 +87,25 @@ function FactRow({ fact, dossierId, editable }: { fact: FactItem; dossierId: num
           <span className="sr-only"> : {fact.label}</span>
         </Link>
       </p>
+    </Card>
+  )
+}
+
+export function BudgetCard({ dossierId }: { dossierId: number }) {
+  const budget = useBudget(dossierId)
+  return (
+    <Card>
+      <h2 className="font-semibold">Budget provisoire</h2>
+      {budget.isPending && <Loading />}
+      {budget.isError && <Alert tone="danger">Budget indisponible : {budget.error.message}</Alert>}
+      {budget.data && (
+        <p className={`mt-1 ${budget.data.totals.overall.status === 'incomplet' ? 'text-warn-700' : ''}`}>
+          {budgetSentence(budget.data.totals.overall)}
+        </p>
+      )}
+      <Link to={`/d/${dossierId}/projet/budget`} className="mt-2 inline-block font-medium text-brand-700 underline">
+        Voir le budget provisoire
+      </Link>
     </Card>
   )
 }

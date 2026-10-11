@@ -15,7 +15,7 @@ Légende des niveaux de preuve, à ne pas confondre :
 | 1 — Socle exécutable | Terminée | Ci-dessous |
 | 2 — Identité, projet, campagne | Terminée | Ci-dessous |
 | 3 — Vérifications et plan d'action | Terminée | Ci-dessous |
-| 4 — Budget transparent | À faire | |
+| 4 — Budget transparent | Terminée | Ci-dessous |
 | 5 — Conseiller, relecture, synthèse | À faire | |
 | 6 — Parcours complet et polissage | À faire | |
 | 7 — Recette et passation | À faire | |
@@ -103,3 +103,25 @@ Légende des niveaux de preuve, à ne pas confondre :
 **Reste incomplet :** le contenu n'est relu par aucun spécialiste ; aucune notification d'échéance ; un nouveau modèle ne se propage pas aux dossiers existants (choix volontaire, D-026).
 
 **Décisions :** D-025 à D-027.
+
+## Brique 4 — Budget transparent (11/10/2026)
+
+**Fonctionne :**
+
+- Postes : investissement ou dépense de campagne, libellé, quantité (3 décimales au plus, virgule acceptée), unité parmi 12, prix unitaire en FCFA entiers (« 15 000 » accepté), état du prix (connu, estimé, manquant), source, date, « déjà détenu », remarques.
+- Règles en base : manquant ⇔ pas de prix ; « connu » ⇒ source et date ; « estimé » ⇒ source ; quantité > 0.
+- Synthèse serveur : total des prix connus, des estimations, des postes chiffrés ; nombre de postes incomplets ; statut vide, incomplet, complet avec estimations ou complet ; même découpage par catégorie. La somme disponible du dossier est affichée à côté, sans conclusion.
+- Retrait sans effacement, historique complet, reprise et conflit gérés comme pour les autres objets.
+- Écran « Budget provisoire » (sous Mon projet), règles de calcul affichées, carte budget sur Mon projet et Aujourd'hui.
+
+**Vérifications exécutées :**
+
+| Vérification | Résultat |
+|---|---|
+| `pytest` | 123/123, dont 53 pour la brique 4. Calcul pur : 7 cas d'arrondi (dont 2,5 × 3 = 8 et 1,001 × 999 = 1 000, et de très grands montants sans dépassement), somme des montants arrondis, poste incomplet, estimations, poste détenu, budget vide, catégories, saisies valides et invalides. API : 11 refus avec le champ fautif, reprise sans doublon, conflit, retrait historisé, poste retiré non modifiable, permissions |
+| Playwright | 12/12 (ordinateur et téléphone). Parcours budget : refus d'un prix connu sans date (saisie conservée), réponse perdue puis reprise (un seul poste), phrase « Budget incomplet… ce n'est pas le coût total », retrait visible dans l'historique |
+| `python scripts/dev.py check --e2e` | Tout passe |
+
+**Reste incomplet :** pas de conversion entre unités (chaque prix est exprimé par l'unité de son poste) ; pas d'import de devis ni de pièce jointe ; pas d'hypothèses de recettes (hors périmètre de la version initiale).
+
+**Décisions :** D-028, D-029.

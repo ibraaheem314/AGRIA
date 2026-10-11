@@ -2,7 +2,7 @@ import { Link } from 'react-router'
 import { Alert, Badge, Card, Loading, PageTitle } from '../../shared/ui'
 import { usePreparation } from '../plan/api'
 import { useCurrentDossier } from './DossierLayout'
-import { factCounts } from './ProjectPage'
+import { BudgetCard, factCounts } from './ProjectPage'
 
 /** Accueil : où en est mon projet, quelle est ma prochaine action, sur quoi ai-je besoin d'aide ? */
 export function TodayPage() {
@@ -78,6 +78,8 @@ export function TodayPage() {
           <p className="mt-2 text-sm text-muted">Un point bloquant suspend l'étape concernée, pas nécessairement tout le projet.</p>
         </Card>
       )}
+
+      <BudgetCard dossierId={dossier.id} />
 
       <Card>
         <h2 className="font-semibold">Mon dossier</h2>

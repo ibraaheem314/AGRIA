@@ -49,6 +49,8 @@ class Campaign(models.Model):
     label = models.CharField("intitulé", max_length=120)
     # Version du contexte : augmente à chaque modification d'une information.
     context_version = models.PositiveIntegerField(default=0)
+    # Version du budget : augmente à chaque ajout, modification ou retrait de poste.
+    budget_version = models.PositiveIntegerField(default=0)
     archived_at = models.DateTimeField(null=True, blank=True)
     client_request_id = models.UUIDField(null=True, blank=True, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
