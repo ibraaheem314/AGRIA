@@ -1,105 +1,64 @@
 # Roadmap AGRIA
 
-Mise à jour : 11 octobre 2026, après clarification des deux profils utilisateurs.
-Phase actuelle : **fondations logicielles livrées (F1–F6 implémentées et vérifiées par tests) ; validation terrain G1 à lancer**.
-Cette version remplace le choix initial irrigation/conservation comme porte d'entrée.
+Mise à jour : 11 octobre 2026 (préparation du pilote). Promesse à tester : *AGRIA aide une personne à préparer sa prochaine campagne agricole, identifier ce qui lui manque et organiser ses démarches avec un conseiller.*
 
-## Statuts et calendrier
+## Où en est le projet
 
-À faire = non réalisé ; conditionnel = dépend d'un jalon ; terminé = preuve liée.
-J0 est le lancement effectif de l'enquête, encore non daté. Les fenêtres ci-dessous sont indicatives, sans estimation contractuelle de développement.
+| Niveau | État | Preuve ou référence |
+|---|---|---|
+| Fondations techniques (F1–F6) | **Livrées** sur `refonte/fondations` | [AVANCEMENT.md](docs/AVANCEMENT.md), briques 0 à 7 |
+| Contrôles exécutés | **Locaux uniquement**, sur Python 3.12 : 148 tests backend, 29 parcours navigateur, recette réelle de redémarrage et de restauration, analyse des secrets | [AVANCEMENT.md](docs/AVANCEMENT.md), lots 2, 3 et 5 |
+| CI GitHub | Configurée, **jamais exécutée** (aucun envoi) | [RESUME_PR.md](docs/RESUME_PR.md) |
+| Préparation du terrain | **Kit G1 et protocole G2 prêts**, non exécutés | [VALIDATION_TERRAIN.md](docs/VALIDATION_TERRAIN.md) |
+| Validation terrain | **Non réalisée** : aucun entretien, participant, conseiller ni contenu relu | — |
+| Mise en service | **Non réalisée** : aucun hébergement, aucun accès à distance | [SECURITE.md](docs/SECURITE.md) §5 |
+| Sécurité | Clés exposées publiquement ; **aucune révocation confirmée** | [SECURITE.md](docs/SECURITE.md) §1–2 |
 
-Le fondateur porte le produit et la technique ; conseiller et relais local restent à identifier. La documentation est livrée, pas les corrections applicatives.
+**Le pilote n'est pas prêt à démarrer** : il manque les révocations, les résultats de G1, un conseiller, un contenu relu et les plafonds de G2. Le kit permet de commencer G1 dès que le fondateur fixe J0.
 
-## Trajectoire
+## Prochaines étapes
 
-| Jalon | Fenêtre indicative | Livrable | Condition de passage |
-|---|---|---|---|
-| G0 — Préserver et contenir | Dès maintenant, en parallèle | État récupérable, secrets et démonstration assainis | P0 corrigés avant usage réel du logiciel |
-| G1 — Valider le parcours | J0 à J0 + 3 semaines | Fiche de préparation éprouvée, zone/culture et groupe pilote | Besoin concret, accès aux participants et conseiller, alternative et payeur examinés |
-| G2 — Tester le service manuellement | Après G1, durée fixée au protocole | Quelques dossiers accompagnés et bilan | Démarches utiles, relecture possible, coût et intérêt de poursuite documentés |
-| G3 — Construire la version minimale | Après signal utile G2 | F1–F6 du cahier des charges | Recette fonctionnelle, permissions, persistance et récupération validées |
-| G4 — Tester le produit | Après G3 | Usage réel des mêmes parcours et bilan de service | Utilisation, qualité, coûts et engagement de poursuite suffisants |
-| G5 — Étendre avec preuve | Après G4 positif | Suivi de campagne ou second contexte comparable | Besoin récurrent et service reproductible |
+Dans l'ordre. Une étape ne commence que si ses dépendances sont satisfaites.
 
-Les prototypes de parcours et corrections de sécurité peuvent avancer avant G2 ; une intégration capteur ou un moteur agronomique ne sont pas des prérequis.
+| # | Étape et objectif | Responsable | Dépendances | Preuve attendue | Condition de sortie |
+|---|---|---|---|---|---|
+| E1 | Révoquer les clés exposées et changer le mot de passe email | Propriétaire des comptes | Aucune | Registre de [SECURITE.md](docs/SECURITE.md) §2 rempli (date, fournisseur, action), sans valeur | Toutes les lignes « à effectuer » sont confirmées par le propriétaire |
+| E2 | Valider Python 3.12 sur le poste, puis supprimer `backend/.venv-py310` | Fondateur | Aucune | `dev.py check --e2e` et `recette.py` réussis sur le poste | Ancien environnement supprimé |
+| E3 | Décider d'envoyer la branche et faire tourner la CI | Propriétaire | E1 recommandé ; `verifier_secrets.py` réussi | Exécution GitHub des trois jobs | Trois jobs verts. Fusion selon [RESUME_PR.md](docs/RESUME_PR.md), conflit README résolu |
+| E4 | Fixer J0, les seuils de G1 et les plafonds de temps et de dépenses | Fondateur | Aucune | D-011 renseigné ; seuils écrits dans VALIDATION §6 | Valeurs consignées avant le premier contact |
+| E5 | Enquête G1 : recrutement et entretiens | Fondateur | E4 | Fiches d'entretien privées ; tableau de suivi anonymisé ; synthèse sans données personnelles | Objectif indicatif atteint (5 débutants, 5 producteurs, 2 conseillers), ou arrêt motivé selon la règle fixée en E4 |
+| E6 | Décision de fin de G1 | Fondateur, avec l'avis d'un conseiller | E5 | Fiche §6 remplie avec des identifiants d'entretien ; D-014 consigné | « Poursuivre », « recentrer » ou « arrêter » consigné avec sa date de réexamen |
+| E7 | Relecture du contenu et publication de la v2 relue | Conseiller ou relecteur désigné, puis technique | E6 (zone, culture) | `preparation-generique.v2.json` avec relecteur et date ; `load_content` et tests réussis | v2 chargée ; dossiers réels créés seulement ensuite (D-042) |
+| E8 | Choisir le mode de données de G2 | Fondateur | E6 | Décision consignée : papier ou application locale supervisée (prérequis de VALIDATION §7.5 vérifiés) | Mode consigné avant le premier dossier |
+| E9 | *(Seulement si un accès à distance est indispensable)* Mise en service | Technique et propriétaire | E1, D-006, décision d'hébergement et de budget | Liste de [SECURITE.md](docs/SECURITE.md) §5 cochée ; restauration testée sur l'environnement cible | Accès à distance autorisé par une décision consignée |
+| E10 | G2 : environ trois dossiers réels accompagnés | Fondateur, conseiller, participants | E6, E7, E8 (et E9 si distant) | Journal de temps et de coûts, indicateurs de VALIDATION §8, synthèses remises aux participants | Bilan et décision selon VALIDATION §7.7 |
 
-## G0 — Technique immédiate
+Après E10 : décider s'il faut consolider, corriger, prolonger avec une limite ou arrêter. Le suivi de campagne et toute extension ne s'envisagent qu'après un bilan G2 favorable.
 
-Statut : fait dans le dépôt le 11/10/2026, sauf la révocation des clés (action externe).
+## Idées différées
 
-- [x] T0 : travail non commité préservé (`fba4f93`, branche `archive/prototype-2026-10-11`).
-- [ ] T1 : clés retirées du code et des builds ; **révocation chez les fournisseurs à faire par le titulaire** ([SECURITE.md](docs/SECURITE.md) §3).
-- [x] T2 : faux succès, chiffres et conseils de démonstration retirés avec l'ancien prototype.
-- [x] T3/T5 : installation reproductible, lint, typecheck, tests, build et CI écrite (non exécutée).
+Aucune n'est à développer maintenant. Chacune se réexamine sur preuve, avec une décision consignée.
 
-Voir le [plan de refonte](docs/PLAN_REFONTE.md). Les entretiens ne dépendent pas du fonctionnement du prototype.
+| Idée | Problème visé | Preuve nécessaire pour la réexaminer |
+|---|---|---|
+| Notifications (SMS, email, WhatsApp) | Une demande ou une question reste sans réponse faute d'alerte | Journal G2 montrant des retards de réponse dus à l'absence d'alerte |
+| Connexion par numéro de téléphone | Des participants n'ont pas d'email | Entretiens G1 (partie G) ou difficultés notées en G2 |
+| Récupération du mot de passe par email | Comptes bloqués | Cas répétés en G2 malgré l'assistance |
+| Mode hors connexion | Saisie impossible sur le terrain | Séances G2 interrompues par le réseau, alors que le mode papier ne suffit pas |
+| Wolof ou explications audio | Explications écrites incomprises | Entretiens et observations G2 |
+| Reformulation assistée par IA d'un contenu relu | Explications trop difficiles | Difficulté constatée en G2 et contenu relu disponible ; jamais pour décider |
+| Météo ou données environnementales | Une décision de préparation dépend d'une donnée climatique | Démarche G2 bloquée faute de cette donnée |
+| Suivi de campagne (journal, dépenses réelles, bilan) | Écart entre prévu et réalisé | Demandes répétées des participants après G2 |
+| Pièces justificatives (photos, devis) | Preuve d'une démarche | Conseiller ne pouvant pas vérifier un résultat en G2 |
+| Migration explicite d'un dossier vers une nouvelle version du contenu | Dossier en cours bloqué sur une version obsolète | Cas réel en pilote ; outil explicite et tracé, jamais silencieux |
+| Conversion entre unités du budget | Prix exprimés dans d'autres unités | Erreurs de saisie observées en G2 |
 
-## G1 — Enquête et fiche commune
+## Hors périmètre
 
-Statut : à faire ; aucun contact confirmé.
-
-- Semaine 1 : trouver 5 débutants avec projet concret, 5 producteurs peu accompagnés et 2 conseillers, comme objectif indicatif.
-- Semaine 2 : reconstituer leurs dernières démarches, problèmes, alternatives et dépenses de préparation.
-- Semaine 3 : tester une même fiche de préparation ; choisir zone, culture, groupe et conseiller pour quelques dossiers réels.
-
-Ces nombres ne constituent pas un échantillon représentatif. Si les deux profils ont des besoins différents, choisir un seul parcours de lancement au lieu de développer deux produits.
-
-Critères : difficulté documentée, démarche modifiable, participants accessibles, conseil disponible, contenu local vérifiable, méthode d'évaluation, payeur potentiel. Ne pas assimiler intérêt oral et demande payante.
-
-À inscrire dans D-014 : filière, culture, zone, groupe prioritaire et canal. L'absence de participants entraîne une recherche ciblée ou une révision de l'hypothèse, pas plus de développement.
-
-## G2 — Service manuel
-
-Statut : conditionnel à G1.
-
-- [ ] Fixer le protocole, les dépenses maximales et le temps disponible.
-- [ ] Définir le résultat attendu avant de tester : informations clarifiées, démarches effectuées et décision de lancement.
-- [ ] Accompagner environ 3 dossiers, nombre indicatif à adapter avec le conseiller.
-- [ ] Produire contexte, vérifications, plan, budget incomplet si nécessaire, relecture et synthèse.
-- [ ] Mesurer temps par dossier, blocages, qualité des informations et engagement de poursuite.
-- [ ] Décider de continuer, corriger, prolonger avec limite ou arrêter.
-
-Le pilote manuel ne requiert pas de déployer l'ancienne application. Données privées dans un espace adapté, accès convenu, aucune coordonnée personnelle publiée dans Git.
-
-## G3 — Version minimale fiable
-
-Statut : **tranches logicielles réalisées en avance de G1/G2, sur instruction du fondateur (11/10/2026)**. Elles sont
-implémentées et vérifiées par tests, mais pas validées sur le terrain. Le passage G3 → G4 reste conditionné à un
-contenu relu, un conseiller, des participants et un hébergement décidé (D-006). Détail : [AVANCEMENT.md](docs/AVANCEMENT.md).
-
-Tranches prévues (toutes réalisées) :
-
-1. T4 + F1 : accès et dossier durable, contrôlés avec deux comptes.
-2. F2 + F3 : contenu local versionné, revue des conditions et plan d'action.
-3. F4 : budget explicite et calculs testés.
-4. F5 + F6 : attribution conseiller, commentaires, historique et synthèse.
-5. T8 : parcours téléphone, erreur réseau, reprise et recette complète.
-
-L'interface peut être préparée avec des exemples clairement étiquetés avant le pilote. Aucune date de livraison ne devient ferme avant estimation de ces tranches.
-
-## G4 — Bilan produit
-
-Évaluer séparément débutants et producteurs actifs : utilité des démarches, décisions documentées, complétude réelle, temps de conseil, coût et poursuite.
-
-| Constat | Suite |
-|---|---|
-| Service utile et engagement concret avec coût soutenable | Consolider |
-| Besoin réel mais erreurs ou parcours corrigeables | Corriger puis vérifier |
-| Résultats insuffisants | Prolongation bornée ou arrêt |
-| Service peu utile, conseil indisponible ou absence de payeur plausible | Revoir le modèle ou arrêter |
-
-Ni un dossier rempli ni un abonnement envisagé ne prouvent un gain de rendement.
-
-## Hors périmètre initial
-
-Marketplace, réseau social, formation généraliste, chatbot ouvert, diagnostic photo autonome, capteurs, automatisation, satellite, crédit/paiement, plusieurs pays et plusieurs filières.
-
-Les capteurs peuvent rester un apprentissage personnel limité, sans dépendance dans la livraison du produit.
+Capteurs ou plateforme IoT, chatbot généraliste, marketplace, paiement, crédit ou assurance, prévision de rendement, application mobile native, architecture distribuée, extension géographique ou multi-filières, refonte visuelle générale.
 
 ## Revue hebdomadaire
 
-Noter phase, preuve nouvelle, tâche livrée, coût/temps, risque, prochaine action/responsable/échéance et décision éventuelle.
-Limiter le travail simultané à une enquête/service et une tâche technique utile.
+Noter l'étape en cours, les preuves nouvelles, le temps et les dépenses, les risques, la prochaine action avec son responsable et son échéance, et les décisions. Limiter le travail en parallèle à une étape de terrain et une tâche technique directement utile.
 
-Références : [produit](docs/PRODUIT.md), [protocole](docs/VALIDATION_TERRAIN.md), [décisions](docs/DECISIONS.md).
+Références : [produit](docs/PRODUIT.md), [stratégie](docs/STRATEGIE.md), [terrain](docs/VALIDATION_TERRAIN.md), [décisions](docs/DECISIONS.md), [avancement](docs/AVANCEMENT.md).

@@ -16,10 +16,10 @@ Remplacer le prototype (marketing, chatbot, météo, données fictives, clés da
 
 | Contrôle | Résultat |
 |---|---|
-| `scripts/dev.py check --e2e` (Python 3.12.10) | ruff, format, migrations à jour, 147 pytest, eslint, TypeScript, build, 29 parcours Playwright (1 ignoré : clavier sur téléphone) |
+| `scripts/dev.py check --e2e` (Python 3.12.10) | ruff, format, migrations à jour, 148 pytest, eslint, TypeScript, build, 29 parcours Playwright (1 ignoré : clavier sur téléphone) |
 | `scripts/recette.py` | Redémarrage réel, sauvegarde puis restauration : OK |
 | `scripts/verifier_secrets.py` | Aucun secret dans la branche ni dans le build |
-| Tests avec une base de travail inexistante (`DB_NAME=agria_inexistante`) | 147 réussis : aucune base de travail ni aucun secret métier n'est nécessaire |
+| Tests avec une base de travail inexistante (`DB_NAME=agria_inexistante`) | 147 réussis au lot 3 (148 depuis le test ajouté au lot 5) : aucune base de travail ni aucun secret métier n'est nécessaire |
 | Workflow `.github/workflows/ci.yml` | YAML validé localement. **Jamais exécuté sur GitHub** |
 
 ## Points d'attention pour la fusion

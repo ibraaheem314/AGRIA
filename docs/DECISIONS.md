@@ -50,3 +50,51 @@ Ce registre distingue le cap convenu, les recommandations d'architecture et les 
 | D-040 | Acté (11/10/2026) | Données de terrain (identités, téléphones, notes nominatives, fiches remplies) **jamais dans le dépôt** : espace privé du fondateur (`terrain-prive/`, ignoré par Git). Le dépôt ne contient que des modèles vierges et des synthèses anonymisées | Dépôt public ; respect des participants (VALIDATION_TERRAIN §0) |
 | D-041 | Acté (11/10/2026) | G2 se déroule sur papier ou dans l'application **locale supervisée** ; tout accès à distance à des données réelles est bloqué tant que SECURITE §5 (hébergement, HTTPS, sauvegardes, restauration) n'est pas rempli | Aucun hébergement décidé (D-006) ; protection des données des participants |
 | D-042 | Acté (11/10/2026) | Une version relue du contenu ne s'applique qu'aux dossiers créés après sa publication ; aucune migration automatique. Les dossiers réels du pilote sont créés **après** la publication de la v2 relue | Comportement vérifié par un test ; évite de présenter d'anciennes règles comme relues, ou de réécrire un historique |
+
+## Décisions à ne pas rouvrir par défaut
+
+Le choix du nom AGRIA, du pays initial et l'absence de marketplace au lancement ne nécessitent pas une nouvelle discussion à chaque tâche technique.
+
+Les corrections réversibles et les travaux déjà autorisés peuvent avancer dans le périmètre demandé. Ce document n'ajoute pas de circuit d'approbation à ces travaux.
+
+Une nouvelle dépense, un contact externe, une publication ou un déploiement ne sont pas autorisés par le seul fait de les mentionner ici. Les instructions effectives du fondateur définissent l'autorisation.
+
+## Registre des inconnues
+
+Mis à jour le 11/10/2026. Chaque inconnue renvoie à l'étape de la [roadmap](../ROADMAP.md) qui doit la lever.
+
+| Inconnue | Conséquence | Moyen de résolution |
+|---|---|---|
+| Profil prioritaire, zone, culture, problème précis | Premier usage non choisi | G1 : entretiens et fiche de décision (E5, E6) |
+| Difficulté réelle de préparation | Proposition de valeur non établie | G1 : démarches, blocages et accompagnements actuels documentés |
+| Capacité à effectuer les démarches | Risque d'un dossier rempli sans effet | G2 : démarches réellement réalisées, avec preuve (E10) |
+| Payeur et disposition à payer | Viabilité commerciale inconnue | G1 (partie H), puis engagement écrit ou paiement en G2 |
+| Conseiller et relecteur du contenu | Contenu non relu ; aucun avis possible | G1, puis relecture et publication de la v2 (E7) |
+| Plafonds de temps et de dépenses, date J0 | Calendrier et dépenses non engageables | D-011 (E4) |
+| Connectivité, langue, équipement des participants | Mode de G2 incertain | G1 (partie G), choix du mode de données (E8) |
+| Hébergement | Pas d'accès à distance possible | D-006, seulement si nécessaire (E9) |
+| Révocation des clés exposées | Exposition publique confirmée ; **révocation non confirmée** | Propriétaire des comptes (E1, SECURITE §2) |
+| Exécution de la CI distante | Contrôles prouvés en local seulement | Envoi de la branche décidé par le propriétaire (E3) |
+
+## Historique du changement de cap
+
+Le premier cadrage partait de l'expertise environnementale du fondateur et comparait irrigation et conservation. Le fondateur a précisé son intention d'aider à la fois des débutants avec projet concret et des exploitants peu accompagnés. Le 11 octobre 2026, D-003 a donc été supersédé : l'enquête valide désormais la préparation d'une campagne et le groupe de lancement. Aucune des anciennes pistes n'est traitée comme un produit supplémentaire à développer.
+
+## Format de décision après enquête
+
+- ID et date :
+- Responsable :
+- Question :
+- Preuves et liens (identifiants d'entretien, jamais de noms) :
+- Options comparées, y compris la pratique actuelle :
+- Choix et raison :
+- Hypothèses restantes :
+- Conséquences produit, techniques et budgétaires :
+- Condition et date de réexamen :
+- Documents mis à jour :
+
+## Revue et idées nouvelles
+
+La revue hebdomadaire suit la [roadmap](../ROADMAP.md). Une idée nouvelle va dans sa liste d'idées différées, avec le problème visé et la preuve nécessaire ; elle n'interrompt pas le travail engagé.
+
+*Note (11/10/2026) : ces sections avaient été supprimées par erreur lors de la brique 2 (commit `bae79c1`), à cause d'un script d'insertion de lignes. Elles sont restaurées depuis `6c57838`, avec un registre des inconnues actualisé.*

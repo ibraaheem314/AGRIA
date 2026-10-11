@@ -33,7 +33,7 @@ Légende des niveaux de preuve, à ne pas confondre :
 - Recherche des 13 valeurs secrètes des `.env` dans tout l'historique Git et dans les fichiers à archiver ; seuls les noms de variables ont été affichés. Résultat : clés OpenWeather et Agromonitoring présentes dans l'historique public. Aucune valeur secrète dans les fichiers archivés.
 - Liste des fichiers ignorés avant le commit : `.env`, `api/.env`, `api/api.log`, `dist/`, `node_modules/` (exclus comme prévu).
 
-**Reste incomplet :** révocation des clés chez les fournisseurs (action externe, voir [SECURITE.md](SECURITE.md) §3).
+**Reste incomplet :** révocation des clés chez les fournisseurs (action externe, voir [SECURITE.md](SECURITE.md) §2).
 
 **Décisions :** archive sur une branche plutôt qu'un stash, plus visible et poussable sur demande. Pas de réécriture de l'historique (non autorisée).
 
@@ -211,7 +211,7 @@ Tous les scénarios ont été exécutés le 11/10/2026 sur le poste de développ
 
 ### Limites restantes (à traiter avant un pilote)
 
-1. **Révocation des clés** exposées : action externe du titulaire des comptes ([SECURITE.md](SECURITE.md) §3).
+1. **Révocation des clés** exposées : action externe du titulaire des comptes ([SECURITE.md](SECURITE.md) §2).
 2. **Contenu non relu** : le modèle de préparation doit être relu par un conseiller, puis publié en v2 avec relecteur et date.
 3. **Hébergement non décidé** (D-006) : HTTPS, sauvegardes automatiques, cache partagé pour la limite de tentatives ([SECURITE.md](SECURITE.md) §5).
 4. **Aucune validation terrain** : enquête G1, choix de zone, culture et conseiller, consentement et conservation des données.
@@ -261,3 +261,19 @@ Retour arrière possible : `backend/.venv-py310` conservé jusqu'à validation p
 
 - [VALIDATION_TERRAIN.md](VALIDATION_TERRAIN.md) §7–10 : conditions d'entrée issues de G1, relecture et publication du contenu, rôles, durée et plafonds (à fixer), trois modes de données (accès à distance bloqué), pratique initiale de comparaison, critères de suite, indicateurs avec définitions (intérêt verbal, engagement écrit et paiement distingués), économie du service.
 - Versionnement du contenu **vérifié par un test** : une v2 relue ne touche pas les dossiers existants (règles, statut « non relu », démarches et historique conservés) et s'applique aux nouveaux dossiers. Aucune migration automatique. Décisions D-041 et D-042.
+
+## Lot 6 — Documentation alignée et transmission (11/10/2026)
+
+- README et ROADMAP distinguent : fondations livrées, contrôles exécutés en local, CI distante non exécutée, préparation du terrain prête, validation terrain non réalisée, mise en service non réalisée. La roadmap donne pour chaque étape (E1 à E10) l'objectif, le responsable, les dépendances, la preuve attendue et la condition de sortie, ainsi que la liste des idées différées.
+- Consignes devenues fausses corrigées : cible « confirmée » devenue « retenue, à comparer » (STRATEGIE), renvois vers SECURITE §2, plan de refonte marqué comme historique.
+- **Défaut documentaire corrigé :** 5 sections de DECISIONS.md (décisions à ne pas rouvrir, registre des inconnues, historique du changement de cap, format de décision, revue) avaient été supprimées par erreur lors de la brique 2 (`bae79c1`). Elles sont restaurées, avec un registre des inconnues à jour. Aucun autre document n'est touché (titres de section comparés à l'archive).
+
+### Contrôles finaux (11/10/2026, Python 3.12.10)
+
+| Commande | Résultat |
+|---|---|
+| `backend\.venv\Scripts\python scripts\dev.py check --e2e` | ruff, format, migrations à jour, **148 pytest**, eslint, TypeScript, build ; Playwright **29 réussis**, 1 ignoré (clavier sur téléphone) |
+| `backend\.venv\Scripts\python scripts\recette.py` | Redémarrage, restauration, session et CSRF par HTTP : OK |
+| `backend\.venv\Scripts\python scripts\verifier_secrets.py` (après build) | Aucun secret dans les fichiers suivis, la branche courante ni le build |
+
+**Ce n'est pas un état « prêt pour le pilote »** : voir les étapes E1 à E10 de la [roadmap](../ROADMAP.md).

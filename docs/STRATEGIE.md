@@ -1,7 +1,7 @@
 # Stratégie produit
 
 Version du 11 octobre 2026, révisée après clarification du fondateur.
-Cible confirmée : débutants avec projet concret et producteurs déjà actifs peu accompagnés.
+Cible retenue par le fondateur (D-012), **à comparer sur le terrain** : débutants avec projet concret et producteurs déjà actifs peu accompagnés. Le profil prioritaire reste à déterminer en G1.
 Point d'entrée recommandé : **préparation accompagnée d'une campagne**, à valider.
 
 ## Mission

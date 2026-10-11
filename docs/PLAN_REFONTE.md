@@ -99,4 +99,4 @@ Tests prioritaires : isolation des comptes et conseillers, calcul du budget inco
 
 Préserver d'abord l'état existant. Réaliser ensuite de petits changements relisibles : exposition des secrets, vérité de l'interface, dépendances, auth/persistance, boucle pilote, nettoyage, polissage.
 
-Éviter un commit qui mélange pivot produit, migration technique, suppression de fichiers et changement graphique. Ne pas réécrire l'historique par défaut. Cette livraison ne crée ni commit ni déploiement.
+Éviter un commit qui mélange pivot produit, migration technique, suppression de fichiers et changement graphique. Ne pas réécrire l'historique par défaut. (Document de planification du 11/10/2026 au matin, conservé pour mémoire ; l'exécution réelle et ses commits sont décrits dans AVANCEMENT.md et la suite dans la ROADMAP.)

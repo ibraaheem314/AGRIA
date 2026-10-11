@@ -6,19 +6,21 @@ AGRIA aide un porteur de projet débutant ou un producteur peu accompagné à pr
 
 ## Où en est le projet (11 octobre 2026)
 
-| Niveau de preuve | État |
+| Niveau | État |
 |---|---|
-| **Implémenté** | Les six fonctions de la première version (F1–F6 du [cahier des charges](docs/PRODUIT.md)) : dossier persistant, points à vérifier, plan d'action, budget transparent, conseil humain rattaché au dossier, synthèse et historique |
-| **Vérifié par des tests logiciels** | 147 tests backend ; 15 scénarios de parcours navigateur exécutés en vues ordinateur et téléphone (29 exécutions) ; recette réelle de redémarrage et de restauration. Détail : [AVANCEMENT.md](docs/AVANCEMENT.md) |
-| **Validé par un spécialiste** | **Rien.** Le contenu de préparation est générique, sans prescription agronomique, et marqué « non relu » dans l'application |
-| **Utilité démontrée** | **Rien.** Aucun utilisateur, conseiller, zone ou culture de pilote n'est encore engagé ([validation terrain](docs/VALIDATION_TERRAIN.md)) |
+| **Fondations techniques** | Livrées : les six fonctions de la première version (F1–F6 du [cahier des charges](docs/PRODUIT.md)) |
+| **Contrôles exécutés** | En local seulement, sur Python 3.12 : 148 tests backend, 29 exécutions de parcours navigateur (ordinateur et téléphone), recette réelle de redémarrage et de restauration, analyse des secrets. **CI GitHub jamais exécutée.** Détail : [AVANCEMENT.md](docs/AVANCEMENT.md) |
+| **Préparation du terrain** | Kit d'enquête G1 et protocole G2 prêts, non exécutés : [VALIDATION_TERRAIN.md](docs/VALIDATION_TERRAIN.md) |
+| **Validation par un spécialiste** | **Aucune.** Le contenu est générique, sans prescription agronomique, et marqué « non relu » dans l'application |
+| **Validation terrain, utilité** | **Aucune.** Aucun entretien, participant, conseiller, zone ni culture engagés |
+| **Mise en service** | **Aucune.** Ni hébergement ni accès à distance ; utilisation locale seulement |
 
-Le code est sur la branche `refonte/fondations`. L'ancien prototype est archivé sur `archive/prototype-2026-10-11`. Rien n'a été déployé.
+Le code est sur la branche `refonte/fondations` ; l'ancien prototype est archivé sur `archive/prototype-2026-10-11`. Rien n'a été poussé ni déployé. **Le pilote n'est pas prêt à démarrer** : les étapes et leurs conditions sont dans la [roadmap](ROADMAP.md).
 
-### Actions externes en attente
+### Actions du propriétaire en attente
 
-- **Révoquer les clés** OpenWeather et Agromonitoring (visibles publiquement dans `lib/config.ts` sur `master` et dans l'historique), ainsi que les clés OpenRouter, AirVisual et HuggingFace, et changer le mot de passe email qui figurait dans `.env`. Voir [SECURITE.md](docs/SECURITE.md) §3. Seul le titulaire des comptes peut le faire.
-- Choisir un hébergement avant tout usage partagé (D-006) ; liste de contrôle dans [SECURITE.md](docs/SECURITE.md) §5.
+- **Révoquer les clés** OpenWeather et Agromonitoring, visibles publiquement dans `lib/config.ts` sur `master` et dans l'historique. Révoquer aussi par précaution les clés OpenRouter, AirVisual et HuggingFace, et changer le mot de passe email qui figurait dans `.env`. Voir [SECURITE.md](docs/SECURITE.md) §2. Aucune révocation n'est confirmée à ce jour.
+- Fixer J0, les seuils de G1 et les plafonds de temps et de dépenses (D-011), puis lancer les premiers contacts ([ROADMAP](ROADMAP.md), E4–E5).
 
 ## Démarrer
 
