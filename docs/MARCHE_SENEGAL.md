@@ -2,17 +2,23 @@
 
 Recherche documentaire du 11 octobre 2026. Ce document prépare les entretiens ; il ne constitue ni une étude exhaustive ni une estimation de taille de marché. Après clarification de la cible, les références d'accompagnement ci-dessous sont prioritaires ; irrigation et stockage restent du contexte historique.
 
-## Accompagnement : références prioritaires pour le nouveau parcours
+## Accompagnement et solutions existantes : repères pour G1
 
-| Source | Élément publié | Question pour AGRIA |
-|---|---|---|
-| [ANCAR](https://ancar.gouv.sn/) | Mission de conseil agricole et rural | Comment le porteur reçoit-il et applique-t-il le conseil entre les échanges ? |
-| [FAO — jeunes dans l'agriculture](https://www.fao.org/africa/youth-in-agriculture/fr) | Formation, mentorat et dispositifs dont MIJA au Sénégal | Quelles démarches restent difficiles pour un projet concret ? |
-| [FAO — Agri-accélérateur 2.0, lancement 2024](https://www.fao.org/in-action/responsible-agricultural-investments/news/detail/Senegal-Launch-of-the-Agri-accelerator-2-0-for-responsible-agricultural-investment/en) | Accompagnement d'entreprises déjà en activité | Quels besoins spécifiques des exploitants actifs diffèrent de ceux des débutants ? |
+Consultation le **11 octobre 2026**. Les sites officiels ont été lus directement quand ils étaient accessibles ; sinon, la source secondaire est indiquée comme telle. **Aucune de ces structures n'est un partenaire, ni un canal acquis.** Elles servent à préparer les entretiens (pratiques actuelles, alternatives, payeurs possibles) et à demander des mises en relation.
 
-Références repérées pendant l'échange de cadrage ; aucun partenariat, accès au programme ou recrutement ouvert n'est présumé. L'existence d'un accompagnement ne démontre ni qu'il couvre tous les besoins ni qu'AGRIA apporte déjà une valeur supplémentaire.
+| Structure ou solution | Source (consultée le 11/10/2026) | Fait établi | Incertitudes | Usage pour G1 |
+|---|---|---|---|---|
+| ANCAR (Agence nationale de conseil agricole et rural) | [ancar.gouv.sn](https://ancar.gouv.sn/), site officiel | Présentée comme le bras technique du ministère de l'Agriculture, de la Souveraineté alimentaire et de l'Élevage ; conseil en agriculture, élevage, pêche et environnement ; couverture annoncée nationale. Actualité la plus récente visible : 4 novembre 2025 | Effectifs, présence réelle par zone, coût du conseil pour le producteur, contacts régionaux : non publiés sur la page | Comprendre le conseil public existant, l'alternative à comparer, et chercher un conseiller ou une mise en relation de zone |
+| ISRA — Centre pour le développement de l'horticulture (CDH) | [isracdh.sn](https://isracdh.sn/), site officiel | Recherche et appui à la filière horticole et maraîchère (oignon en spécialité, tomate, pomme de terre…) ; fiches et itinéraires techniques, formation, conseil technique. Page datée du 6 août 2026 | Modalités d'accès des producteurs, disponibilité pour relire un contenu | Piste pour la relecture technique du contenu (G2) et pour des références maraîchères |
+| ANIDA (Agence nationale d'insertion et de développement agricole) | [anida.sn](https://www.anida.sn/), site officiel | Aménagement de fermes villageoises et familiales « Naatangué » et d'aires agricoles partagées ; public visé : jeunes et femmes ; appels à candidature annoncés | Critères d'éligibilité, accompagnement après installation, nombre de fermes actives ; la page n'affiche pas de date explicite | Population de débutants et de producteurs accompagnés : comparer leurs besoins, identifier des personnes à interroger |
+| CNCR (Conseil national de concertation et de coopération des ruraux) | [cncr.org](https://www.cncr.org/), site officiel | Organisation paysanne créée en 1993, fédérant 28 fédérations et unions ; renforcement de capacités, production de connaissances, dialogue politique. Actualité la plus récente : 11 septembre 2026 | Services individuels aux producteurs ; capacité à orienter vers des membres | Canal possible vers des producteurs actifs via les fédérations membres |
+| DER/FJ (Délégation générale à l'entrepreneuriat rapide des femmes et des jeunes) | Site officiel [der.sn](https://www.der.sn/) **inaccessible** (certificat invalide) ; source secondaire : [AllAfrica, avril 2026](https://fr.allafrica.com/stories/202604100267.html) | D'après la presse, financement et accompagnement de projets de jeunes et de femmes, avec une attention aux projets agricoles en 2026 | Conditions, montants et accompagnement non vérifiés à la source officielle | Payeur ou prescripteur **éventuel** à explorer en entretien. Hors périmètre : AGRIA ne fait ni crédit ni dossier de financement |
+| mLouma (information de marché, mise en relation) | [mlouma.com](https://mlouma.com/) redirige vers mlouma.sn, qui n'affiche qu'un titre (« Xamsambay ») ; sources secondaires : [Osiris](https://osiris.sn/senegal-mlouma-connecte-agriculteurs-et-clients-via-ses-plateformes-web-et.html) | Selon des articles de presse : prix, disponibilités et mise en relation de producteurs et d'acheteurs, accès USSD | **Activité actuelle non établie** ; les sources se contredisent sur le fondateur | Exemple de solution numérique sur les débouchés : demander en entretien si elle est connue et utilisée |
+| FAO — jeunes dans l'agriculture ; Agri-accélérateur 2.0 | [fao.org/africa/youth-in-agriculture](https://www.fao.org/africa/youth-in-agriculture/fr) ; [lancement Agri-accélérateur 2.0 (2024)](https://www.fao.org/in-action/responsible-agricultural-investments/news/detail/Senegal-Launch-of-the-Agri-accelerator-2-0-for-responsible-agricultural-investment/en) | Programmes de formation et d'accompagnement de jeunes et d'entreprises agricoles (repérés le 11/10/2026, non relus en détail) | Statut actuel, participants accessibles | Comparer avec l'accompagnement déjà offert aux débutants et aux exploitants |
 
-## Contexte des premières pistes explorées
+Ce tableau n'est pas une étude de marché. L'existence d'un accompagnement ne prouve ni qu'il couvre les besoins, ni qu'AGRIA apporte une valeur supplémentaire.
+
+## Contexte historique des premières pistes (irrigation, stockage)
 
 | Acteur / source | Offre ou constat publié | Conséquence à vérifier pour AGRIA |
 |---|---|---|

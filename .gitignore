@@ -41,3 +41,7 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 *.swp
+
+# Données de terrain : jamais dans le dépôt (noms, téléphones, notes nominatives)
+terrain-prive/
+*.prive.*

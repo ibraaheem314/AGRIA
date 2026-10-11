@@ -249,3 +249,10 @@ Retour arrière possible : `backend/.venv-py310` conservé jusqu'à validation p
 - CI : actions passées de v4/v5 (exécutées sous Node 20, en fin de vie depuis avril 2026) à v6 (Node 24, version éprouvée) ; droits en lecture seule ; délais maximaux par job ; analyse des motifs de secrets ajoutée au job backend. YAML validé localement.
 - Cohérence avec le local : mêmes contrôles que `scripts/dev.py check --e2e`. Aucune base de travail ni aucun secret métier n'est nécessaire (147 tests réussis avec une base de travail inexistante ; aucun secret GitHub référencé).
 - Résumé de PR : [RESUME_PR.md](RESUME_PR.md). **CI distante non exécutée.**
+
+## Lot 4 — Kit G1 (11/10/2026) — préparé, non exécuté
+
+- [VALIDATION_TERRAIN.md](VALIDATION_TERRAIN.md) §0–6 : règles (données privées hors dépôt, consentement, pas de présentation du produit avant la fin de l'entretien), critères de recrutement (débutant, producteur, conseiller), canaux possibles (non engagés), brouillons de contact à envoyer par le fondateur, guide d'entretien participant et variante conseiller, fiche d'entretien, fiche de décision de fin de G1 (toutes valeurs « à déterminer »).
+- Modèle vierge de tableau de suivi : `docs/terrain/suivi-recrutement-modele.csv` ; `terrain-prive/` et `*.prive.*` ignorés par Git (vérifié avec `git check-ignore`).
+- [MARCHE_SENEGAL.md](MARCHE_SENEGAL.md) : 7 repères datés (ANCAR, ISRA/CDH, ANIDA, CNCR, DER/FJ, mLouma, FAO), avec la source, le fait établi et les incertitudes. Site officiel de la DER/FJ inaccessible ; activité actuelle de mLouma non établie. Aucun partenaire supposé.
+- Aucun contact n'a été pris, aucun entretien réalisé.
