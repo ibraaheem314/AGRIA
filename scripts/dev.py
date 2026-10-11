@@ -320,8 +320,10 @@ def cmd_check(args) -> None:
 
 
 def main() -> None:
-    if sys.version_info < (3, 12):  # noqa: UP036 (refuse un interpréteur trop ancien)
-        fail("Python 3.12+ requis : lancer ce script avec backend/.venv (voir docs/DEMARRAGE.md).")
+    if sys.version_info < (3, 14, 8):  # noqa: UP036 (refuse un interpréteur trop ancien)
+        fail(
+            "Python 3.14.8+ requis : lancer ce script avec backend/.venv (voir docs/DEMARRAGE.md)."
+        )
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8")

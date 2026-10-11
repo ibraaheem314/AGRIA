@@ -3,7 +3,7 @@ import path from 'node:path'
 
 // Parcours exécutés contre une base dédiée (agria_e2e, recréée à chaque lancement)
 // et des ports distincts du développement : 8001 (Django) et 5174 (Vite).
-// Le Python de backend/.venv (3.12) lance aussi les scripts : jamais celui du PATH.
+// Le Python de backend/.venv lance aussi les scripts : jamais celui du PATH.
 const python = path.resolve(
   import.meta.dirname,
   '../backend/.venv',

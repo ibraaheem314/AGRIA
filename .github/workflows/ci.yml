@@ -36,7 +36,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: "3.14.8"
       - run: python -m pip install -r requirements-dev.txt
       # Motifs de clés dans les fichiers suivis (aucune valeur réelle n'est disponible en CI).
       - run: python ../scripts/verifier_secrets.py
@@ -53,6 +53,9 @@ jobs:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14.8"
       - uses: actions/setup-node@v6
         with:
           node-version: 22
@@ -62,6 +65,8 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run build
+      # Ce job possède le build ; le contrôle backend ne peut pas le voir.
+      - run: python ../scripts/verifier_secrets.py
 
   parcours:
     runs-on: ubuntu-latest
@@ -89,7 +94,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: "3.14.8"
       - uses: actions/setup-node@v6
         with:
           node-version: 22

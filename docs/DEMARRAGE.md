@@ -1,12 +1,12 @@
 # Guide de démarrage
 
-Commandes testées le 11 octobre 2026 sous Windows 11 (PowerShell et Git Bash), avec **Python 3.12.10**, Node 22.15.0, npm 11.9.0 et PostgreSQL 18 (binaires). Aucune clé de service externe n'est nécessaire.
+Runtime retenu le 11 octobre 2026 sous Windows 11 : **Python 3.14.8**, Node 22.15.0, npm 11.9.0 et PostgreSQL 18 (binaires). Preuves des contrôles dans [AVANCEMENT.md](AVANCEMENT.md). Aucune clé de service externe n'est nécessaire.
 
 ## Prérequis
 
-- **Python 3.12** (version retenue, D-039). Le serveur et les scripts refusent de démarrer avec une version antérieure.
-  - Windows, sans droits d'administrateur : `winget install --id Python.Python.3.12 --exact --scope user`, ou l'installateur de python.org en mode « pour moi seul ». Il s'installe dans `%LOCALAPPDATA%\Programs\Python\Python312`.
-  - Linux : paquet `python3.12` de la distribution (Ubuntu 24.04).
+- **Python 3.14.8 ou un correctif 3.14 plus récent** (version retenue, D-043). Le serveur et les scripts refusent de démarrer avec une version antérieure à 3.14.8.
+  - Windows, sans droits d'administrateur : `winget install --id Python.Python.3.14 --exact --scope user`, ou l'installateur de python.org en mode « pour moi seul ». Il s'installe dans `%LOCALAPPDATA%\Programs\Python\Python314`.
+  - Linux : installer Python 3.14.8 ou un correctif 3.14 plus récent depuis une distribution maintenue ; vérifier `python3.14 --version`.
 - Node 22.12 ou plus récent.
 - Les binaires PostgreSQL 16+ (`initdb`, `pg_ctl`, `psql`, `pg_dump`, `pg_restore`). Sous Windows, ils sont trouvés automatiquement dans `C:\Program Files\PostgreSQL\<version>\bin` ; sinon, définir `PG_BIN`.
 
@@ -17,8 +17,8 @@ Après l'étape 1, **toutes les commandes Python passent par `backend\.venv`**, 
 Depuis la racine du dépôt (PowerShell) :
 
 ```powershell
-# 1. Environnement Python 3.12 du projet
-& "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe" -m venv backend\.venv   # ou : py -3.12 -m venv backend\.venv
+# 1. Environnement Python 3.14 du projet (première installation seulement)
+& "$env:LOCALAPPDATA\Programs\Python\Python314\python.exe" -m venv backend\.venv   # ou : py -3.14 -m venv backend\.venv
 backend\.venv\Scripts\python -m pip install -r backend\requirements-dev.txt
 
 # 2. Configuration serveur : crée backend/.env avec une clé secrète aléatoire
@@ -39,11 +39,11 @@ npm ci
 cd ..
 ```
 
-Sous Linux et macOS : `python3.12 -m venv backend/.venv`, puis remplacer `backend\.venv\Scripts\python` par `backend/.venv/bin/python`.
+Sous Linux et macOS : `python3.14 -m venv backend/.venv`, puis remplacer `backend\.venv\Scripts\python` par `backend/.venv/bin/python`.
 
-### Passer d'un ancien environnement 3.10 à 3.12 (fait sur ce poste le 11/10/2026)
+### Environnements précédents et retour arrière
 
-L'ancien environnement a été renommé `backend\.venv-py310`, ignoré par Git, pour pouvoir revenir en arrière. Retour arrière : supprimer `backend\.venv`, renommer `backend\.venv-py310` en `backend\.venv` et revenir au commit précédant le lot 2. Une fois la version 3.12 validée par le propriétaire, supprimer `backend\.venv-py310`. La base de données n'est pas concernée par ce changement.
+L'environnement courant est `backend/.venv` (Python 3.14.8). Les environnements 3.10 et 3.12 sont conservés respectivement dans `backend/.venv-py310` et `backend/.venv-py312`, ignorés par Git. Ils ne sont pas à utiliser avec le code courant. Pour diagnostiquer une régression, utiliser un checkout isolé de la révision précédente avec le runtime correspondant et une base de test séparée ; ne pas réinitialiser la branche de travail. Leur suppression ultérieure est un nettoyage facultatif. Elle ne conditionne ni les entretiens ni la validation de l'environnement courant. La base de travail n'a pas été déplacée.
 
 ## Lancer l'application
 

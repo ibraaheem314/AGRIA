@@ -12,10 +12,10 @@ from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
-if sys.version_info < (3, 12):  # noqa: UP036 (refuse un interpréteur trop ancien)
+if sys.version_info < (3, 14, 8):  # noqa: UP036 (refuse un interpréteur trop ancien)
     raise ImproperlyConfigured(
-        f"Python 3.12 ou plus récent est requis (version utilisée : {sys.version.split()[0]}). "
-        "Créer backend/.venv avec Python 3.12 : voir docs/DEMARRAGE.md."
+        f"Python 3.14.8 ou plus récent est requis (version utilisée : {sys.version.split()[0]}). "
+        "Créer backend/.venv avec Python 3.14 à jour : voir docs/DEMARRAGE.md."
     )
 
 BASE_DIR = Path(__file__).resolve().parent.parent
