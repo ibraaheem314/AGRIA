@@ -200,45 +200,94 @@ Le dossier ne devient pas « faisable » par simple complétude. Une case inconn
 
 Consigner la décision dans [DECISIONS.md](DECISIONS.md) (D-014) avec ses preuves, les hypothèses restantes et une date de réexamen.
 
-## 7. Protocole de service manuel — G2
+## 7. Protocole G2 — environ trois dossiers réels accompagnés
 
-Environ 3 dossiers réels, nombre indicatif :
+**Statut : protocole préparé, non exécuté.** G2 ne commence que lorsque toutes les conditions d'entrée sont remplies et consignées.
 
-- Responsable, conseiller, participants et durée fixés.
-- État initial du dossier et pratiques actuelles documentés.
-- Critères fixés avant l'essai : démarches observables, inconnues clarifiées, temps, satisfaction argumentée et engagement de poursuite.
-- Définition d'un dossier « suffisamment préparé » limitée au périmètre examiné.
-- Maximum de temps et dépenses, mode de conservation des données et conditions de fin.
-- Répartition des tâches entre participant et accompagnateur.
-- Bilan séparé par profil et explication des abandons.
+### 7.1 Conditions d'entrée (issues de G1)
 
-Un service manuel réussi justifie un prototype produit ; il ne prouve pas à lui seul la demande à grande échelle.
+- La fiche de décision G1 (§6) est remplie avec des preuves ; la décision « poursuivre » est consignée dans DECISIONS (D-014).
+- Profil, zone et culture sont déterminés, ainsi que le problème de préparation visé.
+- Environ 3 participants ont donné un **accord écrit** (message ou papier signé) pour un dossier réel, en connaissant la durée et l'usage des données.
+- Un conseiller a accepté son rôle et ses conditions par écrit.
+- La version relue du contenu est publiée (§7.2).
+- Plafonds de temps et de dépenses fixés (§7.4), et modalités de données choisies (§7.5).
+- Les révocations de clés de [SECURITE.md](SECURITE.md) §2 sont faites : elles ne bloquent pas le service, mais doivent précéder tout usage plus large du dépôt.
 
-## 8. Indicateurs et limites
+### 7.2 Périmètre et relecture du contenu
 
-| Mesure | Définition à fixer avant le test | Limite |
+- Le contenu `preparation-generique` v1 est générique et **non relu**. Le spécialiste (le conseiller du pilote ou un relecteur désigné) relit chaque vérification et chaque démarche **pour la zone et la culture retenues** : exactitude, utilité, éléments manquants, formulations dangereuses ou trompeuses.
+- Publication : copier `backend/preparation/content/preparation-generique.v1.json` en `…v2.json`, appliquer les corrections, renseigner `version: 2`, `scope` (zone, culture), `review.status: "relu"`, `review.reviewer` (nom ou rôle selon l'accord du relecteur) et `review.date`, puis lancer `manage.py load_content`. Le chargement refuse un « relu » sans relecteur ni date, et une version déjà publiée ne peut plus être modifiée.
+- **Effet sur les dossiers existants (vérifié par le test `test_publication_d_une_version_relue_sans_migration_silencieuse`)** : un dossier garde la version avec laquelle son plan a été créé. Ses points à vérifier continuent d'être calculés avec les règles de cette version, il reste affiché « non relu » s'il est en v1, et ses démarches et son historique ne changent pas. Seuls les dossiers créés après la publication utilisent la v2. **Il n'existe aucune migration automatique** ; en créer une demanderait une décision consignée.
+- Conséquence pour le pilote : **créer les dossiers réels après la publication de la v2.** Les dossiers d'essai créés avant restent en v1 ; les archiver ou les laisser de côté.
+- La relecture ne transforme pas le contenu en prescription : les démarches restent des démarches de préparation, et toute recommandation technique propre à une culture relève de l'échange avec le conseiller.
+
+### 7.3 Rôles
+
+| Rôle | Fait | Ne fait pas |
 |---|---|---|
-| Démarches utiles effectuées | Action et preuve de réalisation | Une case cochée n'est pas une preuve suffisante |
-| Informations clarifiées | Inconnue résolue avec source | Une supposition plus précise reste une estimation |
-| Décision documentée | Poursuite, modification ou report avec motifs | Reporter un mauvais projet peut être utile |
-| Temps de préparation/conseil | Temps du porteur et du conseiller | Ne pas déplacer tout le coût vers le conseiller |
-| Budget documenté | Postes connus, manquants et provenance | Aucun résultat financier garanti |
-| Engagement de poursuite | Paiement, accord écrit, intérêt oral ou refus | Ne pas traiter ces niveaux comme équivalents |
+| Participant | Décrit sa situation, réalise les démarches, rapporte les résultats et le temps passé, décide | Ne s'engage à aucun achat ni à aucun résultat |
+| Conseiller | Relit le contenu (§7.2), relit les dossiers, répond aux questions, donne un avis daté avec ses réserves | Ne garantit ni faisabilité ni rentabilité ; déclare ses intérêts |
+| Fondateur | Recrute, obtient les accords, organise les séances, assiste la saisie si besoin, tient le journal de temps et de coûts, protège les données, fait le bilan | Ne donne pas d'avis technique à la place du conseiller ; ne présente pas de résultat non mesuré |
 
-Documenter la comparaison avec la pratique actuelle, les informations initiales et l'aide humaine fournie. Trois dossiers ne constituent pas une preuve statistique ni un gain agricole attribuable.
+### 7.4 Durée et plafonds (à fixer avant le démarrage)
+
+| Paramètre | Valeur |
+|---|---|
+| Durée de G2 (proposition : 4 à 6 semaines, pour suivre au moins une démarche complète par dossier) | À déterminer |
+| Temps maximal du participant par semaine | À déterminer |
+| Temps maximal du conseiller par dossier | À déterminer |
+| Temps maximal du fondateur par dossier | À déterminer |
+| Plafond de dépenses (déplacements, communications, éventuel dédommagement) | À déterminer (D-011) |
+| Règle d'arrêt anticipé (participant indisponible, conseiller absent, dépassement de plafond) | À déterminer |
+
+### 7.5 Données privées : accès et conservation
+
+Trois modes. **Le mode retenu est consigné avant le premier dossier.**
+
+1. **Papier ou tableur privé** (fiche §5) : aucun prérequis technique. Mode par défaut.
+2. **Application locale supervisée** : sur le poste du fondateur, pendant des séances en présence (ou par appel) du participant, avec la base locale. Prérequis : disque du poste chiffré, sauvegardes `dev.py db-backup` conservées hors du dépôt dans un emplacement privé, interface **non exposée sur le réseau** (pas de `--host 0.0.0.0` avec des données réelles), inscription libre fermée (`AGRIA_ALLOW_SIGNUP=false`) et comptes créés par `create_account`.
+3. **Accès à distance** (participant ou conseiller depuis son propre téléphone) : **bloqué** tant que les conditions de mise en service de [SECURITE.md](SECURITE.md) §5 ne sont pas remplies (hébergement, HTTPS, sauvegardes automatiques et restauration testée, D-006).
+
+Dans tous les cas : consentement écrit sur l'usage des données, durée de conservation fixée (proposition : fin du bilan G2 plus 6 mois, puis suppression ou anonymisation), accès limité au participant, au conseiller attribué et au fondateur. Les exports de synthèse sont remis au participant, qui en garde la propriété.
+
+### 7.6 Pratique initiale servant de comparaison
+
+Avant d'utiliser la fiche ou l'application, consigner pour chaque participant :
+
+- l'état initial de la préparation : informations connues, inconnues, preuves déjà disponibles ;
+- les démarches prévues **sans** AGRIA, et avec quelle aide ;
+- le temps déjà passé et les coûts déjà engagés ;
+- la décision envisagée à ce stade (poursuivre, modifier, différer, indécis).
+
+Le bilan compare la situation finale à cet état initial et à l'alternative identifiée en G1. Trois dossiers ne permettent aucune conclusion statistique.
+
+### 7.7 Critères de suite (fixés avant le démarrage)
+
+- **Poursuivre** vers une version testée par les utilisateurs (G3/G4) si, pour la majorité des dossiers, des démarches utiles ont été réalisées avec preuve, des inconnues bloquantes ont été clarifiées avec leur source et une décision motivée a été prise ; si le temps du conseiller par dossier reste soutenable ; et si au moins un engagement concret de poursuite existe (accord écrit ou paiement).
+- **Corriger** si le besoin est confirmé mais que le parcours, le contenu ou l'outil créent des difficultés identifiées : corriger, puis refaire un essai court et limité.
+- **Arrêter ou revoir l'hypothèse** si les dossiers n'aboutissent à aucune démarche utile, si le conseiller ne peut pas suivre, ou si personne ne s'engage à poursuivre.
+
+## 8. Indicateurs de G2
+
+| Indicateur | Définition à appliquer | Limite |
+|---|---|---|
+| Démarches utiles réalisées | Démarche terminée avec un résultat et une preuve (document, contact nommé, constat), jugée utile par le participant et le conseiller | Une case cochée n'est pas une preuve |
+| Inconnues clarifiées | Information passée de « inconnu » ou « non renseigné » à « déclaré », « estimé » ou « vérifié », avec sa source | Une estimation plus précise reste une estimation |
+| Décisions motivées | Décision « poursuivre », « modifier » ou « différer » enregistrée avec ses motifs | Différer un projet mal préparé peut être un bon résultat |
+| Temps passé | Journal par séance : participant, conseiller, fondateur | Ne pas déplacer tout le coût vers le conseiller |
+| Difficultés d'utilisation | Journal d'observation : blocage, incompréhension, besoin d'aide, langue, connexion | Observation, pas mesure statistique |
+| Engagement à poursuivre | Trois niveaux **distincts** : intérêt verbal < engagement écrit < paiement | Ne jamais additionner ces niveaux |
+| Coût par dossier | Temps (conseiller + fondateur) × coût horaire retenu + déplacements + communications | Le coût horaire retenu doit être explicité |
+
+**Une meilleure préparation ne démontre pas un gain de rendement ni de revenu.** Ces effets exigent un suivi de la campagne elle-même, hors du périmètre de G2.
 
 ## 9. Économie du service
 
-Coût par dossier : temps de conseil + temps opérationnel du fondateur + acquisition + collecte/maintenance du contenu + support + hébergement + déplacement éventuel.
+Coût par dossier : temps de conseil + temps opérationnel du fondateur + acquisition + collecte et maintenance du contenu + support + hébergement éventuel + déplacements.
 
-Tester qui paie et pour quelle étape. Une structure peut financer l'accompagnement sans que le porteur soit le client payant.
+Tester qui paie et pour quelle étape. Une structure peut financer l'accompagnement sans que le porteur soit le client payant. Ne pas chiffrer de « perte évitée » sans fait et sans méthode d'attribution.
 
-Ne pas chiffrer une « perte évitée » sans fait et méthode d'attribution. Les rendements et revenus exigent un suivi de campagne ultérieur.
+## 10. Après G2
 
-## 10. Passage au produit — G3/G4
-
-Le [cahier des charges](PRODUIT.md) définit F1–F6 et la recette. Tester ensuite le même service dans l'application, sans ajouter un second problème.
-
-Rapport de bilan : usage, démarches, avis utiles/inutiles, temps, erreurs, coûts, engagements et limites. Choisir poursuivre, corriger, prolonger avec une limite ou arrêter.
-
-Les données de terrain restent privées ; seuls résultats agrégés et éléments autorisés entrent dans une communication externe.
+Rapport de bilan : usage, démarches, avis utiles ou inutiles, temps, erreurs, coûts, engagements, limites. Décision consignée : poursuivre, corriger, prolonger avec une limite, ou arrêter. Les données de terrain restent privées ; seuls des résultats agrégés et autorisés peuvent entrer dans une communication externe.

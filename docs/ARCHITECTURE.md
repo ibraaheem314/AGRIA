@@ -111,6 +111,8 @@ Compte ─┬─ Projet (profil débutant/producteur, is_demo)
 
 Le modèle `preparation-generique` v1 contient des vérifications de préparation (lieu, terrain, eau, culture, période, moyens, débouchés) et les démarches associées. Il ne contient **aucune prescription agronomique** et son statut est « non relu par un spécialiste », affiché sur l'écran « Mon plan ». Un modèle ne peut être déclaré « relu » qu'avec un relecteur et une date.
 
+Publication d'une version relue : elle ne s'applique qu'aux dossiers créés ensuite. Un dossier existant garde sa version (règles, statut de relecture affiché, démarches et historique) ; aucune migration automatique n'existe (test `test_publication_d_une_version_relue_sans_migration_silencieuse`, procédure dans VALIDATION_TERRAIN §7.2).
+
 Les exemples de démonstration (`manage.py seed_demo`) sont créés sur un compte dédié, en `.invalid`, et portent `is_demo` : un bandeau les signale et ils ne sont jamais visibles depuis un compte réel.
 
 ## 7. Limites connues

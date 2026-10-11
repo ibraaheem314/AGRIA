@@ -341,3 +341,43 @@ def test_demonstration_identifiee_et_separee(porteur, capsys):
     assert porteur.get("/api/dossiers").json() == []  # invisible pour un compte réel
     call_command("seed_demo")  # idempotent
     assert Project.objects.filter(is_demo=True).count() == 1
+
+
+def test_publication_d_une_version_relue_sans_migration_silencieuse(porteur, dossier, tmp_path):
+    """Lot 5 : une v2 relue ne s'applique qu'aux nouveaux dossiers ; l'existant reste en v1."""
+    put_info(porteur, dossier, "eau", "inconnu")
+    before = prep(porteur, dossier)
+    eau_v1 = next(c for c in before["checks"] if c["fact_key"] == "eau")
+
+    content = base_content()
+    content["version"] = 2
+    content["review"] = {
+        "status": "relu",
+        "reviewer": "Relecteur (exemple de test)",
+        "date": "2026-11-01",
+        "note": "Test automatisé : aucune relecture réelle.",
+    }
+    for check in content["checks"]:
+        if check["key"] == "eau":
+            check["rules"][1]["message"] = "Message reformulé en v2"
+    path = tmp_path / "preparation-generique.v2.json"
+    path.write_text(json.dumps(content), encoding="utf-8")
+    template, created = content_store.load_file(path)
+    assert created and template.review_status == "relu"
+
+    after = prep(porteur, dossier)
+    assert after["template"]["version"] == 1
+    assert after["template"]["review_status"] == "non_relu"  # pas présenté comme relu
+    eau_after = next(c for c in after["checks"] if c["fact_key"] == "eau")
+    assert eau_after["message"] == eau_v1["message"]  # règles v1 conservées
+    assert after["actions"] == before["actions"]  # démarches et historique intacts
+    assert PreparationTemplate.objects.get(version=1).content == base_content()
+
+    fresh = new_project(porteur, name="Dossier créé après publication")
+    put_info(porteur, fresh, "eau", "inconnu")
+    data = prep(porteur, fresh)
+    assert data["template"]["version"] == 2
+    assert data["template"]["reviewer"] == "Relecteur (exemple de test)"
+    assert next(c for c in data["checks"] if c["fact_key"] == "eau")["message"] == (
+        "Message reformulé en v2"
+    )

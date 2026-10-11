@@ -256,3 +256,8 @@ Retour arrière possible : `backend/.venv-py310` conservé jusqu'à validation p
 - Modèle vierge de tableau de suivi : `docs/terrain/suivi-recrutement-modele.csv` ; `terrain-prive/` et `*.prive.*` ignorés par Git (vérifié avec `git check-ignore`).
 - [MARCHE_SENEGAL.md](MARCHE_SENEGAL.md) : 7 repères datés (ANCAR, ISRA/CDH, ANIDA, CNCR, DER/FJ, mLouma, FAO), avec la source, le fait établi et les incertitudes. Site officiel de la DER/FJ inaccessible ; activité actuelle de mLouma non établie. Aucun partenaire supposé.
 - Aucun contact n'a été pris, aucun entretien réalisé.
+
+## Lot 5 — Protocole G2 (11/10/2026) — préparé, non exécuté
+
+- [VALIDATION_TERRAIN.md](VALIDATION_TERRAIN.md) §7–10 : conditions d'entrée issues de G1, relecture et publication du contenu, rôles, durée et plafonds (à fixer), trois modes de données (accès à distance bloqué), pratique initiale de comparaison, critères de suite, indicateurs avec définitions (intérêt verbal, engagement écrit et paiement distingués), économie du service.
+- Versionnement du contenu **vérifié par un test** : une v2 relue ne touche pas les dossiers existants (règles, statut « non relu », démarches et historique conservés) et s'applique aux nouveaux dossiers. Aucune migration automatique. Décisions D-041 et D-042.
