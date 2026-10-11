@@ -47,10 +47,10 @@ export function SynthesePage() {
         <p className="mt-2 text-sm text-muted">{s.notice}</p>
       </Card>
 
-      <SectionsView snapshot={s} dossier={dossier} />
+      <SectionsView snapshot={s} dossier={dossier} level={2} />
 
       <section className="space-y-2 break-inside-avoid-page">
-        <h3 className="text-lg font-semibold">Avis du conseiller</h3>
+        <h2 className="text-lg font-semibold">Avis du conseiller</h2>
         {s.reviews.length === 0 ? (
           <p className="text-muted">Aucun avis.</p>
         ) : (
@@ -75,7 +75,7 @@ export function SynthesePage() {
       </section>
 
       <section className="space-y-2 break-inside-avoid-page">
-        <h3 className="text-lg font-semibold">Questions ouvertes</h3>
+        <h2 className="text-lg font-semibold">Questions ouvertes</h2>
         {s.open_questions.length === 0 ? (
           <p className="text-muted">Aucune question ouverte.</p>
         ) : (
@@ -88,7 +88,7 @@ export function SynthesePage() {
       </section>
 
       <section className="space-y-2 break-inside-avoid-page">
-        <h3 className="text-lg font-semibold">Décisions</h3>
+        <h2 className="text-lg font-semibold">Décisions</h2>
         {s.decisions.length === 0 ? (
           <p className="text-muted">Aucune décision enregistrée.</p>
         ) : (
@@ -115,7 +115,7 @@ function ArchiveBox({ dossierId }: { dossierId: number }) {
   const [confirming, setConfirming] = useState(false)
   return (
     <Card className="no-print">
-      <h3 className="font-semibold">Archiver le dossier</h3>
+      <h2 className="font-semibold">Archiver le dossier</h2>
       <p className="mt-1 text-sm text-muted">Un dossier archivé reste consultable mais n'est plus modifiable.</p>
       {archive.error && <Alert tone="danger" role="alert">{archive.error.message}</Alert>}
       {!confirming ? (

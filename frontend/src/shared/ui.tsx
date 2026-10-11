@@ -1,4 +1,4 @@
-import { useId, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { useEffect, useId, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { Link, type LinkProps } from 'react-router'
 
 /* Composants d'interface communs. La couleur accompagne toujours un texte explicite. */
@@ -134,6 +134,9 @@ export const inputClass =
   'aria-[invalid=true]:border-danger-700'
 
 export function PageTitle({ children, subtitle }: { children: ReactNode; subtitle?: ReactNode }) {
+  useEffect(() => {
+    if (typeof children === 'string') document.title = `${children} — AGRIA`
+  }, [children])
   return (
     <header className="mb-4">
       <h1 className="text-2xl font-semibold text-ink">{children}</h1>

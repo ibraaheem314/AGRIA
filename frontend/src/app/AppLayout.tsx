@@ -1,11 +1,37 @@
-import { Link, NavLink, Outlet, useMatch, useNavigate } from 'react-router'
+import { useEffect, useRef, useSyncExternalStore } from 'react'
+import { Link, NavLink, Outlet, useLocation, useMatch, useNavigate } from 'react-router'
 import { useLogout, useMe } from '../features/auth/session'
 import { useDossiers } from '../features/dossiers/api'
 import { forgetDossier, lastDossier } from '../features/dossiers/lastDossier'
 
 /** En-tête, navigation principale (Aujourd'hui · Mon projet · Mon plan · Aide) et contenu. */
+function subscribeOnline(callback: () => void) {
+  window.addEventListener('online', callback)
+  window.addEventListener('offline', callback)
+  return () => {
+    window.removeEventListener('online', callback)
+    window.removeEventListener('offline', callback)
+  }
+}
+
+/** Indication du navigateur : utile pour prévenir, pas une garantie de connexion. */
+function useOnline() {
+  return useSyncExternalStore(subscribeOnline, () => navigator.onLine, () => true)
+}
+
 export function AppLayout() {
   const me = useMe()
+  const online = useOnline()
+  const location = useLocation()
+  const mainRef = useRef<HTMLElement>(null)
+  const lastPath = useRef(location.pathname)
+
+  // Après une navigation (pas au premier affichage), le focus va au contenu (lecteurs d'écran, clavier).
+  useEffect(() => {
+    if (lastPath.current === location.pathname) return
+    lastPath.current = location.pathname
+    mainRef.current?.focus()
+  }, [location.pathname])
   const logout = useLogout()
   const navigate = useNavigate()
   const match = useMatch('/d/:dossierId/*')
@@ -75,7 +101,12 @@ export function AppLayout() {
           </nav>
         )}
       </header>
-      <main id="contenu" className="mx-auto max-w-3xl px-4 py-6">
+      {!online && (
+        <div role="status" className="no-print border-b border-warn-700/30 bg-warn-50 px-4 py-2 text-center text-sm text-warn-700">
+          Vous semblez hors connexion : rien ne pourra être enregistré avant le retour du réseau. Votre saisie reste à l'écran.
+        </div>
+      )}
+      <main id="contenu" ref={mainRef} tabIndex={-1} className="mx-auto max-w-3xl px-4 py-6 focus:outline-none">
         {logout.isError && (
           <p role="alert" className="mb-4 text-danger-700">Déconnexion impossible : {logout.error.message}</p>
         )}

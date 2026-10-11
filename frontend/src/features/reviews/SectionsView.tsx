@@ -6,13 +6,15 @@ import { describeValue, STATUS_LABEL, STATUS_TONE } from '../dossiers/factDispla
 import type { Snapshot } from './api'
 
 /** Affichage d'un instantané (avis) ou de la synthèse : inconnues et manques restent visibles. */
-export function SectionsView({ snapshot, dossier }: { snapshot: Snapshot; dossier: Dossier }) {
+export function SectionsView({ snapshot, dossier, level = 3 }: { snapshot: Snapshot; dossier: Dossier; level?: 2 | 3 }) {
+  const H = level === 2 ? 'h2' : 'h3'
+  const Sub = level === 2 ? 'h3' : 'h4'
   const definitions = Object.fromEntries(dossier.facts.map((f) => [f.key, f]))
   return (
     <div className="space-y-6">
       {snapshot.contexte && (
         <section className="space-y-2 break-inside-avoid-page">
-          <h3 className="text-lg font-semibold">Contexte du projet</h3>
+          <H className="text-lg font-semibold">Contexte du projet</H>
           <p className="text-sm text-muted">Profil : {snapshot.contexte.profile_label}</p>
           <table className="w-full border-collapse text-sm">
             <thead>
@@ -40,14 +42,14 @@ export function SectionsView({ snapshot, dossier }: { snapshot: Snapshot; dossie
 
       {snapshot.plan && (
         <section className="space-y-2 break-inside-avoid-page">
-          <h3 className="text-lg font-semibold">Plan d'action</h3>
+          <H className="text-lg font-semibold">Plan d'action</H>
           {snapshot.plan.template && (
             <p className="text-sm text-muted">
               Modèle {snapshot.plan.template.code} v{snapshot.plan.template.version} —{' '}
               {snapshot.plan.template.review_status === 'relu' ? 'relu' : 'non relu par un spécialiste'}
             </p>
           )}
-          <h4 className="font-medium">Points à vérifier ({snapshot.plan.checks.length})</h4>
+          <Sub className="font-medium">Points à vérifier ({snapshot.plan.checks.length})</Sub>
           {snapshot.plan.checks.length === 0 ? (
             <p className="text-sm text-muted">Aucun point signalé.</p>
           ) : (
@@ -57,7 +59,7 @@ export function SectionsView({ snapshot, dossier }: { snapshot: Snapshot; dossie
               ))}
             </ul>
           )}
-          <h4 className="font-medium">Démarches ({snapshot.plan.actions.length})</h4>
+          <Sub className="font-medium">Démarches ({snapshot.plan.actions.length})</Sub>
           {snapshot.plan.actions.length === 0 ? (
             <p className="text-sm text-muted">Aucune démarche.</p>
           ) : (
@@ -76,7 +78,7 @@ export function SectionsView({ snapshot, dossier }: { snapshot: Snapshot; dossie
 
       {snapshot.budget && (
         <section className="space-y-2 break-inside-avoid-page">
-          <h3 className="text-lg font-semibold">Budget provisoire</h3>
+          <H className="text-lg font-semibold">Budget provisoire</H>
           <p className="font-medium">{budgetSentence(snapshot.budget.totals.overall)}</p>
           {snapshot.budget.lines.length > 0 && (
             <ul className="space-y-1 text-sm">

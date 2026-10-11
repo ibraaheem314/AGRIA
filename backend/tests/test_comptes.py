@@ -56,7 +56,11 @@ def test_connexion_message_identique_compte_existant_ou_non(make_user, session):
     wrong = session().post("/api/auth/login", {"email": "awa@example.sn", "password": "faux-mot"})
     missing = session().post("/api/auth/login", {"email": "x@example.sn", "password": "faux-mot"})
     assert wrong.status_code == missing.status_code == 401
-    assert wrong.json()["error"]["message"] == missing.json()["error"]["message"]
+    assert wrong.json()["error"] == missing.json()["error"]
+    assert wrong.json()["error"] == {
+        "code": "identifiants_invalides",
+        "message": "Email ou mot de passe incorrect.",
+    }
 
 
 def test_connexion_sans_jeton_csrf_refusee(make_user):

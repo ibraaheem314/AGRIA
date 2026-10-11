@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.middleware.csrf import get_token
 from rest_framework import serializers, status
 from rest_framework.decorators import api_view, permission_classes, throttle_classes
-from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
+from rest_framework.exceptions import APIException, PermissionDenied
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.throttling import SimpleRateThrottle
@@ -44,6 +44,12 @@ def _signup_open() -> bool:
     return bool(settings.AGRIA_ALLOW_SIGNUP)
 
 
+class InvalidCredentials(APIException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    default_detail = "Email ou mot de passe incorrect."
+    default_code = "identifiants_invalides"
+
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField(error_messages={"invalid": "Adresse email invalide."})
     password = serializers.CharField(trim_whitespace=False, max_length=200)
@@ -62,7 +68,7 @@ def login_view(request):
     )
     if user is None:
         # Message identique que le compte existe ou non.
-        raise AuthenticationFailed("Email ou mot de passe incorrect.")
+        raise InvalidCredentials()
     login(request._request, user)
     return Response({"user": user_payload(user)})
 

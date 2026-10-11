@@ -115,6 +115,14 @@ async function send<T>(path: string, { method = 'GET', body, signal }: Options):
   }
 
   const err = (payload as { error?: { code?: string; message?: string; fields?: FieldErrors } } | undefined)?.error
+  if (err?.code === 'non_connecte' && UNSAFE.has(method)) {
+    throw new ApiError({
+      status: response.status,
+      code: err.code,
+      message:
+        'Votre session a expiré. Reconnectez-vous dans un autre onglet (même adresse), puis réessayez ici : votre saisie est conservée.',
+    })
+  }
   if (err?.code) {
     throw new ApiError({ status: response.status, code: err.code, message: err.message ?? 'Erreur.', fields: err.fields })
   }

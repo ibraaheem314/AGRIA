@@ -17,7 +17,7 @@ Légende des niveaux de preuve, à ne pas confondre :
 | 3 — Vérifications et plan d'action | Terminée | Ci-dessous |
 | 4 — Budget transparent | Terminée | Ci-dessous |
 | 5 — Conseiller, relecture, synthèse | Terminée | Ci-dessous |
-| 6 — Parcours complet et polissage | À faire | |
+| 6 — Parcours complet et polissage | Terminée | Ci-dessous |
 | 7 — Recette et passation | À faire | |
 
 ## Brique 0 — Préserver et établir la base (11/10/2026)
@@ -151,3 +151,27 @@ Légende des niveaux de preuve, à ne pas confondre :
 **Reste incomplet :** aucune notification (email ou SMS) : le conseiller voit ses demandes en se connectant ; pas de PDF généré par le serveur (impression du navigateur).
 
 **Décisions :** D-030 à D-034.
+
+## Brique 6 — Parcours complet et polissage (11/10/2026)
+
+**Fonctionne :**
+
+- Accueil conforme au cahier des charges : prochaine démarche, points bloquants, état du dossier, dernier retour du conseiller (ou absence de conseiller), budget.
+- Titre d'onglet par page ; focus sur le contenu après navigation ; lien d'évitement ; bandeau hors connexion ; message actionnable en cas de session expirée ; message exact en cas de mauvais mot de passe.
+- Niveaux de titres corrigés sur la synthèse (seule remarque d'axe, modérée).
+
+**Vérifications exécutées :**
+
+| Vérification | Résultat |
+|---|---|
+| axe-core sur 14 écrans (dont un dossier rempli), largeur 360 px | Aucune violation grave ou critique ; aucun défilement horizontal. Sur 8 écrans, toutes catégories confondues : une seule remarque modérée (ordre des titres), corrigée |
+| Clavier seul (ordinateur) | Lien d'évitement, connexion, choix d'un état, enregistrement, focus après navigation : OK |
+| Hors connexion réel (`setOffline`) | Bandeau, échec immédiat et explicite, saisie conservée, reprise au retour du réseau : OK |
+| Session expirée pendant une saisie | Message clair, saisie conservée, reconnexion dans un autre onglet, enregistrement réussi : OK |
+| `python scripts/dev.py check --e2e` | Tout passe : 145 tests pytest, 25 parcours Playwright (et 1 ignoré volontairement : le clavier physique sur téléphone) |
+
+**Défauts trouvés et corrigés :** mise en pause silencieuse des écritures hors ligne, puis renvoi automatique (D-035) ; message de connexion erroné (D-036) ; focus mal placé au premier affichage en développement (effet exécuté deux fois en mode strict).
+
+**Reste incomplet :** aucun essai avec des utilisateurs réels, un lecteur d'écran ou une connexion lente représentative du terrain ; pas de mode hors connexion (non promis).
+
+**Décisions :** D-035 à D-037. Guide d'interface réécrit : [INTERFACE.md](INTERFACE.md).
