@@ -17,7 +17,7 @@ Le code est sur la branche `refonte/fondations`. L'ancien prototype est archivé
 
 ### Actions externes en attente
 
-- **Révoquer les clés** OpenWeather et Agromonitoring (présentes dans l'historique public du dépôt), ainsi que les clés OpenRouter, AirVisual et HuggingFace, et changer le mot de passe email qui figurait dans `.env`. Voir [SECURITE.md](docs/SECURITE.md) §3. Seul le titulaire des comptes peut le faire.
+- **Révoquer les clés** OpenWeather et Agromonitoring (visibles publiquement dans `lib/config.ts` sur `master` et dans l'historique), ainsi que les clés OpenRouter, AirVisual et HuggingFace, et changer le mot de passe email qui figurait dans `.env`. Voir [SECURITE.md](docs/SECURITE.md) §3. Seul le titulaire des comptes peut le faire.
 - Choisir un hébergement avant tout usage partagé (D-006) ; liste de contrôle dans [SECURITE.md](docs/SECURITE.md) §5.
 
 ## Démarrer

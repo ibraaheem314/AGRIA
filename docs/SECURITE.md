@@ -1,44 +1,49 @@
 # Sécurité : incident de clés et règles du dépôt
 
-Mise à jour : 11 octobre 2026 (brique 0). Aucune valeur secrète n'est reproduite dans ce document.
+Mise à jour : 11 octobre 2026 (préparation du pilote, lot 1). Aucune valeur secrète n'est reproduite dans ce document ni dans les sorties des outils.
 
-## 1. Constats vérifiés
+Vérification reproductible : `python scripts/verifier_secrets.py` (ajouter `--historique` pour tout l'historique Git). L'outil compare les valeurs des fichiers `.env` locaux et des motifs génériques de clés avec les fichiers suivis, chaque branche locale et distante récupérée, et le build `frontend/dist`. Il n'affiche que des noms de variables et des emplacements.
 
-| Constat | Méthode | Résultat |
-|---|---|---|
-| Visibilité du dépôt GitHub `ibraaheem314/AGRIA` | `gh repo view` | **Public** |
-| Clé OpenWeather dans l'historique Git | Recherche de la valeur exacte dans `git log --all -p` | **Présente** : écrite en dur dans `lib/config.ts` et `src/pages/WeatherPage.tsx`, commits `667d772` (29/04/2025) et `1f598fc` (01/05/2025) |
-| Clé Agromonitoring dans l'historique Git | Même méthode | **Présente** : `lib/config.ts`, commit `1f598fc` |
-| Clés OpenRouter, AirVisual, HuggingFace, mot de passe email réel | Même méthode | Absentes de l'historique et des fichiers suivis |
-| Clés OpenRouter et OpenWeather dans le build local `dist/` | Recherche des valeurs dans le bundle | Présentes ; `dist/` n'était pas suivi par Git et a été supprimé |
-| Déploiements GitHub / GitHub Pages | API GitHub | Aucun déploiement, aucune page |
-| Autres hébergements du bundle (Netlify, Vercel, serveur personnel…) | — | **Non vérifiable depuis ce poste** |
-| Correspondance « mot de passe email » dans `api/auth.py` | Comparaison des valeurs | Valeur du compte de test par défaut, pas le mot de passe réel |
+## 1. Classement des expositions
 
-## 2. Ce qui est fait, et ce qui ne l'est pas
+Dernière analyse : 11/10/2026, après `git fetch` (lecture seule) du dépôt public `ibraaheem314/AGRIA`.
 
-**Fait (dans le dépôt) :**
+| Élément | Statut | Où | Révocation |
+|---|---|---|---|
+| Clé OpenWeather | **Exposition confirmée, publique** | Version **actuelle** de `lib/config.ts` sur `master` et `origin/master` (branche publique par défaut), et historique (`667d772`, `1f598fc`) | **À effectuer** — aucune confirmation du propriétaire |
+| Clé Agromonitoring | **Exposition confirmée, publique** | Version actuelle de `lib/config.ts` sur `origin/master`, historique (`1f598fc`) | **À effectuer** |
+| Clé OpenRouter | Exposition confirmée **locale** (build `dist/` de l'ancien prototype, supprimé) ; publication **non établie** | Absente de Git | **À effectuer** par précaution |
+| Clé OpenWeather (build) | Même situation que ci-dessus pour le build local | — | Couverte par la ligne OpenWeather |
+| Clé AirVisual, trois jetons HuggingFace | **Exposition non établie** : jamais trouvés dans Git ni dans un build conservé | `.env` locaux uniquement | À effectuer par précaution (variables `VITE_*`, intégrables au navigateur) |
+| Mot de passe du compte email (`.env` racine) | **Exposition non établie** : absent de Git et des builds analysés | `.env` local uniquement | Changement du mot de passe recommandé |
+| Email et mot de passe du compte de test de l'ancien prototype | Valeurs de démonstration, pas des identifiants réels | `api/auth.py` sur `master` et sur l'archive | Aucune (ne protègent rien en service) |
 
-- Plus aucun code ne lit de clé fournisseur ; la refonte ne dépend d'aucun service externe.
-- Les fichiers `.env` contenant les clés ont été retirés du projet et placés dans `.local-archive/prototype/`, dossier ignoré par Git.
-- Le build contenant les clés a été supprimé.
+**Révocations confirmées par le propriétaire : aucune à ce jour.** Une clé absente du code n'est pas une clé révoquée. La validité des anciennes clés n'a pas été testée auprès des fournisseurs, et ne le sera pas.
+
+Branche `refonte/fondations` (courante), fichiers suivis et build actuel : **aucun secret trouvé**.
+
+L'historique Git n'a pas été réécrit et les archives locales n'ont pas été supprimées. Une réécriture ne retirerait d'ailleurs ni les copies ni les clones existants : seule la révocation corrige l'exposition.
+
+## 2. Actions restant au propriétaire
+
+1. **OpenWeather** et **Agromonitoring** : révoquer les clés dans chaque compte fournisseur, puis consulter l'historique d'usage du compte.
+2. **OpenRouter** : révoquer la clé ; vérifier la consommation et la facturation.
+3. **AirVisual** et **HuggingFace** (trois jetons) : révoquer par précaution.
+4. **Compte email** : changer le mot de passe qui figurait dans `.env`.
+5. Si l'ancien prototype a été hébergé ailleurs que sur GitHub (Netlify, Vercel, serveur…) : retirer ce déploiement. Ce n'est pas vérifiable depuis ce poste.
+6. Consigner ci-dessous, pour chaque ligne : date, fournisseur, « révoquée » ou « remplacée », anomalie d'usage constatée. **Ne jamais noter la valeur.**
+7. Seulement ensuite : supprimer `.local-archive/prototype/*.env`, puis décider s'il faut remplacer `lib/config.ts` sur `master` (cela ne retire pas l'historique).
+
+| Date | Élément | Action confirmée par le propriétaire | Anomalie constatée |
+|---|---|---|---|
+| — | — | Aucune à ce jour | — |
+
+## 3. Ce que le dépôt garantit déjà
+
+- Le code de la refonte ne lit aucune clé fournisseur et ne dépend d'aucun service externe.
+- Les anciens `.env` sont dans `.local-archive/prototype/`, ignoré par Git. Le build qui contenait des clés a été supprimé.
 - `.gitignore` refuse tout `.env` sauf les fichiers `*.example`.
-
-**Non fait : une clé retirée du code n'est pas une clé révoquée.** Les clés restent valides tant que le titulaire du compte ne les a pas révoquées. L'historique public de GitHub n'a pas été réécrit : cela demande une autorisation explicite, et une réécriture ne supprime ni les copies ni les clones existants. **La révocation est la seule correction efficace.**
-
-## 3. Actions externes à effectuer par le titulaire des comptes
-
-Par ordre de priorité :
-
-1. **OpenWeather** : révoquer la clé utilisée par le prototype (exposée publiquement), puis consulter l'usage du compte.
-2. **Agromonitoring** : révoquer la clé (exposée publiquement).
-3. **OpenRouter** : révoquer la clé (présente dans un bundle local, éventuellement déployé ailleurs) ; vérifier l'historique de consommation et la facturation.
-4. **AirVisual, HuggingFace (trois jetons)** : révoquer par précaution. Ces valeurs figuraient dans des variables `VITE_*`, que Vite intègre au bundle dès qu'elles sont référencées.
-5. **Compte email** dont le mot de passe figurait dans `.env` (variable `VITE_EMAIL_PASS`) : changer le mot de passe. Pour un envoi applicatif futur, utiliser un mot de passe d'application dédié.
-6. Une fois ces actions faites, supprimer `.local-archive/prototype/*.env`.
-7. Si le prototype a été hébergé ailleurs que sur GitHub : retirer ce déploiement.
-
-À consigner ici une fois réalisé : date, fournisseur, « révoquée/remplacée », anomalies d'usage constatées. Ne jamais noter la valeur.
+- `scripts/verifier_secrets.py` est à lancer avant tout envoi vers GitHub ; il renvoie un code d'erreur si la branche courante ou le build contiennent un secret.
 
 ## 4. Règles pour la refonte
 
