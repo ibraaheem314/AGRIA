@@ -53,3 +53,26 @@ def campaign_for_owner_write(user, campaign_id: int, *, lock: bool = False) -> C
 
 def role_on(user, campaign: Campaign) -> str:
     return "porteur" if campaign.project.owner_id == user.pk else "conseiller"
+
+
+def _lock(campaign: Campaign) -> Campaign:
+    return Campaign.objects.select_for_update().select_related("project").get(pk=campaign.pk)
+
+
+def campaign_for_participant_write(user, campaign_id: int) -> Campaign:
+    """Messages : le porteur ou un conseiller attribué (accès déjà filtré par la lecture)."""
+    campaign = _lock(campaign_for_read(user, campaign_id))
+    if campaign.archived_at is not None:
+        raise PermissionDenied("Ce dossier est archivé : il n'est plus modifiable.")
+    return campaign
+
+
+def campaign_for_advisor_write(user, campaign_id: int) -> Campaign:
+    """Avis : uniquement un conseiller dont l'attribution à ce dossier est active."""
+    campaign = campaign_for_read(user, campaign_id)
+    if not campaign.assignments.filter(advisor=user, ended_at__isnull=True).exists():
+        raise PermissionDenied("Seul un conseiller attribué à ce dossier peut donner un avis.")
+    campaign = _lock(campaign)
+    if campaign.archived_at is not None:
+        raise PermissionDenied("Ce dossier est archivé : il n'est plus modifiable.")
+    return campaign

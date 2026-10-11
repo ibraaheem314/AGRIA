@@ -58,10 +58,11 @@ Pour essayer depuis un téléphone du même réseau : `npm run dev -- --host 0.0
 cd backend
 .venv\Scripts\python manage.py createsuperuser                                   # accès à /admin (attribution des conseillers)
 .venv\Scripts\python manage.py create_account --email c@exemple.sn --name "Nom" --advisor --random-password
+.venv\Scripts\python manage.py assign_advisor --dossier 12 --email c@exemple.sn   # attribuer (--end pour clore)
 .venv\Scripts\python manage.py seed_demo                                         # dossier fictif, compte demonstration@agria.invalid
 ```
 
-L'administration Django (http://127.0.0.1:5173/admin/) sert à attribuer un dossier à un conseiller. Les modèles de contenu, les informations et les démarches n'y sont qu'en lecture.
+L'attribution d'un dossier à un conseiller se fait par `assign_advisor` ou dans l'administration Django (http://127.0.0.1:5173/admin/, fiche de la campagne). Les modèles de contenu, les informations et les démarches n'y sont qu'en lecture.
 
 ## Contrôles
 

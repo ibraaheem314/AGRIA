@@ -29,6 +29,7 @@ backend/
   preparation/    modèles de contenu versionnés, calcul des points à vérifier, plan et démarches
     content/      fichiers JSON des modèles (source de vérité, relus dans Git)
   budget/         postes, calcul pur des montants et totaux (calc.py), historique
+  reviews/        demandes de relecture, avis, messages, décisions, statut du dossier, synthèse
   tests/          tests pytest par brique
 frontend/
   src/app/        routage, mise en page, garde de connexion
@@ -38,7 +39,6 @@ frontend/
 scripts/dev.py    base locale, .env, sauvegarde/restauration, contrôles, serveur de parcours
 ```
 
-Prévu : module `reviews` (brique 5), sur le même modèle.
 
 ## 3. Modèle de données
 
@@ -52,7 +52,11 @@ Compte ─┬─ Projet (profil débutant/producteur, is_demo)
         │           │           └─ Évènement de démarche (ajout seul)
         │           ├─ Poste de budget (catégorie, quantité, unité, prix FCFA, état du prix, source, date, retiré)
         │           │     └─ Évènement de budget (ajout seul, état complet du poste)
-        │           └─ Attribution conseiller (active ou close, jamais effacée)
+        │           ├─ Attribution conseiller (active ou close, jamais effacée)
+        │           ├─ Demande de relecture (versions au moment de la demande)
+        │           ├─ Avis (conseiller, périmètre, versions examinées, verdict, réserves, instantané figé)
+        │           ├─ Message (question, commentaire ou réponse ; cible : dossier, information, démarche, poste)
+        │           └─ Décision (poursuivre, modifier, différer, motifs, versions)
         └─ Modèle de préparation (code, version, contenu JSON, empreinte SHA-256, statut de relecture)
 ```
 
@@ -77,6 +81,9 @@ Compte ─┬─ Projet (profil débutant/producteur, is_demo)
 - Une modification d'information ajoute, dans la même transaction, les démarches devenues nécessaires. Elle ne modifie, ne supprime et ne recrée jamais une démarche existante.
 - Un modèle chargé est immuable : recharger une même version avec un contenu différent est refusé. Un dossier garde la version du modèle avec laquelle son plan a été créé.
 - Une démarche ne peut être terminée tant qu'un de ses prérequis, présent dans le plan, n'est pas terminé.
+- Un avis porte sur la version que le conseiller a lue : l'interface envoie les versions affichées à l'ouverture du formulaire, et le serveur refuse l'avis (409) si une section du périmètre a changé entre-temps.
+- Un avis est « à réexaminer » dès qu'une section de son périmètre change de version (calcul, jamais de suppression). L'instantané conservé permet de relire exactement la version examinée.
+- Le statut du dossier est calculé : archivé, différé, revu (avec ou sans réserves, seulement si l'avis est à jour), en revue, à compléter, prêt pour une relecture, brouillon.
 - Les montants du budget sont calculés par le serveur seul (`budget/calc.py`, en Decimal, sans flottant). Un budget avec un poste incomplet n'est jamais déclaré complet.
 
 ## 4. Accès et sécurité
@@ -84,7 +91,7 @@ Compte ─┬─ Projet (profil débutant/producteur, is_demo)
 | Qui | Lecture | Écriture |
 |---|---|---|
 | Propriétaire du projet | Ses dossiers | Informations, démarches (sauf dossier archivé) |
-| Conseiller attribué (attribution active) | Les dossiers attribués | Rien sur les données du porteur (commentaires et avis : brique 5) |
+| Conseiller attribué (attribution active) | Les dossiers attribués | Avis, messages ; rien sur les données du porteur |
 | Tout autre compte, y compris `is_staff` | Rien : réponse 404 | Rien |
 
 - Contrôle centralisé dans `dossiers/access.py` et appliqué par chaque vue. Les routes React ne protègent rien.

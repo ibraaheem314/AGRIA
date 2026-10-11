@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from budget import calc, services
 from budget.models import BudgetEvent, BudgetLine
 from dossiers.access import campaign_for_owner_write, campaign_for_read
-from dossiers.api import person
+from dossiers.presenters import person
 
 RULES = [
     "Montants en francs CFA entiers.",

@@ -41,6 +41,8 @@ export type FactItem = {
 
 export type DossierSummary = {
   id: number
+  status: { code: string; label: string }
+  pending: { open_questions: number; review_requested: boolean }
   label: string
   archived: boolean
   role: 'porteur' | 'conseiller'
@@ -74,8 +76,8 @@ export type Revision = {
 
 export const dossierKey = (id: number) => ['dossier', id]
 
-export function useDossiers() {
-  return useQuery({ queryKey: ['dossiers'], queryFn: () => api<DossierSummary[]>('/dossiers') })
+export function useDossiers({ enabled = true }: { enabled?: boolean } = {}) {
+  return useQuery({ queryKey: ['dossiers'], queryFn: () => api<DossierSummary[]>('/dossiers'), enabled })
 }
 
 export function useDossier(id: number) {

@@ -5,8 +5,8 @@ from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
 from dossiers.access import campaign_for_owner_write, campaign_for_read
-from dossiers.api import person
 from dossiers.models import Campaign
+from dossiers.presenters import person
 from preparation import services
 from preparation.models import (
     ACTION_STATUSES,

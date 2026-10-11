@@ -62,6 +62,11 @@ export function FactEditPage() {
           {fact.state.source && <p className="mt-1 text-sm text-muted">Source ou précision : {fact.state.source}</p>}
         </Card>
       )}
+      <p>
+        <Link to={`/d/${dossier.id}/relecture?cible=information:${fact.key}#messages`} className="font-medium text-brand-700 underline">
+          Poser une question sur cette information
+        </Link>
+      </p>
       <History dossierId={dossier.id} fact={fact} />
     </div>
   )

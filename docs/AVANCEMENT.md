@@ -16,7 +16,7 @@ Légende des niveaux de preuve, à ne pas confondre :
 | 2 — Identité, projet, campagne | Terminée | Ci-dessous |
 | 3 — Vérifications et plan d'action | Terminée | Ci-dessous |
 | 4 — Budget transparent | Terminée | Ci-dessous |
-| 5 — Conseiller, relecture, synthèse | À faire | |
+| 5 — Conseiller, relecture, synthèse | Terminée | Ci-dessous |
 | 6 — Parcours complet et polissage | À faire | |
 | 7 — Recette et passation | À faire | |
 
@@ -125,3 +125,29 @@ Légende des niveaux de preuve, à ne pas confondre :
 **Reste incomplet :** pas de conversion entre unités (chaque prix est exprimé par l'unité de son poste) ; pas d'import de devis ni de pièce jointe ; pas d'hypothèses de recettes (hors périmètre de la version initiale).
 
 **Décisions :** D-028, D-029.
+
+## Brique 5 — Conseiller, relecture et synthèse (11/10/2026)
+
+**Fonctionne :**
+
+- Attribution explicite d'un dossier à un conseiller (commande `assign_advisor` ou administration), clôture traçable.
+- Demande de relecture par le porteur. Avis du conseiller : auteur, date, périmètre (contexte, plan, budget), versions examinées, conclusion, réserves (obligatoires si « avec réserves »), instantané consultable. Avis refusé si le dossier a changé depuis la lecture ; avis « à réexaminer » après toute modification d'une section relue.
+- Questions et commentaires, rattachés au dossier, à une information, à une démarche ou à un poste de budget ; réponses ; résolution des questions.
+- Décisions (poursuivre, modifier, différer), motifs obligatoires. Archivage (lecture seule ensuite).
+- Statut du dossier calculé, affiché sur l'accueil et dans « Mes dossiers » ; pour le conseiller, demandes et questions en attente.
+- Écrans : Relecture et échanges ; Synthèse imprimable et téléchargeable ; carte « Dernier retour du conseiller » sur l'accueil ; liens « Poser une question » depuis une information, une démarche ou un poste.
+- Sans conseiller attribué : « Aucun conseiller n'est attribué », sans avis ni disponibilité inventés.
+
+**Vérifications exécutées :**
+
+| Vérification | Résultat |
+|---|---|
+| `pytest` | 145/145, dont 22 pour la brique 5 : absence de conseiller, conseiller limité à ses dossiers, porteur et conseiller non attribué sans droit d'avis, attribution close, avis traçable avec instantané, réserves obligatoires, périmètre vide refusé, avis refusé si le dossier a changé pendant la lecture, avis à réexaminer sans effacement, modification hors périmètre sans effet, reprise sans doublon, statuts successifs, question liée à une démarche avec réponse et résolution, cible d'un autre dossier refusée, décision « différer » et archivage, synthèse fidèle (inconnues, budget incomplet, réserves, contenu non relu), export à accès contrôlé, commande `assign_advisor` |
+| Playwright | 16/16 (ordinateur et téléphone), dont le parcours porteur + conseiller complet et la connexion sans cookie CSRF préalable |
+| `python scripts/dev.py check --e2e` | Tout passe |
+
+**Défaut trouvé et corrigé :** connexion refusée (403 CSRF) si elle était envoyée avant l'arrivée du cookie. Corrigé côté client (D-033) et couvert par un parcours.
+
+**Reste incomplet :** aucune notification (email ou SMS) : le conseiller voit ses demandes en se connectant ; pas de PDF généré par le serveur (impression du navigateur).
+
+**Décisions :** D-030 à D-034.

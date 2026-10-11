@@ -9,6 +9,8 @@ import { NewProjectPage } from '../features/dossiers/NewProjectPage'
 import { ProjectPage } from '../features/dossiers/ProjectPage'
 import { TodayPage } from '../features/dossiers/TodayPage'
 import { HelpPage } from '../features/help/HelpPage'
+import { RelecturePage } from '../features/reviews/RelecturePage'
+import { SynthesePage } from '../features/reviews/SynthesePage'
 import { ActionPage } from '../features/plan/ActionPage'
 import { PlanPage } from '../features/plan/PlanPage'
 import { AppLayout } from './AppLayout'
@@ -34,6 +36,8 @@ export function App() {
               <Route path="projet/budget" element={<BudgetPage />} />
               <Route path="plan" element={<PlanPage />} />
               <Route path="plan/:actionId" element={<ActionPage />} />
+              <Route path="relecture" element={<RelecturePage />} />
+              <Route path="synthese" element={<SynthesePage />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFoundPage />} />

@@ -49,7 +49,33 @@ type Options = {
   signal?: AbortSignal
 }
 
-export async function api<T>(path: string, { method = 'GET', body, signal }: Options = {}): Promise<T> {
+/** Obtient le cookie CSRF (posé par /auth/me) s'il n'est pas encore présent. */
+async function ensureCsrfCookie(force = false): Promise<void> {
+  if (!force && readCookie('csrftoken')) return
+  try {
+    await fetch('/api/auth/me', { credentials: 'same-origin', headers: { Accept: 'application/json' } })
+  } catch {
+    /* l'erreur réseau sera signalée par la requête principale */
+  }
+}
+
+export async function api<T>(path: string, options: Options = {}): Promise<T> {
+  const unsafe = UNSAFE.has(options.method ?? 'GET')
+  if (unsafe) await ensureCsrfCookie()
+  try {
+    return await send<T>(path, options)
+  } catch (error) {
+    // Refus CSRF : le serveur a rejeté la requête avant tout traitement (aucun effet).
+    // On renouvelle le jeton et on renvoie une seule fois.
+    if (unsafe && error instanceof ApiError && error.code === 'csrf') {
+      await ensureCsrfCookie(true)
+      return send<T>(path, options)
+    }
+    throw error
+  }
+}
+
+async function send<T>(path: string, { method = 'GET', body, signal }: Options): Promise<T> {
   const headers: Record<string, string> = { Accept: 'application/json' }
   if (body !== undefined) headers['Content-Type'] = 'application/json'
   if (UNSAFE.has(method)) {

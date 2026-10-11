@@ -6,6 +6,7 @@ from agria.health import health
 from budget import api as budget_api
 from dossiers import api as dossiers_api
 from preparation import api as preparation_api
+from reviews import api as reviews_api
 
 handler404 = "agria.errors.not_found"
 handler500 = "agria.errors.server_error"
@@ -47,4 +48,17 @@ urlpatterns = [
         "api/dossiers/<int:campaign_id>/budget/postes/<int:line_id>/retirer",
         budget_api.budget_line_remove,
     ),
+    # Relecture, échanges, décisions et synthèse
+    path("api/dossiers/<int:campaign_id>/relecture", reviews_api.relecture),
+    path("api/dossiers/<int:campaign_id>/demandes-relecture", reviews_api.review_requests),
+    path("api/dossiers/<int:campaign_id>/avis", reviews_api.reviews),
+    path("api/dossiers/<int:campaign_id>/avis/<int:review_id>", reviews_api.review_detail),
+    path("api/dossiers/<int:campaign_id>/messages", reviews_api.comments),
+    path(
+        "api/dossiers/<int:campaign_id>/messages/<int:comment_id>/resoudre",
+        reviews_api.comment_resolve,
+    ),
+    path("api/dossiers/<int:campaign_id>/decisions", reviews_api.decisions),
+    path("api/dossiers/<int:campaign_id>/archiver", reviews_api.archive),
+    path("api/dossiers/<int:campaign_id>/synthese", reviews_api.synthese),
 ]

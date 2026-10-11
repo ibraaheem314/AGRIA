@@ -1,13 +1,16 @@
 import { Link } from 'react-router'
+import { formatDateTime } from '../../shared/format'
 import { Alert, Badge, Card, Loading, PageTitle } from '../../shared/ui'
 import { usePreparation } from '../plan/api'
+import { useRelecture } from '../reviews/api'
 import { useCurrentDossier } from './DossierLayout'
 import { BudgetCard, factCounts } from './ProjectPage'
 
-/** Accueil : où en est mon projet, quelle est ma prochaine action, sur quoi ai-je besoin d'aide ? */
+/** Accueil : prochaine démarche, points bloquants, état du dossier, retours disponibles. */
 export function TodayPage() {
   const dossier = useCurrentDossier()
   const prep = usePreparation(dossier.id)
+  const relecture = useRelecture(dossier.id)
   const counts = factCounts(dossier)
   const owner = dossier.role === 'porteur'
 
@@ -18,7 +21,7 @@ export function TodayPage() {
 
   return (
     <div className="space-y-4">
-      <PageTitle subtitle={`${dossier.project.name} · ${dossier.label} · préparation`}>Aujourd’hui</PageTitle>
+      <PageTitle subtitle={`${dossier.project.name} · ${dossier.label} · état : ${dossier.status.label}`}>Aujourd’hui</PageTitle>
 
       {prep.isPending && <Loading label="Chargement du plan…" />}
       {prep.isError && (
@@ -28,29 +31,33 @@ export function TodayPage() {
         </Alert>
       )}
 
-      <Card>
-        <h2 className="font-semibold">Ma prochaine action</h2>
-        {nextAction ? (
-          <>
-            <p className="mt-1 font-medium">{nextAction.title}</p>
-            {nextAction.explanation && <p className="text-sm text-muted">Pourquoi ? {nextAction.explanation}</p>}
-            <Link to={`/d/${dossier.id}/plan/${nextAction.id}`} className="mt-2 inline-block font-medium text-brand-700 underline">
-              Voir les étapes
-            </Link>
-          </>
-        ) : owner && nextFact ? (
-          <>
-            <p className="mt-1 font-medium">Compléter : {nextFact.label}</p>
-            <p className="text-sm text-muted">Pourquoi ? {nextFact.why}</p>
-            <Link to={`/d/${dossier.id}/projet/${nextFact.key}`} className="mt-2 inline-block font-medium text-brand-700 underline">
-              Compléter cette information
-            </Link>
-            <p className="mt-1 text-sm text-muted">« Je ne sais pas » est une réponse acceptée.</p>
-          </>
-        ) : (
-          prep.isSuccess && <p className="mt-1 text-muted">Aucune démarche ouverte pour l'instant.</p>
-        )}
-      </Card>
+      {!owner && <AdvisorPending dossierId={dossier.id} />}
+
+      {owner && (
+        <Card>
+          <h2 className="font-semibold">Ma prochaine action</h2>
+          {nextAction ? (
+            <>
+              <p className="mt-1 font-medium">{nextAction.title}</p>
+              {nextAction.explanation && <p className="text-sm text-muted">Pourquoi ? {nextAction.explanation}</p>}
+              <Link to={`/d/${dossier.id}/plan/${nextAction.id}`} className="mt-2 inline-block font-medium text-brand-700 underline">
+                Voir les étapes
+              </Link>
+            </>
+          ) : nextFact ? (
+            <>
+              <p className="mt-1 font-medium">Compléter : {nextFact.label}</p>
+              <p className="text-sm text-muted">Pourquoi ? {nextFact.why}</p>
+              <Link to={`/d/${dossier.id}/projet/${nextFact.key}`} className="mt-2 inline-block font-medium text-brand-700 underline">
+                Compléter cette information
+              </Link>
+              <p className="mt-1 text-sm text-muted">« Je ne sais pas » est une réponse acceptée.</p>
+            </>
+          ) : (
+            prep.isSuccess && <p className="mt-1 text-muted">Aucune démarche ouverte pour l'instant.</p>
+          )}
+        </Card>
+      )}
 
       {prep.isSuccess && (
         <Card>
@@ -79,11 +86,39 @@ export function TodayPage() {
         </Card>
       )}
 
+      <Card>
+        <h2 className="font-semibold">Dernier retour du conseiller</h2>
+        {relecture.isPending && <Loading />}
+        {relecture.isError && <p className="mt-1 text-danger-700">Retours indisponibles : {relecture.error.message}</p>}
+        {relecture.data && (
+          <>
+            {relecture.data.advisors.length === 0 && <p className="mt-1">Aucun conseiller n'est attribué à ce dossier pour le moment.</p>}
+            {relecture.data.reviews[0] ? (
+              <div className="mt-1">
+                <p className="font-medium">
+                  {relecture.data.reviews[0].verdict_label}{' '}
+                  {!relecture.data.reviews[0].current && <Badge tone="warn">À réexaminer</Badge>}
+                </p>
+                <p className="text-sm text-muted">
+                  {relecture.data.reviews[0].advisor.display_name} · {formatDateTime(relecture.data.reviews[0].created_at)}
+                </p>
+              </div>
+            ) : (
+              relecture.data.advisors.length > 0 && <p className="mt-1">Aucun retour pour le moment.</p>
+            )}
+            <Link to={`/d/${dossier.id}/relecture`} className="mt-2 inline-block font-medium text-brand-700 underline">
+              Ouvrir la relecture et les échanges
+            </Link>
+          </>
+        )}
+      </Card>
+
       <BudgetCard dossierId={dossier.id} />
 
       <Card>
-        <h2 className="font-semibold">Mon dossier</h2>
-        <p className="mt-1">
+        <h2 className="font-semibold">État du dossier</h2>
+        <p className="mt-1"><Badge tone="info">{dossier.status.label}</Badge></p>
+        <p className="mt-2">
           {counts.total - counts.non_renseigne} information(s) renseignée(s) sur {counts.total}, dont {counts.verifie} vérifiée(s)
           et {counts.inconnu} « je ne sais pas ».
         </p>
@@ -96,8 +131,25 @@ export function TodayPage() {
         <p className="mt-2 flex flex-wrap gap-x-4">
           <Link to={`/d/${dossier.id}/projet`} className="font-medium text-brand-700 underline">Éléments connus</Link>
           <Link to={`/d/${dossier.id}/plan`} className="font-medium text-brand-700 underline">Points à vérifier</Link>
+          <Link to={`/d/${dossier.id}/synthese`} className="font-medium text-brand-700 underline">Synthèse</Link>
         </p>
       </Card>
     </div>
+  )
+}
+
+function AdvisorPending({ dossierId }: { dossierId: number }) {
+  const dossier = useCurrentDossier()
+  return (
+    <Card>
+      <h2 className="font-semibold">En attente de votre part</h2>
+      <ul className="mt-1 space-y-1">
+        <li>{dossier.pending.review_requested ? 'Une relecture est demandée.' : 'Aucune relecture demandée.'}</li>
+        <li>{dossier.pending.open_questions} question(s) ouverte(s).</li>
+      </ul>
+      <Link to={`/d/${dossierId}/relecture`} className="mt-2 inline-block font-medium text-brand-700 underline">
+        Relecture et échanges
+      </Link>
+    </Card>
   )
 }

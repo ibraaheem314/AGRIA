@@ -12,25 +12,9 @@ from dossiers.access import (
     role_on,
     visible_campaigns,
 )
-from dossiers.models import Campaign, Fact, FactRevision
-
-
-def person(user) -> dict | None:
-    return {"id": user.pk, "display_name": user.display_name} if user else None
-
-
-def fact_state(fact: Fact | None) -> dict:
-    if fact is None:
-        return {"status": "non_renseigne", "value": None, "source": "", "row_version": 0,
-                "updated_at": None, "updated_by": None}  # fmt: skip
-    return {
-        "status": fact.status,
-        "value": fact.value,
-        "source": fact.source,
-        "row_version": fact.row_version,
-        "updated_at": fact.updated_at,
-        "updated_by": person(fact.updated_by),
-    }
+from dossiers.models import Campaign, FactRevision
+from dossiers.presenters import fact_state, person
+from reviews.sections import dossier_status, pending_items
 
 
 def campaign_summary(campaign: Campaign, user) -> dict:
@@ -50,6 +34,8 @@ def campaign_summary(campaign: Campaign, user) -> dict:
             "is_demo": project.is_demo,
             "owner": person(project.owner),
         },
+        "status": dossier_status(campaign),
+        "pending": pending_items(campaign),
     }
 
 

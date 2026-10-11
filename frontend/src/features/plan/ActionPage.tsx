@@ -83,6 +83,11 @@ export function ActionPage() {
       )}
 
       {editable && <StatusForm dossierId={dossier.id} action={action} />}
+      <p>
+        <Link to={`/d/${dossier.id}/relecture?cible=demarche:${action.id}#messages`} className="font-medium text-brand-700 underline">
+          Poser une question sur cette démarche
+        </Link>
+      </p>
       <ActionHistory dossierId={dossier.id} actionId={action.id} />
     </div>
   )

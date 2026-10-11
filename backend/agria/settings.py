@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "dossiers",
     "preparation",
     "budget",
+    "reviews",
 ]
 
 MIDDLEWARE = [

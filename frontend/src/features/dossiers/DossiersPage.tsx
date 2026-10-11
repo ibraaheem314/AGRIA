@@ -65,6 +65,9 @@ function DossierList({ title, items }: { title: string; items: DossierSummary[] 
             <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted">
               {d.project.profile_label} · modifié le {formatDateTime(d.updated_at)}
               {d.role === 'conseiller' && <> · porteur : {d.project.owner.display_name}</>}
+              <Badge tone="info">{d.status.label}</Badge>
+              {d.pending.review_requested && <Badge tone="warn">Relecture demandée</Badge>}
+              {d.pending.open_questions > 0 && <Badge tone="warn">{d.pending.open_questions} question(s) ouverte(s)</Badge>}
               {d.project.is_demo && <Badge tone="warn">Démonstration</Badge>}
               {d.archived && <Badge>Archivé</Badge>}
             </p>

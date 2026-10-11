@@ -176,6 +176,11 @@ function LineItem({
         </p>
       )}
       {line.notes && <p className="mt-1 text-sm text-muted">{line.notes}</p>}
+      <p className="mt-1 text-sm">
+        <Link to={`/d/${dossierId}/relecture?cible=poste:${line.id}#messages`} className="text-brand-700 underline">
+          Poser une question<span className="sr-only"> sur « {line.label} »</span>
+        </Link>
+      </p>
       {remove.error && <p role="alert" className="mt-2 text-sm text-danger-700">{remove.error.message}</p>}
       {owner && (
         <div className="mt-2 flex flex-wrap gap-2">
