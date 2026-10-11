@@ -141,6 +141,8 @@ def login(email: str) -> Client:
 
 
 def main() -> int:
+    if sys.version_info < (3, 12):  # noqa: UP036 (refuse un interpréteur trop ancien)
+        raise SystemExit("Python 3.12+ requis : lancer ce script avec backend/.venv.")
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8")

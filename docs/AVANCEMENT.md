@@ -217,3 +217,29 @@ Tous les scénarios ont été exécutés le 11/10/2026 sur le poste de développ
 4. **Aucune validation terrain** : enquête G1, choix de zone, culture et conseiller, consentement et conservation des données.
 5. Fonctions absentes, non promises : notifications, récupération de mot de passe par email, mode hors connexion, langues autres que le français.
 6. CI GitHub écrite mais jamais exécutée (aucun envoi vers GitHub n'a été fait).
+
+---
+
+# Préparation du pilote terrain (à partir du 11/10/2026)
+
+Ces lots ne modifient pas le périmètre fonctionnel. Ils sécurisent l'environnement et préparent le terrain. **Aucune validation terrain ni mise en service n'est réalisée.**
+
+## Lot 1 — Sécuriser les conditions de travail (11/10/2026)
+
+- `scripts/verifier_secrets.py` analyse les fichiers suivis, toutes les branches locales et distantes récupérées, le build et, en option, l'historique. Il n'affiche jamais une valeur.
+- Résultat : branche courante et build sans secret. Clés OpenWeather et Agromonitoring présentes dans la **version actuelle** de `lib/config.ts` sur `origin/master` (branche publique par défaut), en plus de l'historique.
+- Aucune révocation confirmée par le propriétaire. Actions restantes : [SECURITE.md](SECURITE.md) §2.
+
+## Lot 2 — Runtime Python 3.12 (11/10/2026)
+
+| Vérification (avec `backend/.venv` en Python 3.12.10) | Résultat |
+|---|---|
+| Installation de Python 3.12.10 (installateur python.org, signature PSF vérifiée, utilisateur seul, sans élévation) | OK |
+| `pip install -r requirements-dev.txt` puis `pip check` | OK ; mêmes versions qu'en 3.10, hors `exceptiongroup` et `tomli` (inutiles en 3.12) |
+| `scripts/dev.py check --e2e` | ruff, format, migrations, **147 pytest**, eslint, TypeScript, build : OK ; Playwright **29 réussis**, 1 ignoré (clavier sur téléphone) |
+| `scripts/recette.py` | Redémarrage, restauration, session et CSRF par HTTP : OK ; bases dédiées supprimées, base de travail intacte |
+| Refus d'un Python 3.10 (scripts et `django.setup()`) | Message explicite, arrêt |
+
+Obstacles rencontrés et levés : l'installateur attendait une élévation UAC pour le lanceur `py.exe` global (installation relancée sans ce lanceur) ; Git Bash convertissait `/quiet` en chemin (installateur relancé depuis PowerShell) ; `cmd.exe` refusait le chemin relatif du Python dans la configuration Playwright (chemin absolu).
+
+Retour arrière possible : `backend/.venv-py310` conservé jusqu'à validation par le propriétaire ([DEMARRAGE.md](DEMARRAGE.md)). CI GitHub : configurée sur 3.12, **non exécutée**.

@@ -1,4 +1,4 @@
-# Dépendances d'exécution, versions figées (installées et testées sous Python 3.10, Windows).
+# Dépendances d'exécution, versions figées (installées et testées sous Python 3.12, Windows et CI Linux).
 # Mise à jour : modifier une ligne, réinstaller dans un environnement neuf, relancer les contrôles.
 Django==5.2.18
 djangorestframework==3.18.3

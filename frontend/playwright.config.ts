@@ -1,8 +1,14 @@
 import { defineConfig, devices } from '@playwright/test'
+import path from 'node:path'
 
 // Parcours exécutés contre une base dédiée (agria_e2e, recréée à chaque lancement)
 // et des ports distincts du développement : 8001 (Django) et 5174 (Vite).
-const python = process.platform === 'win32' ? 'python' : 'python3'
+// Le Python de backend/.venv (3.12) lance aussi les scripts : jamais celui du PATH.
+const python = path.resolve(
+  import.meta.dirname,
+  '../backend/.venv',
+  process.platform === 'win32' ? 'Scripts/python.exe' : 'bin/python',
+)
 
 export default defineConfig({
   testDir: './e2e',
@@ -25,7 +31,7 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: `${python} ../scripts/dev.py e2e-server --port 8001`,
+      command: `"${python}" ../scripts/dev.py e2e-server --port 8001`,
       url: 'http://127.0.0.1:8001/api/health',
       timeout: 120_000,
       reuseExistingServer: false,

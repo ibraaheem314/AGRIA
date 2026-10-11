@@ -22,19 +22,20 @@ Le code est sur la branche `refonte/fondations`. L'ancien prototype est archivé
 
 ## Démarrer
 
-Prérequis : Python 3.10+ (3.12+ conseillé), Node 22.12+, binaires PostgreSQL 16+. Aucune clé de service externe.
+Prérequis : Python 3.12, Node 22.12+, binaires PostgreSQL 16+. Aucune clé de service externe.
 
 ```powershell
-python scripts/dev.py env                 # backend/.env avec une clé secrète aléatoire
-python scripts/dev.py db-init             # PostgreSQL propre au projet (127.0.0.1:5444)
-python -m venv backend/.venv
-backend\.venv\Scripts\python -m pip install -r backend/requirements-dev.txt
+py -3.12 -m venv backend\.venv            # ou le python.exe de Python 3.12 (voir DEMARRAGE)
+backend\.venv\Scripts\python -m pip install -r backend\requirements-dev.txt
+backend\.venv\Scripts\python scripts\dev.py env       # backend/.env avec une clé secrète aléatoire
+backend\.venv\Scripts\python scripts\dev.py db-init   # PostgreSQL propre au projet (127.0.0.1:5444)
 cd backend; .venv\Scripts\python manage.py migrate; .venv\Scripts\python manage.py load_content; cd ..
 cd frontend; npm ci; cd ..
 # Terminal 1 :  cd backend; .venv\Scripts\python manage.py runserver 127.0.0.1:8000
 # Terminal 2 :  cd frontend; npm run dev        → http://127.0.0.1:5173
-python scripts/dev.py check --e2e         # tous les contrôles
-python scripts/recette.py                 # redémarrage et restauration en conditions réelles
+backend\.venv\Scripts\python scripts\dev.py check --e2e   # tous les contrôles
+backend\.venv\Scripts\python scripts\recette.py          # redémarrage et restauration en conditions réelles
+backend\.venv\Scripts\python scripts\verifier_secrets.py # avant tout envoi vers GitHub
 ```
 
 Guide complet, comptes conseiller, données de démonstration, sauvegardes : [docs/DEMARRAGE.md](docs/DEMARRAGE.md).
