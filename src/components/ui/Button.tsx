@@ -8,13 +8,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-primary hover:bg-primary-600 text-white shadow-sm hover:shadow-glow-sm font-medium",
+        primary: "bg-primary hover:bg-primary-600 text-white shadow-sm hover:shadow-md font-medium",
         secondary: "bg-secondary hover:bg-secondary-600 text-white shadow-sm font-medium",
         accent: "bg-accent hover:bg-accent-600 text-white shadow-sm font-medium",
-        outline: "bg-transparent border border-white/30 text-white hover:border-primary/60 hover:text-white",
-        ghost: "bg-transparent hover:bg-white/10 text-white/80 hover:text-white",
-        link: "bg-transparent underline-offset-4 hover:underline text-primary hover:text-primary-400 p-0 height-auto",
-        season: "border border-season-autumn/40 bg-season-autumn/15 text-season-autumn hover:bg-season-autumn/25 hover:border-season-autumn/50 font-medium",
+        outline: "bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-200",
+        ghost: "bg-transparent hover:bg-gray-100 text-gray-700 hover:text-gray-900 transition-all duration-200",
+        link: "bg-transparent underline-offset-4 hover:underline text-primary hover:text-primary-600 p-0 height-auto",
         danger: "bg-red-600 hover:bg-red-700 text-white shadow-sm font-medium",
         success: "bg-success hover:bg-success-600 text-white shadow-sm font-medium",
       },
@@ -62,7 +61,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {loading ? (
           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
         ) : icon ? (
-          <span className="mr-2 icon-highlight">{icon}</span>
+          <span className="mr-2">{icon}</span>
         ) : null}
         {children}
       </button>

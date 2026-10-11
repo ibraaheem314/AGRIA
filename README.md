@@ -1,149 +1,87 @@
-# AGRIA - Plateforme d'Agriculture Durable
+# AGRIA
 
-## À propos du projet
+**Préparer sa campagne agricole au Sénégal, comprendre ses contraintes et avancer avec un accompagnement adapté.**
 
-AGRIA est une plateforme web moderne dédiée à l'agriculture durable, offrant aux agriculteurs des outils intelligents pour optimiser leurs pratiques agricoles, réduire leur impact environnemental et améliorer leurs rendements.
+Statut au **11 octobre 2026** : prototype logiciel existant ; nouvelle spécification de préparation accompagnée d'une campagne, à valider sur le terrain. Aucun partenaire de pilote, client payant ou résultat agronomique n'est établi dans les éléments disponibles.
 
-La plateforme combine différentes sources de données en temps réel (météo, qualité de l'air, données climatiques) et utilise l'intelligence artificielle pour fournir des analyses et des recommandations personnalisées.
+## Notre trajectoire
 
-## Fonctionnalités principales
+Un territoire, une filière, un problème, un type de client, une décision à améliorer.
 
-- **Tableau de bord interactif** avec indicateurs de performance et scores de durabilité
-- **Suivi météorologique et climatique** en temps réel avec visualisation des données
-- **Assistant IA (AgriBot)** pour répondre aux questions sur l'agriculture durable
-- **Analyse de sol et recommandations** basées sur les données de terrain
-- **Suivi des ressources** (eau, énergie, empreinte carbone)
-- **Planification de tâches** avec priorisation intelligente
-- **Marketplace** pour l'achat de produits et services agricoles durables
+1. Comprendre la préparation des débutants avec un projet concret et des producteurs actifs peu accompagnés.
+2. Choisir une zone, une culture candidate et un parcours commun, ou un seul groupe si leurs besoins divergent.
+3. Tester manuellement quelques dossiers avec un conseiller : **contexte → vérifications → démarches → relecture → décision**.
+4. Construire les six fonctions du produit initial après un premier signal d'utilité, puis mesurer usage, qualité et coûts.
 
-## Technologies utilisées
+La vision à terme couvre préparation, suivi et bilan de campagne. La première version couvre seulement la préparation. Le maraîchage est candidat, sans culture ni zone encore choisies. Capteurs, météo et IA ne sont pas requis au lancement.
 
-### Frontend
-- React avec TypeScript
-- React Router pour la navigation
-- Framer Motion pour les animations
-- TailwindCSS pour le styling
-- Lucide React pour les icônes
+**Prochain jalon : éprouver une fiche de préparation avec les deux profils et identifier un conseiller ainsi que des participants au Sénégal.** L'ancien choix irrigation/conservation est supersédé, pas ajouté comme seconde gamme.
 
-### Backend
-- API Python avec serveur HTTP natif
-- Intégration avec diverses APIs externes:
-  - OpenWeather pour les données météorologiques
-  - AirVisual pour la qualité de l'air
-  - Agromonitoring pour les données climatiques agricoles
-  - OpenAI pour l'assistant agricole intelligent
+## Lire et décider
 
-## Installation et démarrage
+| Document de référence | Rôle |
+|---|---|
+| [Produit : vision et fonctions initiales](docs/PRODUIT.md) | Écrans, six fonctions indispensables, exclusions et recette |
+| [Stratégie produit](docs/STRATEGIE.md) | Objectif, cible, proposition de valeur et critères de choix |
+| [Roadmap](ROADMAP.md) | Ordre de travail, responsables fonctionnels, dépendances et critères de passage |
+| [Plan de refonte](docs/PLAN_REFONTE.md) | Garder, retirer, refondre ou polir ; travaux techniques vérifiables |
+| [Enquête et protocole de pilote](docs/VALIDATION_TERRAIN.md) | Entretiens, fiche de préparation et test manuel du service |
+| [Architecture](docs/ARCHITECTURE.md) | État actuel et cible conditionnelle, explicitement séparés |
+| [Registre des décisions](docs/DECISIONS.md) | Arbitrages, inconnues et règles de changement de cap |
+| [Repères de marché](docs/MARCHE_SENEGAL.md) | Sources publiques, limites de preuve et questions à vérifier |
 
-### Prérequis
-- Node.js (v14+)
-- Python (v3.8+)
-- Clés API pour les services externes (référez-vous au fichier `.env.example`)
+Les dates et statuts d'exécution font foi dans la roadmap. Les décisions produit font foi dans la stratégie et leur historique dans le registre. Les guides techniques décrivent le code observé ; ils ne prouvent pas l'achèvement de la refonte.
 
-### Configuration
-1. Clonez le dépôt
-   ```bash
-   git clone https://github.com/ibraaheem314/AGRIA.git
-   cd AGRIA
-   ```
+## Ce qui existe aujourd'hui
 
-2. Installez les dépendances frontend
-   ```bash
-   npm install
-   ```
+| Composant | Réalité observée |
+|---|---|
+| React / TypeScript / Vite / Tailwind | Interface réutilisable et routage |
+| Assistant | Appel OpenRouter depuis le navigateur ; secours par textes prédéfinis |
+| Météo | Appels OpenWeather depuis le navigateur ; simulations dans certains cas |
+| Authentification Flask | Comptes en mémoire et mécanisme JWT de prototype |
+| Profil, contact et newsletter | Plusieurs opérations simulent une réussite sans persistance ou envoi |
+| Boutique et consultants | Données de démonstration |
+| Parcelles historiques | Écrans supprimés du dossier de travail ; exemples examinés fondés sur des données fictives |
+| Capteurs / pilote | Aucune chaîne de capteurs ni validation terrain établie |
 
-3. Créez un fichier `.env` à la racine du projet avec vos clés API:
-   ```
-   VITE_OPEN_ROUTER_KEY=votre_clé_openrouter
-   VITE_HUGGING_FACE_TOKEN_1=votre_clé_huggingface_1
-   VITE_HUGGING_FACE_TOKEN_2=votre_clé_huggingface_2
-   VITE_HUGGING_FACE_TOKEN_3=votre_clé_huggingface_3
-   VITE_OPENWEATHER_API_KEY=votre_clé_openweather
-   VITE_AIRVISUAL_API_KEY=votre_clé_airvisual
-   VITE_AGROMONITORING_API_KEY=votre_clé_agromonitoring
-   ```
+Le dépôt contient un refactor important non commité. Préserver et examiner cet état avant toute suppression de code.
 
-4. Installez les dépendances Python (si nécessaire)
-   ```bash
-   pip install numpy
-   ```
+### Limites avant usage réel
 
-### Démarrage
-1. Lancez le serveur backend Python
-   ```bash
-   cd api
-   chmod +x run_server.sh
-   ./run_server.sh
-   ```
+- Les clés OpenRouter et OpenWeather configurées localement ont été retrouvées dans le bundle existant lors de l'audit ; rotation et migration serveur restent à faire.
+- Le profil peut annoncer un changement de mot de passe qui n'a pas eu lieu.
+- Les chiffres commerciaux affichés ne sont pas étayés dans le dépôt.
+- La présence d'un JWT ou d'une route React protégée ne garantit pas la sécurité serveur.
+- La simulation et les conseils prédéfinis ne sont pas des mesures ni une validation agronomique.
 
-2. Dans un autre terminal, lancez l'application frontend
-   ```bash
-   npm run dev
-   ```
+**Ce dépôt ne constitue pas un service prêt pour un pilote réel.** Voir les tâches P0 et le jalon de préparation dans la [roadmap](ROADMAP.md).
 
-3. Accédez à l'application via `http://localhost:5173`
+## Travailler sur le prototype
 
-## Structure du projet
+Consulter la [configuration](CONFIGURATION_API.md) avant tout lancement : Vite charge les fichiers d'environnement existants. Ne pas lui fournir de secret de fournisseur.
 
-```
-agritech/
-├── api/                # Backend Python
-│   └── main.py         # Serveur HTTP et endpoints API
-├── lib/                # Bibliothèques partagées
-│   ├── api/            # Services API pour la communication avec les APIs externes
-│   │   ├── weather.ts  # Service météo
-│   │   ├── climate.ts  # Service climat
-│   │   ├── airQuality.ts # Service qualité de l'air
-│   │   └── chatbot.ts  # Service assistant IA
-│   └── config.ts       # Configuration (clés API, URLs)
-├── hooks/              # Hooks React personnalisés
-│   ├── useWeather.ts   # Hook pour les données météo
-│   ├── useClimate.ts   # Hook pour les données climatiques
-│   ├── useChatbot.ts   # Hook pour l'assistant IA
-│   └── usePythonApi.ts # Hook pour l'API Python
-├── src/
-│   ├── components/     # Composants React
-│   │   ├── ai/         # Composants liés à l'IA
-│   │   ├── layout/     # Layouts et navigation
-│   │   ├── marketplace/# Composants du marketplace
-│   │   ├── resources/  # Composants ressources et articles
-│   │   ├── sustainability/ # Composants liés à la durabilité
-│   │   ├── tasks/      # Gestion des tâches
-│   │   ├── ui/         # Composants UI réutilisables
-│   │   └── weather/    # Composants météo
-│   ├── pages/          # Pages de l'application
-│   │   ├── Dashboard.tsx # Tableau de bord principal
-│   │   ├── WeatherPage.tsx # Page météo et climat
-│   │   └── Home.tsx    # Page d'accueil
-│   ├── utils/          # Utilitaires
-│   └── App.tsx         # Point d'entrée React avec routes
-└── env.d.ts            # Définitions TypeScript pour les variables d'environnement
+Avec les dépendances déjà installées, depuis la racine :
+
+```powershell
+npm.cmd run dev -- --host 127.0.0.1
+npm.cmd run lint
+.\node_modules\.bin\tsc.cmd --noEmit -p tsconfig.app.json
 ```
 
-## APIs utilisées
+Pour une installation reproductible du frontend, utiliser `npm.cmd ci` après vérification de la configuration locale. L'installation propre n'a pas été validée dans cet audit.
 
-- **OpenWeather API**: Fournit des données météorologiques en temps réel
-- **AirVisual API**: Fournit des données sur la qualité de l'air
-- **Agromonitoring API**: Fournit des données climatiques et agricoles
-- **OpenRouter/Mistral API**: Alimente l'assistant IA pour les conseils agricoles
+La commande `npm.cmd run build` existe mais écrit dans `dist/` et peut embarquer les secrets encore référencés par le frontend. Son succès ne vaut ni validation TypeScript ni autorisation de déploiement. Le backend a des dépendances à remettre en cohérence avant de documenter un démarrage reproductible.
 
-## Déploiement
+Guides : [frontend](README_FRONTEND.md), [backend](api/README.md), [configuration](CONFIGURATION_API.md), [interface](COULEURS_MINIMALISTES.md).
 
-Pour le déploiement en production:
+## Dernière vérification connue
 
-1. Construisez l'application React
-   ```bash
-   npm run build
-   ```
+Audit du 11 octobre 2026, avant la refonte documentaire :
 
-2. Configurez votre serveur web (Apache/Nginx) pour servir le contenu de `dist/`
+- Build Vite : réussi avec les dépendances locales, sortie temporaire.
+- TypeScript : échec.
+- ESLint avec `--quiet` : 52 erreurs.
+- Services externes avec clés réelles, installation backend propre et validation terrain : non testés.
 
-3. Configurez votre serveur Python avec gunicorn ou un autre serveur WSGI
-
-## Contribuer
-
-Les contributions sont les bienvenues! N'hésitez pas à ouvrir une issue ou à soumettre une pull request.
-
-## Licence
-
-Ce projet est sous licence MIT - voir le fichier LICENSE pour plus de détails.
+La présente refonte met à jour la documentation. Elle n'annonce pas la réalisation des corrections applicatives.

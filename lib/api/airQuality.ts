@@ -230,8 +230,4 @@ function getRecommendations(aqi: number): string {
   }
 }
 
-// La fonction getSimulatedAirQualityData n'est plus utilisée mais conservée pour référence
-function getSimulatedAirQualityData(lat: number, lon: number): AirQualityData {
-  // Cette fonction n'est plus appelée
-  throw new Error("Les données simulées ne sont plus autorisées");
-} 
+ 

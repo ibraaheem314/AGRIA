@@ -2,213 +2,207 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-@import './styles/theme.css';
-@import './styles/typography.css';
-@import './styles/colors.css';
-@import './styles/variables.css';
+/* 🎨 COMPOSANTS MINIMALISTES OPTIMISÉS */
 
 @layer components {
-  /* Card components */
+  /* Cards minimalistes */
   .card {
-    @apply bg-surface border border-subtle rounded-xl transition-all duration-300;
+    @apply bg-white border border-gray-200 rounded-lg p-6 transition-all duration-200;
   }
   
   .card-hover {
-    @apply hover:border-green-500/80 hover:shadow-glow-green;
+    @apply hover:border-gray-300 hover:shadow-md hover:-translate-y-0.5;
   }
   
-  .card-gradient {
-    @apply bg-gradient-to-br from-dark-surface to-dark;
+  /* Buttons minimalistes */
+  .btn-primary {
+    @apply bg-gray-900 text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-200;
   }
   
-  /* Glass morphism */
-  .glass-panel {
-    @apply backdrop-blur-md bg-white/5 border border-subtle rounded-xl;
+  .btn-secondary {
+    @apply bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-colors duration-200;
   }
   
-  .glass-card {
-    @apply backdrop-blur-sm bg-black/50 border border-green-500/10 rounded-xl shadow-lg;
+  .btn-ghost {
+    @apply bg-transparent text-gray-600 font-medium py-2 px-4 rounded-lg hover:text-gray-900 hover:bg-gray-50 transition-colors duration-200;
   }
   
-  /* Typography */
+  /* Typography minimaliste */
   .heading-1 {
-    @apply text-3xl md:text-4xl lg:text-5xl font-light;
+    @apply text-3xl md:text-4xl font-light text-gray-900 leading-tight;
   }
   
   .heading-2 {
-    @apply text-2xl md:text-3xl font-light;
+    @apply text-2xl md:text-3xl font-light text-gray-900 leading-tight;
   }
   
   .heading-3 {
-    @apply text-xl font-light;
+    @apply text-lg font-medium text-gray-900;
   }
   
   .subtitle {
-    @apply text-secondary text-lg md:text-xl;
+    @apply text-gray-600 text-base md:text-lg font-normal;
   }
   
-  /* Layouts */
+  /* Layouts optimisés */
   .section {
-    @apply py-16 md:py-24 px-4 sm:px-6 lg:px-8 relative;
+    @apply py-12 md:py-16 px-4 relative;
   }
   
   .container-custom {
-    @apply max-w-7xl mx-auto;
+    @apply max-w-6xl mx-auto;
   }
   
-  /* Backgrounds */
-  .bg-gradient-primary {
-    @apply bg-gradient-green;
+  /* Inputs minimalistes */
+  .input-field {
+    @apply bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-gray-900 focus:ring-0 transition-colors duration-200;
   }
   
-  .bg-gradient-secondary {
-    @apply bg-gradient-gold;
-  }
-  
-  /* Text highlights */
-  .highlight {
-    @apply text-gradient-green;
-  }
-  
-  /* Buttons */
-  .btn-primary {
-    @apply bg-gradient-green text-white font-medium rounded-lg shadow-md transition-all duration-300 hover-glow;
-  }
-  
-  .btn-accent {
-    @apply bg-gold-500 text-black font-medium rounded-full shadow-md hover:shadow-gold hover:bg-gold-400 transition-all duration-300;
-  }
-  
-  .btn-outline {
-    @apply border border-white/20 text-white font-medium rounded-lg hover:bg-white/5 transition-all duration-300;
-  }
-  
-  /* Hover effects */
+  /* Micro-interactions optimisées */
   .hover-lift {
-    @apply transition-transform duration-300 hover:-translate-y-1;
+    @apply transition-transform duration-200 hover:-translate-y-0.5;
   }
   
-  .hover-glow {
-    transition: box-shadow 0.3s;
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
   }
   
-  .hover-glow:hover {
-    box-shadow: 0 0 20px rgba(74, 124, 89, 0.3);
+  /* États et feedback */
+  .state-success {
+    @apply text-green-600;
   }
   
-  /* Patterns */
-  .bg-pattern-grid {
-    background-image: var(--pattern-grid);
+  .state-warning {
+    @apply text-yellow-500;
   }
   
-  .bg-pattern-dots {
-    background-image: var(--pattern-dots);
+  .state-error {
+    @apply text-red-500;
   }
   
-  .bg-pattern-waves {
-    background-image: var(--pattern-waves);
+  .state-info {
+    @apply text-blue-500;
   }
   
-  .bg-pattern-garden {
-    background-image: var(--pattern-garden);
+  /* Performance optimisations */
+  .will-change-transform {
+    will-change: transform;
   }
   
-  .bg-pattern-leaves {
-    background-image: var(--pattern-leaves);
+  .will-change-opacity {
+    will-change: opacity;
   }
   
-  .bg-pattern-soil {
-    background-image: var(--pattern-soil);
+  /* Loading states */
+  .skeleton {
+    @apply bg-gray-200 animate-pulse rounded;
   }
   
-  .bg-pattern-rain {
-    background-image: var(--pattern-rain);
-  }
-  
-  /* Custom scrollbar */
-  .styled-scrollbar {
-    @apply overflow-auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-green-500) var(--color-dark);
-  }
-  
-  .styled-scrollbar::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  .styled-scrollbar::-webkit-scrollbar-track {
-    background: var(--color-dark);
-    border-radius: 4px;
-  }
-  
-  .styled-scrollbar::-webkit-scrollbar-thumb {
-    background-color: var(--color-green-500);
-    border-radius: 4px;
-  }
-  
-  /* Animations */
-  .animate-fade-in {
-    animation: fadeIn 0.8s ease-out forwards;
-  }
-  
-  .animate-slide-up {
-    animation: slideUp 0.8s ease-out forwards;
-  }
-  
-  .animate-float {
-    animation: float 5s ease-in-out infinite;
-  }
-  
-  .stagger-delay-1 {
-    animation-delay: 0.1s;
-  }
-  
-  .stagger-delay-2 {
-    animation-delay: 0.2s;
-  }
-  
-  .stagger-delay-3 {
-    animation-delay: 0.3s;
+  .loading-spinner {
+    @apply animate-spin rounded-full border-2 border-gray-300 border-t-gray-900;
   }
 }
 
+/* 🎨 STYLES GLOBAUX OPTIMISÉS */
+
+/* Reset global minimaliste */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
 body {
-  background-color: var(--color-black);
-  color: var(--color-text-primary);
-  font-family: var(--font-family-main);
-  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #ffffff;
+  color: #171717;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 10px rgba(64, 140, 84, 0.1);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(64, 140, 84, 0.3);
-  }
+/* Layout global */
+#root {
+  min-height: 100vh;
+  width: 100%;
 }
 
+/* Conteneurs principaux */
+main {
+  max-width: 1536px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+section {
+  width: 100%;
+  position: relative;
+}
+
+/* Images responsives */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Sélection de texte */
+::selection {
+  background-color: #171717;
+  color: #ffffff;
+}
+
+/* Scrollbar minimaliste */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #d4d4d4 #f5f5f5;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d4d4d4;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a3a3a3;
+}
+
+/* Focus states améliorés */
+:focus-visible {
+  outline: 2px solid #171717;
+  outline-offset: 2px;
+}
+
+/* Animations optimisées */
 @keyframes fadeIn {
   from {
     opacity: 0;
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -216,72 +210,81 @@ body {
   }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
   }
-  50% {
-    transform: translateY(-10px);
+  100% {
+    background-position: 468px 0;
   }
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
 }
 
-::selection {
-  background-color: var(--color-green-500);
-  color: white;
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
 }
 
-/* Style personnalisé pour la scrollbar */
-.styled-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.animate-shimmer {
+  animation: shimmer 1.2s ease-in-out infinite;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 936px 100%;
 }
 
-.styled-scrollbar::-webkit-scrollbar-track {
-  background: rgb(var(--muted));
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .section {
+    @apply py-8 px-4;
   }
-
-.styled-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(var(--primary), 0.6);
-  border-radius: 3px;
+  
+  .container-custom {
+    @apply px-4;
+  }
+  
+  .heading-1 {
+    @apply text-2xl;
+  }
+  
+  .heading-2 {
+    @apply text-xl;
+  }
 }
 
-.styled-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(var(--primary), 0.8);
+/* États d'interaction optimisés */
+.interactive {
+  @apply transition-colors duration-200 cursor-pointer;
 }
 
-/* Pattern de grille subtil pour les arrière-plans */
-.bg-grid-pattern {
-  background-image: 
-    linear-gradient(rgba(var(--primary), 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(var(--primary), 0.05) 1px, transparent 1px);
-  background-size: 20px 20px;
+.interactive:hover {
+  @apply text-green-600;
 }
 
-/* Effet de verre dépoli pour les cartes et éléments UI */
-.bg-glass {
-  background: rgba(var(--muted), 0.3);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(var(--primary), 0.1);
+/* Performance optimizations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
-/* Animation de dégradé subtile */
-.bg-gradient-animate {
-  background: linear-gradient(
-    -45deg,
-    rgba(var(--primary), 0.3),
-    rgba(var(--secondary), 0.3),
-    rgba(var(--accent), 0.3)
-  );
-  background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
+/* Suppression des styles complexes non utilisés */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-@keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
