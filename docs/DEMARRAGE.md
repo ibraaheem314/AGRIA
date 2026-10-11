@@ -24,6 +24,7 @@ python -m venv backend/.venv
 backend\.venv\Scripts\python -m pip install -r backend/requirements-dev.txt
 cd backend
 .venv\Scripts\python manage.py migrate
+.venv\Scripts\python manage.py load_content        # modèles de préparation (idempotent)
 cd ..
 
 # 4. Frontend
@@ -50,6 +51,17 @@ cd frontend; npm run dev
 Ouvrir http://127.0.0.1:5173. L'interface relaie `/api` vers Django (même origine : cookies de session et CSRF, sans CORS).
 
 Pour essayer depuis un téléphone du même réseau : `npm run dev -- --host 0.0.0.0`, puis ajouter l'adresse IP du poste à `DJANGO_ALLOWED_HOSTS`. La connexion n'est alors **pas chiffrée** : à réserver à des données de test.
+
+## Comptes et données d'exemple
+
+```powershell
+cd backend
+.venv\Scripts\python manage.py createsuperuser                                   # accès à /admin (attribution des conseillers)
+.venv\Scripts\python manage.py create_account --email c@exemple.sn --name "Nom" --advisor --random-password
+.venv\Scripts\python manage.py seed_demo                                         # dossier fictif, compte demonstration@agria.invalid
+```
+
+L'administration Django (http://127.0.0.1:5173/admin/) sert à attribuer un dossier à un conseiller. Les modèles de contenu, les informations et les démarches n'y sont qu'en lecture.
 
 ## Contrôles
 
@@ -81,5 +93,6 @@ L'instance de développement accepte toute connexion locale sans mot de passe (`
 | `DJANGO_ALLOWED_HOSTS` | Obligatoire si `DJANGO_DEBUG=false` |
 | `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` | Connexion PostgreSQL |
 | `AGRIA_ALLOW_SIGNUP` | Autorise l'inscription libre par email |
+| `AGRIA_AUTH_RATE` | Tentatives de connexion/inscription par IP (défaut `10/min`) |
 
 Toute valeur invalide arrête le démarrage avec un message explicite. Le frontend n'a **aucune** variable secrète.

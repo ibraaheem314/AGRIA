@@ -258,7 +258,7 @@ def venv_python() -> str:
 
 
 E2E_DB = "agria_e2e"
-E2E_SETUP = [["migrate", "--noinput"]]
+E2E_SETUP = [["migrate", "--noinput"], ["load_content"]]
 
 
 def cmd_e2e_server(args) -> None:
@@ -268,7 +268,13 @@ def cmd_e2e_server(args) -> None:
     run([tool("dropdb"), *base, "--if-exists", "--force", E2E_DB])
     if run([tool("createdb"), *base, E2E_DB]).returncode:
         fail("createdb agria_e2e a échoué.")
-    env = {**os.environ, "DB_NAME": E2E_DB, "AGRIA_ALLOW_SIGNUP": "true"}
+    # Les parcours enchaînent les connexions depuis 127.0.0.1 : limite relevée pour eux seuls.
+    env = {
+        **os.environ,
+        "DB_NAME": E2E_DB,
+        "AGRIA_ALLOW_SIGNUP": "true",
+        "AGRIA_AUTH_RATE": "1000/min",
+    }
     py = venv_python()
     for command in E2E_SETUP:
         if run([py, "manage.py", *command], cwd=BACKEND, env=env).returncode:

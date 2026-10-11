@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "accounts",
     "dossiers",
+    "preparation",
 ]
 
 MIDDLEWARE = [
@@ -158,7 +159,8 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
     "EXCEPTION_HANDLER": "agria.errors.api_exception_handler",
-    "DEFAULT_THROTTLE_RATES": {"auth": "10/min"},
+    # Tentatives de connexion/inscription par adresse IP.
+    "DEFAULT_THROTTLE_RATES": {"auth": env_str("AGRIA_AUTH_RATE", "10/min")},
     "UNAUTHENTICATED_USER": "django.contrib.auth.models.AnonymousUser",
 }
 

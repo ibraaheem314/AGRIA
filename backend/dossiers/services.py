@@ -6,6 +6,7 @@ from rest_framework.exceptions import ValidationError
 from agria.errors import Conflict
 from dossiers import facts
 from dossiers.models import Campaign, Fact, FactRevision, Project
+from preparation import services as preparation
 
 
 @transaction.atomic
@@ -21,7 +22,8 @@ def create_project(*, owner, name, profile, campaign_label, request_id) -> tuple
     project = Project.objects.create(
         owner=owner, name=name, profile=profile, client_request_id=request_id
     )
-    Campaign.objects.create(project=project, label=campaign_label)
+    campaign = Campaign.objects.create(project=project, label=campaign_label)
+    preparation.sync_plan(campaign, owner)
     return project, True
 
 
@@ -31,7 +33,9 @@ def create_campaign(*, project, label, request_id) -> tuple[Campaign, bool]:
         existing = Campaign.objects.filter(project=project, client_request_id=request_id).first()
         if existing:
             return existing, False
-    return Campaign.objects.create(project=project, label=label, client_request_id=request_id), True
+    campaign = Campaign.objects.create(project=project, label=label, client_request_id=request_id)
+    preparation.sync_plan(campaign, project.owner)
+    return campaign, True
 
 
 SOURCE_REQUIRED = "Indiquez comment l'information a été vérifiée (document, visite, personne)."
@@ -92,4 +96,7 @@ def save_fact(
         context_version=campaign.context_version,
         author=author,
     )
+    # Les points à vérifier ont pu changer : ajoute les démarches nouvellement nécessaires
+    # (aucune démarche existante n'est modifiée ni supprimée).
+    preparation.sync_plan(campaign, author)
     return fact, True

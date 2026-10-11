@@ -1,161 +1,107 @@
-# Architecture : reconstruire les fondations du produit
+# Architecture
 
-Version du 11 octobre 2026. Cible recommandée pour F1–F6 du [produit](PRODUIT.md).
-Cette architecture n'est pas implémentée par la documentation.
+Mise à jour : 11 octobre 2026. Ce document décrit **le code présent sur la branche `refonte/fondations`**. Les éléments encore à construire sont signalés comme tels. L'état par brique et les preuves sont dans [AVANCEMENT.md](AVANCEMENT.md) ; les choix et leurs motifs, dans [DECISIONS.md](DECISIONS.md).
 
-## 1. Situation actuelle
-
-```text
-React/Vite
-  ├─ AuthContext → Flask → comptes en mémoire
-  ├─ AIService → OpenRouter directement
-  └─ WeatherPage → OpenWeather directement
-```
-
-Le backend possède aussi des chemins fournisseurs parallèles. Aucun dossier agricole durable, contenu local versionné, budget persistant ou circuit de relecture n'est établi. La dépendance Supabase et DATABASE_URL ne constituent pas une base intégrée.
-
-## 2. Choix techniques proposés
-
-- Conserver React, TypeScript, Vite et Tailwind pour réutiliser les compétences et composants.
-- Un backend Python unique organisé par domaine. Flask peut rester après remise en état ; pas de migration de framework par principe.
-- PostgreSQL pour les données relationnelles, avec migrations versionnées.
-- Authentification gérée plutôt que hachage/JWT maison ; fournisseur à trancher en D-006.
-- Accès métier via l'API, contrôlé à chaque requête ; un seul chemin d'écriture.
-- Aucune dépendance nécessaire à un LLM, à la météo ou à des capteurs pour F1–F6.
-- Fichiers justificatifs privés uniquement si le pilote en a besoin ; pas de stockage public par défaut.
-
-Une reconstruction « comme de zéro » signifie définir les contrats métier et les responsabilités avant de recycler les écrans. Elle n'impose pas de jeter les composants utiles ni de changer toute la stack.
-
-## 3. Organisation cible
+## 1. Vue d'ensemble
 
 ```text
-src/
-  app/                 # routage, session, erreurs globales
-  features/
-    projects/
-    campaigns/
-    readiness/
-    actions/
-    budget/
-    reviews/
-  shared/              # interface, client API, formats
-api/
-  modules/
-    identity/
-    projects/
-    campaigns/
-    readiness/
-    actions/
-    budget/
-    reviews/
-    content/
-  integrations/        # auth, stockage et fournisseurs futurs
-  jobs/                # seulement si besoin asynchrone établi
-db/
-  migrations/
-tests/
-  integration/
-  journeys/
+Navigateur (téléphone ou ordinateur)
+  │  même origine : cookies de session HttpOnly + jeton CSRF
+  ▼
+frontend/  React 19 · React Router 7 · TanStack Query · Tailwind 4   (aucun secret, aucune variable d'environnement)
+  │  /api/*  (proxy Vite en développement)
+  ▼
+backend/   Django 5.2 LTS · Django REST Framework   (une seule application, modules par domaine)
+  │  transaction par requête ; verrou sur le dossier pour toute écriture
+  ▼
+PostgreSQL (contraintes d'intégrité pour les invariants métier)
 ```
 
-Ne pas créer des services indépendants par dossier. Les modules appartiennent à une seule application. Un domaine possède son code et ses tests, sans trois versions dans pages, features et lib.
+Aucun service externe n'est requis : ni IA, ni météo, ni envoi d'email.
 
-## 4. Modèle métier minimal
+## 2. Organisation du code
 
 ```text
-Compte → Espace personnel ou d'accompagnement → Membres et droits
-                         │
-                       Projet
-                         │
-                       Campagne
-                         ├─ Informations et conditions à vérifier
-                         ├─ Plan versionné → Actions → Résultats des actions
-                         ├─ Budget → Postes sourcés
-                         ├─ Questions et retours du conseiller
-                         └─ Historique des décisions et relectures
+backend/
+  agria/          configuration, authentification CSRF, format d'erreur, santé
+  accounts/       compte (email = identifiant, indicateur conseiller), API de session, commande create_account
+  dossiers/       projet, campagne (= dossier), informations et leur historique, attribution conseiller, règles d'accès
+  preparation/    modèles de contenu versionnés, calcul des points à vérifier, plan et démarches
+    content/      fichiers JSON des modèles (source de vérité, relus dans Git)
+  tests/          tests pytest par brique
+frontend/
+  src/app/        routage, mise en page, garde de connexion
+  src/features/   auth, dossiers, plan, help
+  src/shared/     client API, composants d'interface, formats
+  e2e/            parcours Playwright (ordinateur + téléphone)
+scripts/dev.py    base locale, .env, sauvegarde/restauration, contrôles, serveur de parcours
 ```
 
-Un projet peut avoir plusieurs campagnes dans le modèle ; le pilote suit une campagne par dossier. L'accès au terrain peut être envisagé plutôt que confirmé, avec statut explicite.
+Prévu : modules `budget` (brique 4) et `reviews` (brique 5), sur le même modèle.
 
-Le producteur accompagné et le compte utilisateur sont distincts : un dossier peut être saisi avec assistance. Le propriétaire du projet conserve la visibilité et l'accès convenus. L'interface n'a pas besoin d'exposer toute la structure interne d'organisation.
+## 3. Modèle de données
 
-### Contrats de données
+```text
+Compte ─┬─ Projet (profil débutant/producteur, is_demo)
+        │     └─ Campagne = dossier (context_version, archived_at)
+        │           ├─ Information (clé du registre, état, valeur, source, row_version)
+        │           │     └─ Révision d'information (ajout seul, numérotée par context_version)
+        │           ├─ Plan (modèle de préparation figé pour ce dossier, plan_version)
+        │           │     └─ Démarche (état, motif de blocage, résultat + date, prérequis, row_version)
+        │           │           └─ Évènement de démarche (ajout seul)
+        │           └─ Attribution conseiller (active ou close, jamais effacée)
+        └─ Modèle de préparation (code, version, contenu JSON, empreinte SHA-256, statut de relecture)
+```
 
-| Objet | Données essentielles |
+### Invariants garantis par PostgreSQL
+
+| Invariant | Contrainte |
 |---|---|
-| Projet | Propriétaire/espace, localisation et précision, accès au terrain, expérience, contexte |
-| Campagne | Culture envisagée, période envisagée, statut, version du contexte |
-| Information | Valeur, unité, origine, date, état déclaré/estimé/vérifié/inconnu |
-| Modèle de contenu | Zone/culture concernées, source, auteur/relecteur, version, date et conditions d'application |
-| Action | But, explication, prérequis, échéance éventuelle, statut, résultat et auteur |
-| Poste budgétaire | Catégorie, quantité, unité, prix, devise, source/date, état d'estimation |
-| Relecture | Conseiller, périmètre, version examinée, avis, réserves et date |
-| Question | Dossier/objet associé, texte, auteur, état et réponses |
-| Décision | Poursuivre/modifier/différer, auteur, motif et éléments disponibles |
+| « Je ne sais pas » n'a aucune valeur ; tout autre état en a une | `fact_value_matches_status` |
+| Une information « vérifiée » porte une source | `fact_verified_has_source` |
+| Une démarche terminée porte un résultat et une date | `action_done_has_result` |
+| Une démarche bloquée porte un motif | `action_blocked_has_reason` |
+| Une démarche du modèle n'existe qu'une fois par dossier | `action_unique_definition` |
+| Une requête de création rejouée ne crée rien de plus | `*_unique_request` |
+| Une version de modèle est unique | `template_unique_version` |
+| Un conseiller n'a qu'une attribution active par dossier | `assignment_one_active_per_advisor` |
 
-Ne pas stocker les inconnues comme zéro ou comme valeurs réalistes par défaut. Un résultat agricole futur n'est pas déduit du remplissage du dossier.
+### Invariants garantis par le code et vérifiés par des tests
 
-## 5. Règles métier et versionnement
+- Les points à vérifier sont **calculés** à partir des informations et du modèle (fonction pure `preparation/engine.py`), et jamais stockés : ils ne peuvent donc pas diverger du contexte.
+- Une modification d'information ajoute, dans la même transaction, les démarches devenues nécessaires. Elle ne modifie, ne supprime et ne recrée jamais une démarche existante.
+- Un modèle chargé est immuable : recharger une même version avec un contenu différent est refusé. Un dossier garde la version du modèle avec laquelle son plan a été créé.
+- Une démarche ne peut être terminée tant qu'un de ses prérequis, présent dans le plan, n'est pas terminé.
 
-- Les contrôles de préparation sont explicables et proviennent d'un modèle local relu.
-- Le plan conserve la version du modèle et du contexte utilisés.
-- Modifier une donnée significative signale une relecture nécessaire ; l'ancien avis reste dans l'historique.
-- Une tâche terminée n'est pas recréée silencieusement lors d'une mise à jour.
-- Une action modifiée simultanément depuis deux sessions produit un conflit explicite, pas un écrasement invisible.
-- Les envois réessayés utilisent une clé stable ou un mécanisme équivalent pour éviter les doublons.
-- Un état « enregistré » correspond à une écriture serveur confirmée.
+## 4. Accès et sécurité
 
-Le circuit de relecture est un besoin du produit, pas un système de certification de faisabilité ou de rentabilité.
+| Qui | Lecture | Écriture |
+|---|---|---|
+| Propriétaire du projet | Ses dossiers | Informations, démarches (sauf dossier archivé) |
+| Conseiller attribué (attribution active) | Les dossiers attribués | Rien sur les données du porteur (commentaires et avis : brique 5) |
+| Tout autre compte, y compris `is_staff` | Rien : réponse 404 | Rien |
 
-## 6. Budget
+- Contrôle centralisé dans `dossiers/access.py` et appliqué par chaque vue. Les routes React ne protègent rien.
+- Sessions Django (cookie HttpOnly, SameSite=Lax, Secure hors développement). CSRF imposé à toute écriture, y compris la connexion. Mots de passe hachés en Argon2, validés par les règles Django (10 caractères au moins).
+- Limite de tentatives sur la connexion et l'inscription (`AGRIA_AUTH_RATE`, 10/min par adresse IP par défaut). Le compteur est en mémoire du processus : il n'est pas partagé entre plusieurs processus serveur.
+- Erreurs : JSON `{"error": {code, message, fields}}` ; base injoignable → 503 ; aucune trace d'exécution renvoyée.
 
-Calculs déterministes sur données validées. Utiliser une représentation monétaire précise et des règles d'arrondi documentées ; ne pas additionner des chaînes ou déléguer les calculs à un modèle de langage.
+## 5. Écritures fiables
 
-Distinguer total renseigné et budget complet. Séparer investissement, charges de campagne, ressources déjà détenues et éventuelles hypothèses de recettes. Fixer les unités pour éviter quantité × prix incompatible.
+- **Transaction par requête** (`ATOMIC_REQUESTS`) et **verrou** sur la ligne du dossier pour toute écriture : deux requêtes sur un même dossier sont sérialisées.
+- **Concurrence optimiste** : chaque information et chaque démarche portent une `row_version`. Une écriture fondée sur une version périmée est refusée (409), sauf si son contenu est identique à l'état enregistré : c'est alors une reprise, acceptée sans effet.
+- **Créations idempotentes** : projet, campagne et démarche personnelle portent un `request_id` choisi par l'interface et réutilisé lors d'une nouvelle tentative.
+- **Interface** : « enregistré » n'est affiché qu'après la réponse du serveur. En cas d'erreur, la saisie reste à l'écran et un bouton permet de réessayer avec la même requête. Les écritures ne sont jamais rejouées automatiquement.
 
-Le budget est un outil de préparation ; pas de module comptable complet, paiement ni scoring de crédit.
+## 6. Contenu et niveaux de preuve
 
-## 7. Accès et sécurité
+Le modèle `preparation-generique` v1 contient des vérifications de préparation (lieu, terrain, eau, culture, période, moyens, débouchés) et les démarches associées. Il ne contient **aucune prescription agronomique** et son statut est « non relu par un spécialiste », affiché sur l'écran « Mon plan ». Un modèle ne peut être déclaré « relu » qu'avec un relecteur et une date.
 
-Rôles minimaux : propriétaire/participant du projet, conseiller explicitement attribué et administration technique restreinte.
+Les exemples de démonstration (`manage.py seed_demo`) sont créés sur un compte dédié, en `.invalid`, et portent `is_demo` : un bandeau les signale et ils ne sont jamais visibles depuis un compte réel.
 
-- Autoriser sur chaque objet côté serveur ; la route React ne protège pas les données.
-- Le conseiller n'obtient pas automatiquement accès à tous les projets d'une organisation.
-- Contrôler aussi questions, synthèses, exports et éventuelles pièces jointes.
-- Choisir une session adaptée à l'authentification retenue ; ne pas recopier le JWT localStorage actuel sans analyse.
-- Identifiants fournisseurs, secrets et données privées absents des bundles et logs.
-- Sauvegarde et restauration vérifiées ; suppression/archivage et conservation des données définis.
-- Prévenir les double-envois et limiter la taille/fréquence des requêtes.
-- Si des cookies sont retenus, définir les protections de session et de requêtes associées.
+## 7. Limites connues
 
-## 8. Réseau et interface
-
-Version initiale : serveur requis pour confirmer une écriture. Conserver la saisie pendant une erreur, indiquer l'échec et proposer une reprise sans doublon.
-
-L'accès hors connexion complet est un chantier distinct : cache de données privées, synchronisation et conflits. Ne pas le promettre avant choix du canal et essais terrain. Si la connexion rend le pilote impraticable, réviser ce choix avant G3.
-
-## 9. Qualité de contenu
-
-Sources identifiables, domaine d'application, date et responsable de relecture. Les conseils critiques restent soumis à une expertise locale.
-
-Commencer avec un seul modèle de préparation validé pour le pilote et un moyen interne simple de le maintenir. Ne pas construire un CMS généraliste.
-
-Un LLM éventuel reformule un contenu ou structure une saisie confirmée. Il ne calcule pas le budget, ne crée pas de valeurs manquantes et ne prononce pas seul la faisabilité.
-
-## 10. Futurs modules conditionnels
-
-Journal de campagne et dépenses réelles après validation du besoin ; météo ou observations environnementales pour une action identifiée ensuite. Ajouter alors les contrats de mesure : source, unité, date de mesure/réception, qualité et calibration.
-
-Pas de plateforme IoT, de base de séries temporelles spécialisée ni de moteur satellite dans les fondations initiales.
-
-## 11. Vérifications avant usage partagé
-
-- Installation reproductible, lint, typecheck et build.
-- Deux comptes et un conseiller : accès autorisés et refusés, y compris exports.
-- Données retrouvées après redémarrage ; restauration d'une sauvegarde.
-- Budget incomplet, unités et arrondis.
-- Changement de contexte invalidant un avis courant sans effacer l'historique.
-- Erreur réseau et reprise sans faux succès ni doublon.
-- Recette F1–F6 sur téléphone avec des utilisateurs du pilote.
-
-Les choix d'hébergement, d'authentification et de versions seront arrêtés en D-006 avant implémentation partagée. Aucun déploiement ou achat n'est effectué par ce document.
+- Pas de mode hors connexion : une écriture exige le serveur. La saisie en cours est conservée à l'écran, mais pas après fermeture de la page.
+- Pas de récupération de mot de passe par email (aucun envoi configuré) : réinitialisation par l'administration.
+- Hébergement, sauvegardes automatiques et supervision : non définis, et aucun déploiement n'a été fait (D-006).
+- La limite de tentatives de connexion repose sur un cache local au processus.

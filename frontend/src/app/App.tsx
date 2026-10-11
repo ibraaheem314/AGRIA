@@ -8,6 +8,8 @@ import { NewProjectPage } from '../features/dossiers/NewProjectPage'
 import { ProjectPage } from '../features/dossiers/ProjectPage'
 import { TodayPage } from '../features/dossiers/TodayPage'
 import { HelpPage } from '../features/help/HelpPage'
+import { ActionPage } from '../features/plan/ActionPage'
+import { PlanPage } from '../features/plan/PlanPage'
 import { AppLayout } from './AppLayout'
 import { NotFoundPage } from './NotFoundPage'
 import { RequireAuth } from './RequireAuth'
@@ -28,6 +30,8 @@ export function App() {
               <Route index element={<TodayPage />} />
               <Route path="projet" element={<ProjectPage />} />
               <Route path="projet/:factKey" element={<FactEditPage />} />
+              <Route path="plan" element={<PlanPage />} />
+              <Route path="plan/:actionId" element={<ActionPage />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFoundPage />} />

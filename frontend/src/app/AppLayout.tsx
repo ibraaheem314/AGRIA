@@ -15,6 +15,7 @@ export function AppLayout() {
     ? [
         { to: `/d/${dossierId}`, label: 'Aujourd’hui', end: true },
         { to: `/d/${dossierId}/projet`, label: 'Mon projet', end: false },
+        { to: `/d/${dossierId}/plan`, label: 'Mon plan', end: false },
         { to: '/aide', label: 'Aide', end: true },
       ]
     : [{ to: '/aide', label: 'Aide', end: true }]

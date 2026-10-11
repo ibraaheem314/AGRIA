@@ -4,6 +4,7 @@ from django.urls import path
 from accounts import api as accounts_api
 from agria.health import health
 from dossiers import api as dossiers_api
+from preparation import api as preparation_api
 
 handler404 = "agria.errors.not_found"
 handler500 = "agria.errors.server_error"
@@ -28,5 +29,13 @@ urlpatterns = [
     path(
         "api/dossiers/<int:campaign_id>/informations/<str:key>/historique",
         dossiers_api.fact_history,
+    ),
+    # Vérifications et plan d'action
+    path("api/dossiers/<int:campaign_id>/preparation", preparation_api.preparation),
+    path("api/dossiers/<int:campaign_id>/actions", preparation_api.actions),
+    path("api/dossiers/<int:campaign_id>/actions/<int:action_id>", preparation_api.action_detail),
+    path(
+        "api/dossiers/<int:campaign_id>/actions/<int:action_id>/historique",
+        preparation_api.action_history,
     ),
 ]

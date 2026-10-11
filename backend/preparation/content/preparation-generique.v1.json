@@ -1,0 +1,292 @@
+{
+  "code": "preparation-generique",
+  "version": 1,
+  "title": "Préparation d'une campagne — vérifications génériques",
+  "scope": {
+    "pays": "Sénégal",
+    "zones": [],
+    "cultures": [],
+    "note": "Toutes zones et toutes cultures : uniquement des vérifications de préparation, sans conseil technique propre à une culture."
+  },
+  "source": "Rédaction de l'équipe AGRIA (11 octobre 2026), à partir du cahier des charges (docs/PRODUIT.md). Aucune prescription agronomique.",
+  "authors": ["Équipe AGRIA"],
+  "review": {
+    "status": "non_relu",
+    "reviewer": null,
+    "date": null,
+    "note": "Contenu non relu par un conseiller agricole ou un spécialiste. À faire relire avant tout pilote."
+  },
+  "checks": [
+    {
+      "key": "lieu",
+      "fact": "localisation",
+      "why": "Les démarches, les contacts utiles et les conditions locales dépendent du lieu.",
+      "rules": [
+        {"states": ["non_renseigne"], "level": "a_completer", "blocking": true, "message": "Localisation du terrain non renseignée"},
+        {"states": ["inconnu"], "level": "a_clarifier", "blocking": true, "message": "Localisation du terrain inconnue", "action": "preciser-lieu"}
+      ]
+    },
+    {
+      "key": "terrain",
+      "fact": "acces_terrain",
+      "why": "Sans accès confirmé au terrain pour toute la campagne, les autres préparatifs risquent d'être perdus.",
+      "rules": [
+        {"states": ["non_renseigne"], "level": "a_completer", "blocking": true, "message": "Accès au terrain non renseigné"},
+        {"states": ["inconnu"], "level": "a_clarifier", "blocking": true, "message": "Accès au terrain inconnu", "action": "trouver-terrain"},
+        {"value": {"situation": ["aucun"]}, "level": "a_clarifier", "blocking": true, "message": "Aucun terrain identifié", "action": "trouver-terrain"},
+        {"value": {"situation": ["en_discussion"]}, "level": "a_clarifier", "blocking": true, "message": "Accès au terrain encore en discussion", "action": "confirmer-acces-terrain"},
+        {"states": ["declare", "estime"], "level": "a_verifier", "blocking": true, "message": "Accès au terrain déclaré mais non vérifié", "action": "confirmer-acces-terrain"}
+      ]
+    },
+    {
+      "key": "eau",
+      "fact": "eau",
+      "why": "La disponibilité de l'eau pendant toute la période envisagée conditionne la suite du projet.",
+      "rules": [
+        {"states": ["non_renseigne"], "level": "a_completer", "blocking": true, "message": "Accès à l'eau non renseigné"},
+        {"states": ["inconnu"], "level": "a_clarifier", "blocking": true, "message": "Source d'eau inconnue", "action": "identifier-eau"},
+        {"value": {"source": ["aucune"]}, "level": "a_clarifier", "blocking": true, "message": "Aucune source d'eau identifiée", "action": "identifier-eau"},
+        {"states": ["declare", "estime"], "level": "a_verifier", "blocking": true, "message": "Disponibilité de l'eau déclarée mais non vérifiée", "action": "confirmer-eau"}
+      ]
+    },
+    {
+      "key": "culture",
+      "fact": "culture",
+      "why": "Les besoins, le calendrier et le budget dépendent de la culture. AGRIA ne recommande pas de culture.",
+      "rules": [
+        {"states": ["non_renseigne"], "level": "a_completer", "blocking": false, "message": "Culture envisagée non renseignée"},
+        {"states": ["inconnu"], "level": "a_clarifier", "blocking": false, "message": "Culture pas encore choisie", "action": "choisir-culture"},
+        {"states": ["declare", "estime"], "level": "a_verifier", "blocking": false, "message": "Choix de culture pas encore relu", "action": "faire-relire-culture"}
+      ]
+    },
+    {
+      "key": "periode",
+      "fact": "periode",
+      "why": "La période fixe l'ordre et l'échéance des démarches de préparation.",
+      "rules": [
+        {"states": ["non_renseigne"], "level": "a_completer", "blocking": false, "message": "Période envisagée non renseignée"},
+        {"states": ["inconnu"], "level": "a_clarifier", "blocking": false, "message": "Période de campagne inconnue", "action": "fixer-periode"}
+      ]
+    },
+    {
+      "key": "temps",
+      "fact": "temps_disponible",
+      "why": "Le temps de travail disponible limite ce qu'il est possible de mener.",
+      "rules": [
+        {"states": ["non_renseigne"], "level": "a_completer", "blocking": false, "message": "Temps disponible non renseigné"},
+        {"states": ["inconnu"], "level": "a_clarifier", "blocking": false, "message": "Temps disponible inconnu", "action": "estimer-temps"}
+      ]
+    },
+    {
+      "key": "main-oeuvre",
+      "fact": "main_oeuvre",
+      "why": "Savoir qui travaillera, et quand, permet d'organiser les tâches et leur coût.",
+      "rules": [
+        {"states": ["non_renseigne"], "level": "a_completer", "blocking": false, "message": "Main-d'œuvre non renseignée"},
+        {"states": ["inconnu"], "level": "a_clarifier", "blocking": false, "message": "Main-d'œuvre inconnue", "action": "organiser-main-oeuvre"}
+      ]
+    },
+    {
+      "key": "materiel",
+      "fact": "materiel",
+      "why": "Le matériel déjà disponible évite des achats ; celui qui manque entre au budget.",
+      "rules": [
+        {"states": ["non_renseigne"], "level": "a_completer", "blocking": false, "message": "Matériel non renseigné"},
+        {"states": ["inconnu"], "level": "a_clarifier", "blocking": false, "message": "Matériel disponible inconnu", "action": "inventorier-materiel"}
+      ]
+    },
+    {
+      "key": "moyens",
+      "fact": "apport",
+      "why": "Permet de rapprocher le budget provisoire de vos moyens, sans en tirer de garantie.",
+      "rules": [
+        {"states": ["non_renseigne"], "level": "a_completer", "blocking": false, "message": "Somme disponible non renseignée"},
+        {"states": ["inconnu"], "level": "a_clarifier", "blocking": false, "message": "Somme disponible inconnue", "action": "evaluer-moyens"}
+      ]
+    },
+    {
+      "key": "debouches",
+      "fact": "debouches",
+      "why": "Identifier à l'avance à qui vendre permet de vérifier qu'une vente est possible.",
+      "rules": [
+        {"states": ["non_renseigne"], "level": "a_completer", "blocking": false, "message": "Débouchés non renseignés"},
+        {"states": ["inconnu"], "level": "a_clarifier", "blocking": false, "message": "Débouchés inconnus", "action": "identifier-debouches"},
+        {"states": ["declare", "estime"], "level": "a_verifier", "blocking": false, "message": "Débouché envisagé non vérifié auprès d'un acheteur", "action": "verifier-debouche"}
+      ]
+    },
+    {
+      "key": "experience",
+      "fact": "experience",
+      "why": "Les explications et les points à vérifier s'adaptent à votre expérience.",
+      "rules": [
+        {"states": ["non_renseigne"], "level": "a_completer", "blocking": false, "message": "Expérience non renseignée"}
+      ]
+    },
+    {
+      "key": "changements",
+      "fact": "changements",
+      "why": "Ce qui change par rapport aux campagnes précédentes mérite une attention particulière.",
+      "rules": [
+        {"states": ["non_renseigne"], "level": "a_completer", "blocking": false, "message": "Changements envisagés non renseignés"}
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "key": "preciser-lieu",
+      "title": "Préciser l'emplacement du terrain envisagé",
+      "goal": "Savoir où se déroulera la campagne.",
+      "explanation": "Le lieu détermine les personnes à contacter et les démarches locales.",
+      "steps": [
+        "Noter la région, la commune et le village ou quartier.",
+        "Si plusieurs terrains sont possibles, les lister tous dans la précision."
+      ],
+      "prerequisites": []
+    },
+    {
+      "key": "trouver-terrain",
+      "title": "Identifier un terrain accessible",
+      "goal": "Disposer d'au moins un terrain possible pour la campagne.",
+      "explanation": "Les autres préparatifs dépendent de l'accès à un terrain.",
+      "steps": [
+        "Lister les terrains possibles (famille, voisinage, location, prêt).",
+        "Identifier pour chacun la personne qui peut en autoriser l'usage."
+      ],
+      "prerequisites": []
+    },
+    {
+      "key": "confirmer-acces-terrain",
+      "title": "Confirmer l'accès au terrain pour toute la campagne",
+      "goal": "Avoir l'accord de la personne qui peut autoriser l'usage du terrain, pour toute la période.",
+      "explanation": "Un accès qui s'interrompt en cours de campagne fait perdre le travail et les dépenses engagées.",
+      "steps": [
+        "Rencontrer la personne qui peut autoriser l'usage du terrain.",
+        "Convenir de la durée et des conditions (loyer, prêt, partage de la récolte…).",
+        "Noter comment l'accord est attesté (écrit, témoins) et l'indiquer dans le dossier."
+      ],
+      "prerequisites": []
+    },
+    {
+      "key": "identifier-eau",
+      "title": "Identifier une source d'eau utilisable",
+      "goal": "Connaître au moins une source d'eau possible pour le terrain.",
+      "explanation": "Sans eau identifiée, la période et le budget ne peuvent pas être préparés sérieusement.",
+      "steps": [
+        "Repérer les sources possibles près du terrain (forage, puits, réseau, cours d'eau).",
+        "Demander à leurs utilisateurs ou gestionnaires les conditions d'accès (coût, horaires, partage)."
+      ],
+      "prerequisites": []
+    },
+    {
+      "key": "confirmer-eau",
+      "title": "Confirmer la disponibilité de l'eau pendant la période envisagée",
+      "goal": "Savoir si l'eau restera disponible pendant toute la campagne.",
+      "explanation": "Une source disponible aujourd'hui peut manquer à une autre saison ou être partagée.",
+      "steps": [
+        "Demander au gestionnaire ou aux utilisateurs actuels si l'eau manque à certaines périodes.",
+        "Noter qui a confirmé, et quand, dans la source de l'information « Accès à l'eau »."
+      ],
+      "prerequisites": []
+    },
+    {
+      "key": "choisir-culture",
+      "title": "Préparer le choix de la culture avec un conseiller",
+      "goal": "Retenir une culture envisagée, en connaissant ses raisons.",
+      "explanation": "AGRIA ne recommande pas de culture. Le choix dépend du lieu, de l'eau, de la période, du marché et de votre expérience : il mérite un avis local.",
+      "steps": [
+        "Lister les cultures envisagées et vos raisons.",
+        "En parler avec un conseiller ou un producteur expérimenté de la zone.",
+        "Indiquer la culture retenue dans le dossier."
+      ],
+      "prerequisites": []
+    },
+    {
+      "key": "faire-relire-culture",
+      "title": "Faire relire le choix de culture",
+      "goal": "Obtenir un avis local sur la culture envisagée.",
+      "explanation": "Un avis local permet de repérer tôt une incompatibilité avec le lieu, l'eau ou la période.",
+      "steps": [
+        "Présenter le dossier (lieu, eau, période) à un conseiller ou à un producteur expérimenté de la zone.",
+        "Noter son avis et ses réserves dans le résultat de cette démarche."
+      ],
+      "prerequisites": []
+    },
+    {
+      "key": "fixer-periode",
+      "title": "Fixer la période de la campagne",
+      "goal": "Connaître le début et la fin envisagés de la campagne.",
+      "explanation": "La période conditionne les besoins en eau et en main-d'œuvre, et l'échéance des démarches.",
+      "steps": [
+        "Demander à un conseiller ou à des producteurs de la zone les périodes pratiquées pour la culture envisagée.",
+        "Vérifier que l'eau et la main-d'œuvre seront disponibles à cette période."
+      ],
+      "prerequisites": ["choisir-culture"]
+    },
+    {
+      "key": "estimer-temps",
+      "title": "Estimer le temps que vous pourrez consacrer au projet",
+      "goal": "Connaître le nombre d'heures disponibles par semaine.",
+      "explanation": "Le temps disponible limite ce qu'il est possible de mener.",
+      "steps": [
+        "Noter vos autres occupations pendant la période envisagée.",
+        "En déduire les heures disponibles par semaine."
+      ],
+      "prerequisites": []
+    },
+    {
+      "key": "organiser-main-oeuvre",
+      "title": "Identifier qui travaillera avec vous",
+      "goal": "Savoir sur qui compter, et quand.",
+      "explanation": "La main-d'œuvre conditionne l'organisation des tâches et une partie du budget.",
+      "steps": [
+        "Lister les personnes disponibles (famille, ouvriers) et leurs périodes de disponibilité.",
+        "Noter les conditions convenues (rémunération, partage)."
+      ],
+      "prerequisites": []
+    },
+    {
+      "key": "inventorier-materiel",
+      "title": "Faire l'inventaire du matériel",
+      "goal": "Distinguer le matériel disponible du matériel à acquérir.",
+      "explanation": "Le matériel manquant entre au budget ; celui déjà détenu ne doit pas être compté comme une dépense.",
+      "steps": [
+        "Lister le matériel disponible et son état.",
+        "Lister ce qui manque : ces postes iront au budget."
+      ],
+      "prerequisites": []
+    },
+    {
+      "key": "evaluer-moyens",
+      "title": "Évaluer la somme que vous pouvez consacrer au projet",
+      "goal": "Connaître le montant mobilisable pour la campagne.",
+      "explanation": "Le budget provisoire sera rapproché de ce montant, sans garantie de financement.",
+      "steps": [
+        "Faire le point sur vos économies et les contributions possibles (famille, associés).",
+        "Noter le montant que vous pouvez engager sans mettre en difficulté vos autres dépenses."
+      ],
+      "prerequisites": []
+    },
+    {
+      "key": "identifier-debouches",
+      "title": "Identifier à qui vendre",
+      "goal": "Connaître au moins un débouché possible.",
+      "explanation": "Produire sans acheteur identifié expose à ne pas pouvoir vendre.",
+      "steps": [
+        "Lister les acheteurs possibles (marché, commerçants, voisins, transformateurs).",
+        "Se renseigner sur la période où ils achètent."
+      ],
+      "prerequisites": []
+    },
+    {
+      "key": "verifier-debouche",
+      "title": "Vérifier un débouché auprès d'un acheteur",
+      "goal": "Confirmer auprès d'au moins un acheteur qu'une vente est envisageable.",
+      "explanation": "Un débouché supposé n'est pas un débouché vérifié.",
+      "steps": [
+        "Contacter au moins un acheteur envisagé.",
+        "Noter ce qu'il a indiqué (quantités, période, conditions) et la date de l'échange."
+      ],
+      "prerequisites": []
+    }
+  ]
+}

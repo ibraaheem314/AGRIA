@@ -48,3 +48,8 @@ export function formatDecimal(value: string | number): string {
 export function formatFcfa(value: number | string): string {
   return `${formatDecimal(value)}${NBSP}FCFA`
 }
+
+/** Date du jour à Dakar, au format AAAA-MM-JJ (valeur par défaut des champs date). */
+export function todayInDakar(): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Dakar' }).format(new Date())
+}

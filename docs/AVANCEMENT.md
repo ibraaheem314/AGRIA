@@ -14,7 +14,7 @@ Légende des niveaux de preuve, à ne pas confondre :
 | 0 — Préserver et établir la base | Terminée | Ci-dessous |
 | 1 — Socle exécutable | Terminée | Ci-dessous |
 | 2 — Identité, projet, campagne | Terminée | Ci-dessous |
-| 3 — Vérifications et plan d'action | À faire | |
+| 3 — Vérifications et plan d'action | Terminée | Ci-dessous |
 | 4 — Budget transparent | À faire | |
 | 5 — Conseiller, relecture, synthèse | À faire | |
 | 6 — Parcours complet et polissage | À faire | |
@@ -82,3 +82,24 @@ Légende des niveaux de preuve, à ne pas confondre :
 **Reste incomplet :** pas de récupération de mot de passe (pas d'envoi d'email configuré ; réinitialisation possible par l'administration) ; le navigateur affiche « Mon plan » seulement à partir de la brique 3.
 
 **Décisions :** D-021 à D-024.
+
+## Brique 3 — Vérifications et plan d'action (11/10/2026)
+
+**Fonctionne :**
+
+- Modèle de contenu `preparation-generique` v1 : 12 vérifications, 14 démarches, source, périmètre (Sénégal, toutes zones et cultures), statut **non relu**. Chargement validé : références, prérequis sans cycle, « relu » impossible sans relecteur ni date.
+- Points à vérifier calculés à trois niveaux : à compléter, à clarifier (inconnue ou valeur problématique, par ex. « aucune source d'eau »), à vérifier (déclaré ou estimé). Chacun porte une justification, son caractère bloquant ou non, et un lien vers l'information et la démarche.
+- Démarches : objectif, explication, étapes, prérequis, origine, échéance facultative. États : à faire, en cours, bloquée (motif obligatoire), terminée (résultat et date obligatoires, date non future). Rouvrir est possible : le résultat reste dans l'historique. Ajout de démarches personnelles sans doublon.
+- Écrans : Mon plan ; fiche de démarche ; Aujourd'hui avec prochaine action, points bloquants et compteurs (présentés comme une mesure d'avancement, pas de réussite).
+- `seed_demo` : dossier fictif sur un compte dédié, signalé par un bandeau.
+
+**Vérifications exécutées :**
+
+| Vérification | Résultat |
+|---|---|
+| `pytest` (total backend) | 70/70, dont 25 pour la brique 3 : contenu incohérent refusé (6 cas), version publiée non modifiable, inconnue → vérification expliquée + démarche, valeur problématique, vérifié → plus de point, résultat et date obligatoires, motif de blocage, prérequis (refus puis succès), prérequis absent ignoré, contexte modifié sans perte ni doublon, réouverture, conflit et reprise, démarche personnelle idempotente, modèle figé par dossier, permissions (autre compte 404, conseiller en lecture seule 403), démonstration séparée |
+| Playwright | 10/10 (ordinateur et téléphone), dont le parcours complet de la brique 3 |
+
+**Reste incomplet :** le contenu n'est relu par aucun spécialiste ; aucune notification d'échéance ; un nouveau modèle ne se propage pas aux dossiers existants (choix volontaire, D-026).
+
+**Décisions :** D-025 à D-027.
