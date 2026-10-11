@@ -12,7 +12,7 @@ Légende des niveaux de preuve, à ne pas confondre :
 | Brique | Statut | Preuve |
 |---|---|---|
 | 0 — Préserver et établir la base | Terminée | Ci-dessous |
-| 1 — Socle exécutable | À faire | |
+| 1 — Socle exécutable | Terminée | Ci-dessous |
 | 2 — Identité, projet, campagne | À faire | |
 | 3 — Vérifications et plan d'action | À faire | |
 | 4 — Budget transparent | À faire | |
@@ -36,3 +36,28 @@ Légende des niveaux de preuve, à ne pas confondre :
 **Reste incomplet :** révocation des clés chez les fournisseurs (action externe, voir [SECURITE.md](SECURITE.md) §3).
 
 **Décisions :** archive sur une branche plutôt qu'un stash, plus visible et poussable sur demande. Pas de réécriture de l'historique (non autorisée).
+
+## Brique 1 — Socle exécutable et reproductible (11/10/2026)
+
+**Fonctionne :**
+
+- `backend/` : Django 5.2 + DRF + PostgreSQL. Modèle de compte personnalisé (email comme identifiant, indicateur conseiller), hachage Argon2, sessions serveur, CSRF, erreurs JSON uniformes (`{"error": {code, message, fields}}`), transaction par requête.
+- Configuration lue dans l'environnement. Une clé secrète absente, trop courte ou égale à l'exemple, un booléen invalide ou des hôtes manquants en production arrêtent le démarrage.
+- `/api/health` interroge réellement la base et l'état des migrations : 200 seulement si tout est à jour, 503 sinon.
+- Base injoignable : 503 explicite sur toute route `/api/`, jamais un faux « ok ».
+- `frontend/` : Vite + React + Tailwind, client API commun (CSRF, erreurs réseau distinguées, identifiants de requête stables pour les reprises).
+- `scripts/dev.py` : base locale, `.env`, sauvegarde/restauration, contrôles, serveur de parcours.
+- CI GitHub Actions écrite (`.github/workflows/ci.yml`), **non exécutée** : aucun envoi vers GitHub n'a été fait.
+
+**Vérifications exécutées :**
+
+| Vérification | Résultat |
+|---|---|
+| Installation Python dans un environnement vierge depuis `requirements-dev.txt`, puis `pip check` et pytest | OK, 8/8 tests (avant l'ajout du 9e) |
+| `npm ci` après suppression de `node_modules` | 179 paquets installés |
+| `python scripts/dev.py check --e2e` | Tout passe : ruff, format, migrations à jour, pytest 9/9, eslint, tsc, build, Playwright 2/2 (ordinateur, téléphone) |
+| Cycle `db-init` (idempotent) / `db-stop` / `db-start` / `db-status` | OK |
+
+**Reste incomplet :** CI non exécutée ; admin Django non servi hors mode développement (aucun déploiement prévu) ; sauvegarde/restauration écrites mais testées en brique 7.
+
+**Décisions :** D-016 à D-020, D-006 en partie ([DECISIONS.md](DECISIONS.md)).

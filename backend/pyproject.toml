@@ -1,0 +1,24 @@
+[project]
+name = "agria-backend"
+version = "0.1.0"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "agria.settings"
+python_files = ["test_*.py"]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "DJ", "S"]
+ignore = [
+  "S101", # assert est l'outil normal des tests pytest
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S105", "S106"] # mots de passe de test explicites

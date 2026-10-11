@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/* Palette sobre : la couleur accompagne toujours un texte, elle ne porte jamais seule un statut. */
+@theme {
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+
+  --color-brand-50: #f0f7f1;
+  --color-brand-100: #dbeedf;
+  --color-brand-600: #2a6b40;
+  --color-brand-700: #1f5130;
+  --color-brand-800: #173d25;
+
+  --color-ink: #1c2420;
+  --color-muted: #55615a;
+  --color-line: #d6ddd8;
+  --color-surface: #ffffff;
+  --color-canvas: #f6f7f5;
+
+  --color-warn-50: #fff7e6;
+  --color-warn-700: #8a5300;
+  --color-danger-50: #fdeeee;
+  --color-danger-700: #a12222;
+  --color-info-50: #edf4fb;
+  --color-info-700: #1d5486;
+  --color-ok-50: #eaf6ec;
+  --color-ok-700: #1e6b33;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-info-700);
+  outline-offset: 2px;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+}

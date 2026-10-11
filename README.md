@@ -6,6 +6,7 @@ Reconstruction en cours sur la branche `refonte/fondations`. L'ancien prototype 
 
 Aucun partenaire de pilote, client payant, conseiller ou contenu agronomique validé n'est établi à ce jour.
 
+- Démarrer en local : [docs/DEMARRAGE.md](docs/DEMARRAGE.md)
 - Avancement par brique et preuves : [docs/AVANCEMENT.md](docs/AVANCEMENT.md)
 - Sécurité, et clés à révoquer : [docs/SECURITE.md](docs/SECURITE.md)
 - Inventaire de l'ancien prototype : [docs/INVENTAIRE.md](docs/INVENTAIRE.md)
