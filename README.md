@@ -9,7 +9,7 @@ AGRIA aide un porteur de projet débutant ou un producteur peu accompagné à pr
 | Niveau | État |
 |---|---|
 | **Fondations techniques** | Livrées : les six fonctions de la première version (F1–F6 du [cahier des charges](docs/PRODUIT.md)) |
-| **Contrôles exécutés** | En local seulement, sur Python 3.12 : 148 tests backend, 29 exécutions de parcours navigateur (ordinateur et téléphone), recette réelle de redémarrage et de restauration, analyse des secrets. **CI GitHub jamais exécutée.** Détail : [AVANCEMENT.md](docs/AVANCEMENT.md) |
+| **Contrôles exécutés** | Résultats locaux et versions exactes dans [AVANCEMENT.md](docs/AVANCEMENT.md). Runtime courant : Python 3.14.8. **CI GitHub jamais exécutée.** |
 | **Préparation du terrain** | Kit d'enquête G1 et protocole G2 prêts, non exécutés : [VALIDATION_TERRAIN.md](docs/VALIDATION_TERRAIN.md) |
 | **Validation par un spécialiste** | **Aucune.** Le contenu est générique, sans prescription agronomique, et marqué « non relu » dans l'application |
 | **Validation terrain, utilité** | **Aucune.** Aucun entretien, participant, conseiller, zone ni culture engagés |
@@ -24,10 +24,10 @@ Le code est sur la branche `refonte/fondations` ; l'ancien prototype est archiv�
 
 ## Démarrer
 
-Prérequis : Python 3.12, Node 22.12+, binaires PostgreSQL 16+. Aucune clé de service externe.
+Prérequis : Python 3.14.8 ou correctif 3.14 plus récent, Node 22.12+, binaires PostgreSQL 16+. Aucune clé de service externe.
 
 ```powershell
-py -3.12 -m venv backend\.venv            # ou le python.exe de Python 3.12 (voir DEMARRAGE)
+py -3.14 -m venv backend\.venv            # première installation ; voir DEMARRAGE
 backend\.venv\Scripts\python -m pip install -r backend\requirements-dev.txt
 backend\.venv\Scripts\python scripts\dev.py env       # backend/.env avec une clé secrète aléatoire
 backend\.venv\Scripts\python scripts\dev.py db-init   # PostgreSQL propre au projet (127.0.0.1:5444)

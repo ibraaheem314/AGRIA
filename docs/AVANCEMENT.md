@@ -274,6 +274,29 @@ Retour arrière possible : `backend/.venv-py310` conservé jusqu'à validation p
 |---|---|
 | `backend\.venv\Scripts\python scripts\dev.py check --e2e` | ruff, format, migrations à jour, **148 pytest**, eslint, TypeScript, build ; Playwright **29 réussis**, 1 ignoré (clavier sur téléphone) |
 | `backend\.venv\Scripts\python scripts\recette.py` | Redémarrage, restauration, session et CSRF par HTTP : OK |
-| `backend\.venv\Scripts\python scripts\verifier_secrets.py` (après build) | Aucun secret dans les fichiers suivis, la branche courante ni le build |
+| `backend\.venv\Scripts\python scripts\verifier_secrets.py` (après build) | Aucun secret détecté avec les valeurs connues et motifs du scanner dans les fichiers suivis, la branche courante et le build ; ne garantit pas l'absence de secrets inconnus |
 
 **Ce n'est pas un état « prêt pour le pilote »** : voir les étapes E1 à E10 de la [roadmap](../ROADMAP.md).
+
+## Corrections après revue (11/10/2026)
+
+- Scanner : toutes les valeurs homonymes sont conservées, entre fichiers de même nom et entre lignes d'un même fichier. Trois tests couvrent cette régression, les codes de sortie et l'absence de valeurs dans les rapports. La conclusion porte sur le périmètre bloquant ; les autres branches et l'historique sont signalés séparément. Les limites sont explicites dans SECURITE.
+- Runtime : **Python 3.14.8** installé pour le compte Windows courant, sans modifier le PATH ni le lanceur. Installateur python.org, signature PSF valide et SHA-256 comparé à la publication officielle. Environnement neuf `backend/.venv`, dépendances applicatives conservées ; `pip check` réussi. Ancien environnement conservé en `.venv-py312`, en plus de `.venv-py310`, tous deux ignorés par Git.
+- Serveur, scripts et métadonnées exigent au minimum 3.14.8. La CI est configurée sur cette version ; le job frontend analyse également son build après compilation. **Aucune exécution distante** n'est revendiquée.
+- Documentation : D-039 remplacé par D-043, suppression de la mention erronée « testé en CI ». Toutes les sections du registre ont été conservées (43 décisions). G1 peut avancer indépendamment de la fusion, de l'hébergement et du nettoyage des anciens environnements. Les plafonds de G1 sont fixés avant les contacts ; ceux de G2 avant les dossiers accompagnés.
+
+### Vérifications sur Python 3.14.8
+
+| Contrôle | Résultat |
+|---|---|
+| Backend : migrations, pytest | Pas de migration manquante ; **151 tests réussis**, dont les 3 tests du scanner |
+| Frontend : ESLint, TypeScript, build | Réussis |
+| Playwright (via `dev.py check --e2e`) | **29 réussis**, 1 ignoré intentionnellement (clavier physique sur téléphone) |
+| Ruff : lint et format sur backend et scripts | Réussis après correction d'une ligne trop longue |
+| `scripts/recette.py` | Redémarrage, sauvegarde puis restauration : état conservé, modification postérieure absente après restauration |
+| `scripts/verifier_secrets.py --historique` | Aucun secret détecté dans le périmètre bloquant avec les valeurs connues et motifs définis ; clés historiques et autres branches toujours signalées, sans afficher leurs valeurs |
+| Test ciblé du scanner après clarification finale du rapport | 3 réussis ; lint et format réussis |
+
+Le lancement global initial de `check --e2e` a renvoyé un code 1 pour le lint/format d'une ligne du message de version Python. Cette ligne a été reformattée ; les contrôles Ruff complets ont ensuite été relancés et réussis. Les 151 tests backend et les 29 parcours navigateur de ce lancement ont réussi. Aucun échec fonctionnel n'a été observé pendant ces contrôles.
+
+La base de travail n'a pas été réinitialisée. Aucun secret révoqué par l'agent, aucun contact externe, aucun entretien, aucun push ni déploiement. Révocations par le propriétaire et démarrage de G1 restent à effectuer ; le pilote G2 reste conditionné aux preuves prévues dans la roadmap.

@@ -7,7 +7,7 @@ Mise à jour : 11 octobre 2026 (préparation du pilote). Promesse à tester : *A
 | Niveau | État | Preuve ou référence |
 |---|---|---|
 | Fondations techniques (F1–F6) | **Livrées** sur `refonte/fondations` | [AVANCEMENT.md](docs/AVANCEMENT.md), briques 0 à 7 |
-| Contrôles exécutés | **Locaux uniquement**, sur Python 3.12 : 148 tests backend, 29 parcours navigateur, recette réelle de redémarrage et de restauration, analyse des secrets | [AVANCEMENT.md](docs/AVANCEMENT.md), lots 2, 3 et 5 |
+| Contrôles exécutés | **Locaux uniquement** ; runtime courant Python 3.14.8, résultats détaillés dans le rapport | [AVANCEMENT.md](docs/AVANCEMENT.md), lots et corrections après revue |
 | CI GitHub | Configurée, **jamais exécutée** (aucun envoi) | [RESUME_PR.md](docs/RESUME_PR.md) |
 | Préparation du terrain | **Kit G1 et protocole G2 prêts**, non exécutés | [VALIDATION_TERRAIN.md](docs/VALIDATION_TERRAIN.md) |
 | Validation terrain | **Non réalisée** : aucun entretien, participant, conseiller ni contenu relu | — |
@@ -18,14 +18,14 @@ Mise à jour : 11 octobre 2026 (préparation du pilote). Promesse à tester : *A
 
 ## Prochaines étapes
 
-Dans l'ordre. Une étape ne commence que si ses dépendances sont satisfaites.
+Suivre les dépendances du tableau, pas une séquence obligatoire de E1 à E10. La révocation des clés est urgente ; l'enquête G1 (E4–E6) peut avancer en parallèle des travaux techniques (E2–E3). Ni une fusion GitHub, ni un hébergement, ni la suppression d'un ancien environnement Python ne sont nécessaires aux entretiens.
 
 | # | Étape et objectif | Responsable | Dépendances | Preuve attendue | Condition de sortie |
 |---|---|---|---|---|---|
 | E1 | Révoquer les clés exposées et changer le mot de passe email | Propriétaire des comptes | Aucune | Registre de [SECURITE.md](docs/SECURITE.md) §2 rempli (date, fournisseur, action), sans valeur | Toutes les lignes « à effectuer » sont confirmées par le propriétaire |
-| E2 | Valider Python 3.12 sur le poste, puis supprimer `backend/.venv-py310` | Fondateur | Aucune | `dev.py check --e2e` et `recette.py` réussis sur le poste | Ancien environnement supprimé |
+| E2 | Maintenir le runtime du projet à jour et vérifier son fonctionnement | Technique | Aucune | Version corrective consignée ; `dev.py check --e2e` et `recette.py` réussis sur le poste | Environnement courant validé. Nettoyage des anciens environnements facultatif, sans bloquer le terrain |
 | E3 | Décider d'envoyer la branche et faire tourner la CI | Propriétaire | E1 recommandé ; `verifier_secrets.py` réussi | Exécution GitHub des trois jobs | Trois jobs verts. Fusion selon [RESUME_PR.md](docs/RESUME_PR.md), conflit README résolu |
-| E4 | Fixer J0, les seuils de G1 et les plafonds de temps et de dépenses | Fondateur | Aucune | D-011 renseigné ; seuils écrits dans VALIDATION §6 | Valeurs consignées avant le premier contact |
+| E4 | Fixer J0, les seuils de G1 et les plafonds de temps et de dépenses de G1 | Fondateur | Aucune | D-011 renseigné pour G1 ; seuils écrits dans VALIDATION §6 | Valeurs G1 consignées avant le premier contact ; plafonds G2 à fixer avant E10 |
 | E5 | Enquête G1 : recrutement et entretiens | Fondateur | E4 | Fiches d'entretien privées ; tableau de suivi anonymisé ; synthèse sans données personnelles | Objectif indicatif atteint (5 débutants, 5 producteurs, 2 conseillers), ou arrêt motivé selon la règle fixée en E4 |
 | E6 | Décision de fin de G1 | Fondateur, avec l'avis d'un conseiller | E5 | Fiche §6 remplie avec des identifiants d'entretien ; D-014 consigné | « Poursuivre », « recentrer » ou « arrêter » consigné avec sa date de réexamen |
 | E7 | Relecture du contenu et publication de la v2 relue | Conseiller ou relecteur désigné, puis technique | E6 (zone, culture) | `preparation-generique.v2.json` avec relecteur et date ; `load_content` et tests réussis | v2 chargée ; dossiers réels créés seulement ensuite (D-042) |

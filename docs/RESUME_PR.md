@@ -9,24 +9,24 @@ Remplacer le prototype (marketing, chatbot, météo, données fictives, clés da
 ## Modifications
 
 - 8 commits de fondation (briques 0 à 7) et les lots de préparation du pilote ; détail et preuves dans [AVANCEMENT.md](AVANCEMENT.md).
-- Backend Django 5.2 + DRF + PostgreSQL ; frontend React/Vite/Tailwind sans secret ; Python 3.12.
+- Backend Django 5.2 + DRF + PostgreSQL ; frontend React/Vite/Tailwind sans clé fournisseur ; Python 3.14.8.
 - Ancien prototype supprimé de la branche, conservé sur `archive/prototype-2026-10-11`.
 
 ## Preuves locales (poste Windows 11, 11/10/2026)
 
 | Contrôle | Résultat |
 |---|---|
-| `scripts/dev.py check --e2e` (Python 3.12.10) | ruff, format, migrations à jour, 148 pytest, eslint, TypeScript, build, 29 parcours Playwright (1 ignoré : clavier sur téléphone) |
+| Contrôles backend, frontend et navigateur | Résultats et version exacte du runtime consignés dans [AVANCEMENT.md](AVANCEMENT.md), section « Corrections après revue » |
 | `scripts/recette.py` | Redémarrage réel, sauvegarde puis restauration : OK |
-| `scripts/verifier_secrets.py` | Aucun secret dans la branche ni dans le build |
+| `scripts/verifier_secrets.py` | Périmètre : valeurs locales connues et motifs définis ; aucune garantie d'absence de secrets inconnus. Résultats dans AVANCEMENT |
 | Tests avec une base de travail inexistante (`DB_NAME=agria_inexistante`) | 147 réussis au lot 3 (148 depuis le test ajouté au lot 5) : aucune base de travail ni aucun secret métier n'est nécessaire |
-| Workflow `.github/workflows/ci.yml` | YAML validé localement. **Jamais exécuté sur GitHub** |
+| Workflow `.github/workflows/ci.yml` | Configuré pour Python 3.14.8, scan du build dans le job frontend après compilation. **Jamais exécuté sur GitHub** |
 
 ## Points d'attention pour la fusion
 
 - **Conflit attendu sur `README.md`** : `origin/master` contient un commit (`735381a`, 29/05/2025) modifiant l'ancien README. Garder la version de la branche.
 - La fusion retire `lib/config.ts`, et donc les clés OpenWeather et Agromonitoring, de la version courante de `master`. **Elle ne les retire pas de l'historique : la révocation par le propriétaire reste indispensable** ([SECURITE.md](SECURITE.md) §2).
-- Lancer `python scripts/verifier_secrets.py` juste avant l'envoi.
+- Lancer le scanner avec le Python de `backend/.venv` juste avant l'envoi (commandes dans README).
 
 ## Limites
 

@@ -19,6 +19,8 @@ Vérifier si la **préparation d'une campagne** pose, chez des débutants avec p
 
 Objectif indicatif, à confirmer par le fondateur avant J0 : **5 débutants, 5 producteurs actifs, 2 conseillers**, plus si possible 1 ou 2 personnes ayant abandonné un projet. Ce n'est pas un échantillon représentatif.
 
+Pour démarrer, viser un premier échange avec un conseiller et deux personnes préparant une campagne, puis compléter la série. Ce petit groupe sert à vérifier les questions et l'accès aux participants ; il ne valide pas le marché. G1 ne dépend ni d'un hébergement, ni de la CI GitHub, ni du nettoyage des anciens environnements Python. Fixer d'abord les plafonds de G1 ; ceux de G2 pourront être arrêtés à la sortie de G1, avant le premier dossier accompagné.
+
 ## 2. Recrutement
 
 ### 2.1 Débutant avec un projet concret
