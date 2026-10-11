@@ -1,25 +1,38 @@
-import { useQuery } from '@tanstack/react-query'
-import { api, ApiError } from '../shared/api'
-
-type Health = { status: string; database: string; migrations: string }
+import { BrowserRouter, Route, Routes } from 'react-router'
+import { LoginPage } from '../features/auth/LoginPage'
+import { RegisterPage } from '../features/auth/RegisterPage'
+import { DossierLayout } from '../features/dossiers/DossierLayout'
+import { DossiersPage, HomeRedirect } from '../features/dossiers/DossiersPage'
+import { FactEditPage } from '../features/dossiers/FactEditPage'
+import { NewProjectPage } from '../features/dossiers/NewProjectPage'
+import { ProjectPage } from '../features/dossiers/ProjectPage'
+import { TodayPage } from '../features/dossiers/TodayPage'
+import { HelpPage } from '../features/help/HelpPage'
+import { AppLayout } from './AppLayout'
+import { NotFoundPage } from './NotFoundPage'
+import { RequireAuth } from './RequireAuth'
 
 export function App() {
-  const health = useQuery({ queryKey: ['health'], queryFn: () => api<Health>('/health'), retry: false })
-
   return (
-    <main className="mx-auto max-w-xl px-4 py-10">
-      <h1 className="text-2xl font-semibold text-brand-700">AGRIA</h1>
-      <p className="mt-2 text-muted">Préparer sa campagne agricole.</p>
-      <section className="mt-6 rounded-lg border border-line bg-surface p-4" aria-live="polite">
-        <h2 className="font-medium">État du serveur</h2>
-        {health.isPending && <p>Vérification…</p>}
-        {health.isSuccess && <p>Serveur et base de données disponibles.</p>}
-        {health.isError && (
-          <p role="alert" className="text-danger-700">
-            {health.error instanceof ApiError ? health.error.message : 'Serveur indisponible.'}
-          </p>
-        )}
-      </section>
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route path="/connexion" element={<LoginPage />} />
+          <Route path="/inscription" element={<RegisterPage />} />
+          <Route path="/aide" element={<HelpPage />} />
+          <Route element={<RequireAuth />}>
+            <Route index element={<HomeRedirect />} />
+            <Route path="/dossiers" element={<DossiersPage />} />
+            <Route path="/projets/nouveau" element={<NewProjectPage />} />
+            <Route path="/d/:dossierId" element={<DossierLayout />}>
+              <Route index element={<TodayPage />} />
+              <Route path="projet" element={<ProjectPage />} />
+              <Route path="projet/:factKey" element={<FactEditPage />} />
+            </Route>
+          </Route>
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }

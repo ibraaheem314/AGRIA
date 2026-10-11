@@ -10,7 +10,7 @@ français et ne contiennent ni trace d'exécution ni détail interne.
 
 import logging
 
-from django.db import DatabaseError
+from django.db import InterfaceError, OperationalError
 from django.http import JsonResponse
 from rest_framework import exceptions, status
 from rest_framework.response import Response
@@ -18,6 +18,8 @@ from rest_framework.views import exception_handler, set_rollback
 
 logger = logging.getLogger("agria.errors")
 
+# Panne de connexion à la base uniquement ; une violation de contrainte reste une erreur interne.
+UNAVAILABLE_ERRORS = (OperationalError, InterfaceError)
 UNAVAILABLE_MESSAGE = (
     "Le service est momentanément indisponible. Vos données n'ont pas été modifiées."
 )
@@ -67,7 +69,7 @@ def _flatten(detail) -> object:
 
 
 def api_exception_handler(exc, context):
-    if isinstance(exc, DatabaseError):
+    if isinstance(exc, UNAVAILABLE_ERRORS):
         logger.exception("Erreur de base de données")
         set_rollback()
         return Response(
@@ -92,8 +94,9 @@ def api_exception_handler(exc, context):
         response.data = error_body("validation", message, fields or None)
         return response
 
+    # Type exact : une sous-classe (ex. CsrfFailed) garde son propre code.
     for exc_class, (code, message) in CODES.items():
-        if isinstance(exc, exc_class):
+        if type(exc) is exc_class:
             if isinstance(exc, exceptions.Throttled) and exc.wait:
                 message = f"Trop de tentatives. Réessayez dans {int(exc.wait) + 1} secondes."
             response.data = error_body(code, message)
@@ -149,7 +152,7 @@ class DatabaseUnavailableMiddleware:
         return self.get_response(request)
 
     def process_exception(self, request, exception):
-        if isinstance(exception, DatabaseError) and _wants_json(request):
+        if isinstance(exception, UNAVAILABLE_ERRORS) and _wants_json(request):
             logger.exception("Base de données indisponible")
             return JsonResponse(
                 error_body("service_indisponible", UNAVAILABLE_MESSAGE),

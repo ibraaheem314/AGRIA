@@ -28,47 +28,7 @@ Ce registre distingue le cap convenu, les recommandations d'architecture et les 
 | D-018 | Acté (11/10/2026) | Organisation `backend/` + `frontend/` + `scripts/dev.py` ; une seule application Django découpée en modules métier | Remplace l'arborescence `src/` + `api/` proposée en ARCHITECTURE §3. Pas de services séparés |
 | D-019 | Acté (11/10/2026) | Base de développement : instance PostgreSQL propre au projet (`.devdb/`, 127.0.0.1:5444) gérée par `scripts/dev.py` ; Docker non requis | Le démon Docker n'est pas actif sur le poste, et les services PostgreSQL déjà installés (ports 5432 et 5433) ne doivent pas être modifiés |
 | D-020 | Acté (11/10/2026) | Parcours de bout en bout avec Playwright sur une base dédiée `agria_e2e`, en vues ordinateur et téléphone | Prouve le comportement réel (proxy, cookies, base) sans toucher les données de travail |
-
-## Décisions à ne pas rouvrir par défaut
-
-Le choix du nom AGRIA, du pays initial et l'absence de marketplace au lancement ne nécessitent pas une nouvelle discussion à chaque tâche technique.
-
-Les corrections réversibles et les travaux déjà autorisés peuvent avancer dans le périmètre demandé. Ce document n'ajoute pas de circuit d'approbation à ces travaux.
-
-Une nouvelle dépense, un contact externe, une publication ou un déploiement ne sont pas autorisés par le seul fait de les mentionner ici. Les instructions effectives du fondateur définissent l'autorisation.
-
-## Registre des inconnues
-
-| Inconnue | Conséquence | Moyen de résolution |
-|---|---|---|
-| Site et relais local | Impossible de valider le service au Sénégal | Entretiens et accord de pilote |
-| Difficulté réelle de préparation | Proposition de valeur non établie | Démarches, blocages et accompagnements actuels documentés |
-| Capacité à effectuer les démarches | Risque d'un dossier rempli sans effet | Observer les pratiques, accès et contraintes |
-| Payeur et disposition à payer | Viabilité commerciale inconnue | Entretien avec décideur, offre de pilote et engagement concret |
-| Budget / disponibilité | Plan matériel et délais non engageables | D-011 |
-| Infrastructure / connectivité | Architecture terrain encore incertaine | Relevé sur site |
-| Exposition du prototype | Portée de l'incident de clés inconnue | Vérification auprès des comptes et déploiements accessibles |
-| Expertise agronomique | Recommandations non validées | Partenaire technique à identifier |
-
-## Historique du changement de cap
-
-Le premier cadrage partait de l'expertise environnementale du fondateur et comparait irrigation/conservation. Le fondateur a précisé son intention d'aider à la fois des débutants avec projet concret et des exploitants peu accompagnés. Le 11 octobre 2026, D-003 a donc été supersédé : l'enquête valide désormais la préparation d'une campagne et le groupe de lancement. Aucune des anciennes pistes n'est traitée comme un produit supplémentaire à développer.
-
-## Format de décision après enquête
-
-- ID et date :
-- Responsable :
-- Question :
-- Preuves et liens :
-- Options comparées, y compris la pratique actuelle :
-- Choix et raison :
-- Hypothèses restantes :
-- Conséquences produit, techniques et budgétaires :
-- Condition et date de réexamen :
-- Documents mis à jour :
-
-## Revue hebdomadaire
-
-Examiner les preuves nouvelles, les blocages et la prochaine décision. Limiter le travail simultané à une enquête produit et une tâche technique directement utile.
-
-Une nouvelle idée est consignée dans le hors-périmètre de la roadmap. Elle n'interrompt pas automatiquement le travail engagé.
+| D-021 | Acté (11/10/2026) | Le « dossier » est une **campagne** d'un projet. Ses informations sont définies dans un registre unique côté serveur (`backend/dossiers/facts.py`), que l'interface lit pour construire ses formulaires. États : non renseigné (pas de ligne), je ne sais pas, déclaré, estimé, vérifié | Un « vérifié » exige une source (contrainte en base). Aucune valeur par défaut. Débutant et producteur partagent le même dossier ; seuls un libellé et l'information « Changements envisagés » diffèrent |
+| D-022 | Acté (11/10/2026) | Accès : le propriétaire lit et modifie ; un conseiller lit seulement les dossiers qui lui sont attribués (attribution faite dans l'administration, jamais effacée mais close) ; tout autre compte reçoit 404. `is_staff` ne donne aucun accès par l'API | Pas de rôle « organisation » au lancement : il ouvrirait l'accès à tous les dossiers d'une structure |
+| D-023 | Acté (11/10/2026) | Reprise sans doublon : les créations portent un `request_id` choisi par l'interface ; les modifications portent la version lue (`expected_version`). Une version différente avec un contenu identique est reconnue comme une reprise ; avec un contenu différent, c'est un conflit 409 | Couvre la réponse perdue sur un réseau instable sans fusion silencieuse |
+| D-024 | Acté (11/10/2026) | Connexion par email et mot de passe. Inscription libre activable (`AGRIA_ALLOW_SIGNUP`) ; sinon comptes créés par la commande `create_account` (accès assisté). Téléphone/SMS différé | La connexion exacte dépend des entretiens (PRODUIT §5) ; un seul canal pour commencer |

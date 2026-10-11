@@ -13,7 +13,7 @@ Légende des niveaux de preuve, à ne pas confondre :
 |---|---|---|
 | 0 — Préserver et établir la base | Terminée | Ci-dessous |
 | 1 — Socle exécutable | Terminée | Ci-dessous |
-| 2 — Identité, projet, campagne | À faire | |
+| 2 — Identité, projet, campagne | Terminée | Ci-dessous |
 | 3 — Vérifications et plan d'action | À faire | |
 | 4 — Budget transparent | À faire | |
 | 5 — Conseiller, relecture, synthèse | À faire | |
@@ -61,3 +61,24 @@ Légende des niveaux de preuve, à ne pas confondre :
 **Reste incomplet :** CI non exécutée ; admin Django non servi hors mode développement (aucun déploiement prévu) ; sauvegarde/restauration écrites mais testées en brique 7.
 
 **Décisions :** D-016 à D-020, D-006 en partie ([DECISIONS.md](DECISIONS.md)).
+
+## Brique 2 — Identité, projet et campagne (11/10/2026)
+
+**Fonctionne :**
+
+- Inscription, connexion et déconnexion par session Django. CSRF imposé à toute écriture, y compris la connexion. 10 tentatives par minute et par adresse IP. Message identique, que le compte existe ou non.
+- Création d'un projet et de sa première campagne en une seule transaction ; ajout d'une autre campagne à un projet existant.
+- 11 informations (12 pour un producteur actif) : localisation, accès au terrain, eau, culture et période envisagées, temps, main-d'œuvre, matériel, somme disponible, débouchés, expérience (et changements envisagés). Chacune a un état, une source et un historique complet.
+- Interface : Connexion, Inscription, Aujourd'hui (information à compléter), Mon projet (éléments connus par section), fiche d'information (formulaire, historique), Mes dossiers, Aide.
+
+**Vérifications exécutées :**
+
+| Vérification | Résultat |
+|---|---|
+| `pytest` (backend) | 45/45 : comptes (CSRF, limite de tentatives, mot de passe faible, compte désactivé, inscription fermée) ; dossiers (états, validation, conflit 409, reprise sans doublon, historique) ; permissions (autre compte 404, conseiller non attribué 404, attribué en lecture seule 403, attribution close, administrateur sans accès, dossier archivé) |
+| Persistance au redémarrage | Test `test_les_donnees_survivent_a_un_nouveau_processus_serveur` : écriture par l'API, relecture par un autre processus Python |
+| Playwright, 8/8 (ordinateur et téléphone) | Parcours débutant complet avec reconnexion ; refus d'un « vérifié » sans source, saisie conservée ; coupure réseau avec réponse perdue : pas de faux succès, saisie conservée, une seule révision après reprise ; un autre compte voit « Dossier introuvable » |
+
+**Reste incomplet :** pas de récupération de mot de passe (pas d'envoi d'email configuré ; réinitialisation possible par l'administration) ; le navigateur affiche « Mon plan » seulement à partir de la brique 3.
+
+**Décisions :** D-021 à D-024.
