@@ -37,6 +37,18 @@ export type Message = {
   resolved_by: Person | null
   created_at: string
   replies: Message[]
+  /** État de la question pour la personne connectée (null pour un commentaire ou une réponse). */
+  state: QuestionState | null
+}
+
+export type QuestionState = 'a_repondre' | 'en_attente_reponse' | 'reponse_recue' | 'repondu' | 'close'
+
+export const QUESTION_STATE: Record<QuestionState, { label: string; tone: 'warn' | 'info' | 'neutral' | 'ok' }> = {
+  a_repondre: { label: 'Attend votre réponse', tone: 'warn' },
+  en_attente_reponse: { label: 'En attente d’une réponse', tone: 'info' },
+  reponse_recue: { label: 'Réponse reçue, question ouverte', tone: 'info' },
+  repondu: { label: 'Vous avez répondu, question ouverte', tone: 'neutral' },
+  close: { label: 'Résolue', tone: 'ok' },
 }
 
 export type Decision = { id: number; choice: string; choice_label: string; reason: string; author: Person; created_at: string }

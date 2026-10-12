@@ -19,6 +19,7 @@ import {
   type Review,
   type Section,
   type Versions,
+  QUESTION_STATE,
 } from './api'
 import { SectionsView } from './SectionsView'
 import { useBudget } from '../budget/api'
@@ -188,7 +189,7 @@ function ReviewForm({ dossierId, relecture }: { dossierId: number; relecture: Re
   if (!seen) {
     return (
       <Card>
-        <h2 className="font-semibold">Donner un avis</h2>
+        <h2 id="donner-avis" className="font-semibold">Donner un avis</h2>
         {sent && <p role="status" className="mt-1 font-medium text-ok-700">Avis enregistré.</p>}
         <p className="mt-1 text-sm text-muted">Relisez d'abord le projet, le plan et le budget du dossier.</p>
         <Button className="mt-3" onClick={() => { setSeen(relecture.versions); setSent(false) }}>Rédiger un avis</Button>
@@ -309,7 +310,7 @@ function Thread({ message, dossierId, canWrite }: { message: Message; dossierId:
           {message.kind_label} de {message.author.display_name} ({message.author_role}) · {formatDateTime(message.created_at)}
           {message.target_label && <> · {TARGET_PREFIX[message.target_type]} : « {message.target_label} »</>}
         </p>
-        {isQuestion && (message.resolved_at ? <Badge tone="ok">Résolue</Badge> : <Badge tone="warn">Ouverte</Badge>)}
+        {isQuestion && message.state && <Badge tone={QUESTION_STATE[message.state].tone}>{QUESTION_STATE[message.state].label}</Badge>}
       </div>
       <p className="mt-1 whitespace-pre-line">{message.body}</p>
       {message.replies.length > 0 && (

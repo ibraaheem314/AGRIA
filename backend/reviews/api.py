@@ -35,7 +35,7 @@ def created_status(created: bool) -> int:
     return status.HTTP_201_CREATED if created else status.HTTP_200_OK
 
 
-def comment_payload(c: Comment) -> dict:
+def comment_payload(c: Comment, viewer_role: str | None = None) -> dict:
     return {
         "id": c.pk,
         "kind": c.kind,
@@ -50,6 +50,11 @@ def comment_payload(c: Comment) -> dict:
         "resolved_by": person(c.resolved_by),
         "created_at": c.created_at,
         "replies": [comment_payload(r) for r in c.replies.all()],
+        "state": (
+            sections.question_state(c, viewer_role, c.campaign.project.owner_id)
+            if viewer_role and c.parent_id is None
+            else None
+        ),
     }
 
 
@@ -98,7 +103,7 @@ def relecture_payload(campaign, user) -> dict:
             }
             for d in Decision.objects.filter(campaign=campaign).select_related("author")
         ],
-        "threads": [comment_payload(c) for c in threads],
+        "threads": [comment_payload(c, role_on(user, campaign)) for c in threads],
         "choices": {
             "sections": [{"value": k, "label": v} for k, v in SECTIONS.items()],
             "verdicts": [{"value": k, "label": v} for k, v in VERDICTS.items()],

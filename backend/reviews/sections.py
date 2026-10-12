@@ -166,18 +166,59 @@ def _status_code(campaign: Campaign, versions: dict[str, int]) -> str:
     return "pret_relecture"
 
 
-def pending_items(campaign: Campaign) -> dict:
-    """Ce qui attend une réponse : questions non résolues, demande de relecture sans avis."""
+QUESTION_STATES = {
+    "a_repondre": "Attend votre réponse",
+    "en_attente_reponse": "En attente d'une réponse",
+    "reponse_recue": "Réponse reçue, question encore ouverte",
+    "repondu": "Vous avez répondu, question encore ouverte",
+    "close": "Question résolue",
+}
+
+
+def question_state(question, viewer_role: str, owner_id: int) -> str | None:
+    """État d'une question pour la personne qui la consulte (porteur ou conseiller).
+
+    Le dernier message du fil dit qui doit agir : plusieurs relances sont possibles, et une
+    réponse ne clôt jamais la question (seul « marquer comme résolue » le fait). Aucun suivi
+    de lecture n'existe : rien n'est « non lu » ni « nouveau ».
+    """
+    if question.kind != "question":
+        return None
+    if question.resolved_at is not None:
+        return "close"
+
+    def role(message) -> str:
+        return "porteur" if message.author_id == owner_id else "conseiller"
+
+    replies = list(question.replies.all())
+    last = replies[-1] if replies else question
+    asked_by_me = role(question) == viewer_role
+    if role(last) == viewer_role:
+        return "en_attente_reponse" if asked_by_me else "repondu"
+    return "reponse_recue" if asked_by_me else "a_repondre"
+
+
+def pending_items(campaign: Campaign, viewer_role: str) -> dict:
+    """Ce qui attend la personne qui consulte, et ce qu'elle attend des autres."""
     from reviews.models import Comment
 
+    owner_id = campaign.project.owner_id
+    questions = Comment.objects.filter(
+        campaign=campaign, kind="question", parent__isnull=True, resolved_at__isnull=True
+    ).prefetch_related("replies")
+    states = [question_state(q, viewer_role, owner_id) for q in questions]
     last_request = ReviewRequest.objects.filter(campaign=campaign).first()
     last_review = Review.objects.filter(campaign=campaign).first()
     return {
-        "open_questions": Comment.objects.filter(
-            campaign=campaign, kind="question", resolved_at__isnull=True
-        ).count(),
+        "open_questions": len(states),
+        "to_answer": states.count("a_repondre"),
+        "awaiting_reply": states.count("en_attente_reponse"),
+        "replies_received": states.count("reponse_recue"),
         "review_requested": bool(
             last_request
             and (last_review is None or last_review.created_at < last_request.created_at)
+        ),
+        "review_stale": bool(
+            last_review and stale_sections(last_review, current_versions(campaign))
         ),
     }

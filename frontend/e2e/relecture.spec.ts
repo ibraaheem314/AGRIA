@@ -16,7 +16,7 @@ test('conseiller attribué : avis traçable, avis à réexaminer après modifica
 
   // Sans conseiller : absence explicite, aucun avis inventé.
   await page.goto(`/d/${id}`)
-  await expect(page.getByText("Aucun conseiller n'est attribué à ce dossier pour le moment.")).toBeVisible()
+  await expect(page.getByText(/Aucun conseiller n'est attribué à ce dossier pour le moment : aucune réponse ni aucun avis ne peut être promis./)).toBeVisible()
   await page.goto(`/d/${id}/relecture`)
   await expect(page.getByText('Aucun avis pour le moment.')).toBeVisible()
   await page.getByRole('button', { name: 'Demander une relecture' }).click()

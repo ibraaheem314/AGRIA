@@ -1,4 +1,5 @@
 import type { Preparation } from '../plan/api'
+import type { Relecture } from '../reviews/api'
 import type { Dossier } from './api'
 import { isDetailed } from './guidance'
 import { canEdit } from './roles'
@@ -126,6 +127,49 @@ export function ownerHome(dossier: Dossier, prep: Preparation, questionsToAnswer
   }
   if (fill && !blockingFill) candidates.push(fill)
 
+  const [primary = null, ...secondary] = candidates
+  return { primary, secondary }
+}
+
+/**
+ * Accueil du conseiller : ses interventions utiles (répondre, examiner, réexaminer), pas une copie
+ * de l'accueil du porteur. Même table de décision (docs/INTERFACE.md).
+ */
+export function advisorHome(dossier: Dossier, relecture: Relecture): HomePlan {
+  if (dossier.role !== 'conseiller' || dossier.archived) return { primary: null, secondary: [] }
+  const base = `/d/${dossier.id}`
+  const toAnswer = relecture.threads.filter((m) => m.state === 'a_repondre').length
+  const requested = relecture.requests.find((r) => !r.answered)
+  const stale = relecture.reviews[0] && !relecture.reviews[0].current
+  const candidates: HomeAction[] = []
+  if (toAnswer > 0) {
+    candidates.push({
+      key: 'repondre',
+      heading: 'Une réponse est attendue de vous',
+      title: toAnswer === 1 ? 'Le porteur attend votre réponse à une question.' : `Le porteur attend votre réponse à ${toAnswer} questions.`,
+      to: `${base}/relecture#messages`,
+      label: 'Répondre',
+    })
+  }
+  if (requested && relecture.can_review) {
+    candidates.push({
+      key: 'avis',
+      heading: 'Relecture demandée',
+      title: 'Examiner le dossier et rédiger un avis',
+      why: requested.note || undefined,
+      to: `${base}/relecture#donner-avis`,
+      label: 'Rédiger un avis',
+    })
+  } else if (stale && relecture.can_review) {
+    candidates.push({
+      key: 'reexaminer',
+      heading: 'Avis à réexaminer',
+      title: 'Le dossier a changé depuis le dernier avis',
+      why: `Modifié depuis : ${relecture.reviews[0]!.stale_sections.join(', ')}.`,
+      to: `${base}/relecture#donner-avis`,
+      label: 'Réexaminer et rédiger un avis',
+    })
+  }
   const [primary = null, ...secondary] = candidates
   return { primary, secondary }
 }

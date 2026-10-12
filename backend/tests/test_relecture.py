@@ -347,3 +347,71 @@ def test_dossier_archive_expose_sa_date_et_reste_consultable(porteur, dossier):
         {"label": "Saison suivante", "request_id": str(uuid.uuid4()), "copy_from": dossier["id"]},
     )
     assert response.status_code == 201
+
+
+# --- Qui doit agir dans un échange --------------------------------------------------------------
+
+
+def post(sess, dossier, body, parent=None):
+    data = {"body": body, "request_id": str(uuid.uuid4())}
+    data.update({"parent_id": parent} if parent else {"kind": "question"})
+    response = sess.post(f"{base(dossier)}/messages", data)
+    assert response.status_code == 201
+    return response.json()["id"]
+
+
+def pending(sess):
+    return sess.get("/api/dossiers").json()[0]["pending"]
+
+
+def state(sess, dossier):
+    return relecture(sess, dossier)["threads"][0]["state"]
+
+
+def test_question_du_conseiller_relances_et_reponse_qui_ne_clot_pas(porteur, conseiller, dossier):
+    q = post(conseiller, dossier, "Le terrain est-il loué ?")
+    assert (state(porteur, dossier), state(conseiller, dossier)) == (
+        "a_repondre", "en_attente_reponse",
+    )  # fmt: skip
+    assert pending(porteur)["to_answer"] == 1
+    assert (pending(conseiller)["to_answer"], pending(conseiller)["awaiting_reply"]) == (0, 1)
+
+    post(porteur, dossier, "Prêté, sans écrit.", parent=q)
+    # Une réponse ne clôt pas la question : elle reste ouverte, sans tâche pour le porteur.
+    assert (state(porteur, dossier), state(conseiller, dossier)) == ("repondu", "reponse_recue")
+    assert pending(porteur)["to_answer"] == 0
+    assert pending(conseiller)["replies_received"] == 1
+    assert pending(conseiller)["open_questions"] == 1
+
+    # Relance du conseiller : la réponse est de nouveau attendue du porteur.
+    post(conseiller, dossier, "Pour combien de temps ?", parent=q)
+    assert state(porteur, dossier) == "a_repondre"
+    assert pending(porteur)["to_answer"] == 1
+
+    conseiller.post(f"{base(dossier)}/messages/{q}/resoudre")
+    assert (state(porteur, dossier), state(conseiller, dossier)) == ("close", "close")
+    assert pending(porteur)["to_answer"] == pending(conseiller)["open_questions"] == 0
+
+
+def test_question_du_porteur_attend_le_conseiller(porteur, conseiller, dossier):
+    q = post(porteur, dossier, "Qui contacter pour l'eau ?")
+    assert pending(conseiller)["to_answer"] == 1
+    assert pending(porteur)["awaiting_reply"] == 1
+    post(conseiller, dossier, "Le comité du forage.", parent=q)
+    assert pending(conseiller)["to_answer"] == 0
+    assert state(porteur, dossier) == "reponse_recue"
+    # Un commentaire n'est jamais une tâche.
+    porteur.post(
+        f"{base(dossier)}/messages",
+        {"kind": "commentaire", "body": "Merci.", "request_id": str(uuid.uuid4())},
+    )
+    assert pending(conseiller)["to_answer"] == 0
+
+
+def test_avis_a_reexaminer_signale(porteur, conseiller, dossier):
+    assert pending(conseiller)["review_stale"] is False
+    give_review(conseiller, dossier)
+    assert pending(conseiller)["review_stale"] is False
+    put_info(porteur, dossier, "eau", "inconnu")
+    assert pending(conseiller)["review_stale"] is True
+    assert pending(porteur)["review_stale"] is True

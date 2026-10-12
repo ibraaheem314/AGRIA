@@ -1,12 +1,13 @@
+import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 import { formatDate, formatDateTime, plural } from '../../shared/format'
 import { Alert, Badge, ButtonLink, Card, Loading, PageTitle } from '../../shared/ui'
 import { usePreparation, type Check } from '../plan/api'
-import { useRelecture } from '../reviews/api'
+import { useRelecture, type Message } from '../reviews/api'
 import { useCurrentDossier } from './DossierLayout'
 import { isDetailed } from './guidance'
 import { BudgetCard, factCounts } from './ProjectPage'
-import { ownerHome, type HomePlan } from './priority'
+import { advisorHome, ownerHome, type HomePlan } from './priority'
 
 /** Accueil : prochaine démarche, points bloquants, état du dossier, retours disponibles. */
 export function TodayPage() {
@@ -24,18 +25,18 @@ export function TodayPage() {
   const blockedActions = prep.data?.actions.filter((a) => a.status === 'bloquee') ?? []
   const deferral = dossier.status.code === 'differe' ? relecture.data?.decisions.find((d) => d.choice === 'differer') : undefined
   const starting = ['brouillon', 'a_completer'].includes(dossier.status.code)
-  // Échanges qui demandent l'attention du porteur : questions du conseiller sans réponse de sa part,
-  // et ses propres questions auxquelles le conseiller a répondu.
-  const threads = relecture.data?.threads ?? []
-  const toAnswer = threads.filter(
-    (m) => m.kind === 'question' && m.author_role === 'conseiller' && !m.resolved_at && !m.replies.some((r) => r.author_role === 'porteur'),
-  )
-  const answered = threads.filter(
-    (m) => m.kind === 'question' && m.author_role === 'porteur' && !m.resolved_at && m.replies.some((r) => r.author_role === 'conseiller'),
-  )
+  // Qui doit agir dans les échanges : état calculé par le serveur pour la personne connectée.
+  const toAnswer = relecture.data?.threads.filter((m) => m.state === 'a_repondre') ?? []
   const stepByStep = active && dossier.project.profile === 'debutant' && counts.non_renseigne > 0
   // Action principale : une seule, calculée à un seul endroit, une fois le plan et les échanges lus.
-  const home = prep.data && !relecture.isPending ? ownerHome(dossier, prep.data, toAnswer.length) : null
+  const home =
+    prep.data && !relecture.isPending
+      ? owner
+        ? ownerHome(dossier, prep.data, toAnswer.length)
+        : relecture.data
+          ? advisorHome(dossier, relecture.data)
+          : null
+      : null
 
   return (
     <div className="space-y-4">
@@ -65,9 +66,9 @@ export function TodayPage() {
         </Card>
       )}
 
-      {!owner && <AdvisorPending dossierId={dossier.id} />}
+      {!dossier.archived && home && (owner || !relecture.isError) && <HomeActions plan={home} dossierId={dossier.id} advisor={!owner} />}
 
-      {active && home && <HomeActions plan={home} dossierId={dossier.id} />}
+      <ExchangesCard toAnswer={toAnswer} />
 
       {active && detailed && starting && (
         <Card>
@@ -131,53 +132,6 @@ export function TodayPage() {
         </Card>
       )}
 
-      <Card>
-        <h2 className="font-semibold">{owner ? 'Dernier retour du conseiller' : 'Dernier avis donné'}</h2>
-        {relecture.isPending && <Loading />}
-        {relecture.isError && <p className="mt-1 text-danger-700">Retours indisponibles : {relecture.error.message}</p>}
-        {relecture.data && (
-          <>
-            {relecture.data.advisors.length === 0 && <p className="mt-1">Aucun conseiller n'est attribué à ce dossier pour le moment.</p>}
-            {owner && toAnswer.length > 0 && (
-              <p className="mt-1 font-medium text-warn-700">
-                {toAnswer.length === 1 ? 'Une question du conseiller attend votre réponse' : `${toAnswer.length} questions du conseiller attendent votre réponse`} :{' '}
-                {toAnswer.map((m) => (m.target_label ? `« ${m.target_label} »` : 'le dossier')).join(', ')}.
-              </p>
-            )}
-            {owner && answered.length > 0 && (
-              <p className="mt-1">
-                {answered.length === 1 ? 'Le conseiller a répondu à votre question.' : `Le conseiller a répondu à ${answered.length} de vos questions.`}
-              </p>
-            )}
-            {relecture.data.reviews[0] ? (
-              <div className="mt-1">
-                <p className="font-medium">
-                  {relecture.data.reviews[0].verdict_label}{' '}
-                  {!relecture.data.reviews[0].current && <Badge tone="warn">À réexaminer</Badge>}
-                </p>
-                <p className="text-sm text-muted">
-                  {relecture.data.reviews[0].advisor.display_name} · {formatDateTime(relecture.data.reviews[0].created_at)}
-                </p>
-              </div>
-            ) : (
-              relecture.data.advisors.length > 0 && toAnswer.length === 0 && answered.length === 0 && (
-                <p className="mt-1">{owner ? 'Aucun retour pour le moment.' : 'Aucun avis donné pour le moment.'}</p>
-              )
-            )}
-            <Link
-              to={`/d/${dossier.id}/relecture${owner && toAnswer.length > 0 && !dossier.archived ? '#messages' : ''}`}
-              className="mt-2 inline-block font-medium text-brand-700 underline"
-            >
-              {dossier.archived
-                ? 'Consulter la relecture et les échanges'
-                : owner && toAnswer.length > 0
-                  ? 'Répondre au conseiller'
-                  : 'Ouvrir la relecture et les échanges'}
-            </Link>
-          </>
-        )}
-      </Card>
-
       <BudgetCard dossierId={dossier.id} />
 
       <Card>
@@ -224,24 +178,8 @@ function ArchivedCard() {
   )
 }
 
-function AdvisorPending({ dossierId }: { dossierId: number }) {
-  const dossier = useCurrentDossier()
-  return (
-    <Card>
-      <h2 className="font-semibold">En attente de votre part</h2>
-      <ul className="mt-1 space-y-1">
-        <li>{dossier.pending.review_requested ? 'Une relecture est demandée.' : 'Aucune relecture demandée.'}</li>
-        <li>{plural(dossier.pending.open_questions, 'question ouverte', 'questions ouvertes')}.</li>
-      </ul>
-      <Link to={`/d/${dossierId}/relecture`} className="mt-2 inline-block font-medium text-brand-700 underline">
-        Relecture et échanges
-      </Link>
-    </Card>
-  )
-}
-
 /** Une seule action mise en avant ; les autres restent accessibles juste dessous. */
-function HomeActions({ plan, dossierId }: { plan: HomePlan; dossierId: number }) {
+function HomeActions({ plan, dossierId, advisor }: { plan: HomePlan; dossierId: number; advisor: boolean }) {
   const { primary, secondary } = plan
   return (
     <>
@@ -251,6 +189,14 @@ function HomeActions({ plan, dossierId }: { plan: HomePlan; dossierId: number })
           <h2 className="mt-1 text-lg font-semibold">{primary.title}</h2>
           {primary.why && <p className="mt-1 text-sm text-muted">{primary.why}</p>}
           <ButtonLink to={primary.to} className="mt-3">{primary.label}</ButtonLink>
+        </Card>
+      ) : advisor ? (
+        <Card>
+          <h2 className="font-semibold">Aucune intervention attendue de vous pour l’instant</h2>
+          <p className="mt-1 text-sm text-muted">
+            Aucune question n'attend votre réponse et aucune relecture n'est demandée. Vous pouvez consulter le projet,
+            le plan et les échanges, ou donner un avis à tout moment.
+          </p>
         </Card>
       ) : (
         <Card>
@@ -280,5 +226,81 @@ function HomeActions({ plan, dossierId }: { plan: HomePlan; dossierId: number })
         </section>
       )}
     </>
+  )
+}
+
+/**
+ * Échanges et relecture, du point de vue de la personne connectée : ce qui l'attend, ce qu'elle
+ * attend, les réponses reçues, la relecture demandée et le dernier avis. Rien n'est affirmé avant
+ * d'avoir lu les échanges ; aucune réponse future n'est promise.
+ */
+function ExchangesCard({ toAnswer }: { toAnswer: Message[] }) {
+  const dossier = useCurrentDossier()
+  const relecture = useRelecture(dossier.id)
+  const owner = dossier.role === 'porteur'
+  const other = owner ? 'du conseiller' : 'du porteur'
+  const count = (state: string) => relecture.data?.threads.filter((m) => m.state === state).length ?? 0
+  const awaiting = count('en_attente_reponse')
+  const received = count('reponse_recue')
+  const answered = count('repondu')
+  const request = relecture.data?.requests.find((r) => !r.answered)
+  const review = relecture.data?.reviews[0]
+  const noAdvisor = relecture.data?.advisors.length === 0
+  const lines: ReactNode[] = []
+  if (relecture.data) {
+    if (noAdvisor) {
+      lines.push("Aucun conseiller n'est attribué à ce dossier pour le moment : aucune réponse ni aucun avis ne peut être promis.")
+    }
+    if (toAnswer.length > 0) {
+      lines.push(
+        <strong className="text-warn-700">
+          {toAnswer.length === 1 ? `Une question ${other} attend votre réponse` : `${toAnswer.length} questions ${other} attendent votre réponse`} :{' '}
+          {toAnswer.map((m) => (m.target_label ? `« ${m.target_label} »` : 'le dossier')).join(', ')}.
+        </strong>,
+      )
+    }
+    if (received > 0) lines.push(`Réponse reçue à ${received === 1 ? 'une de vos questions' : `${received} de vos questions`} ; l'échange reste ouvert tant qu'il n'est pas marqué résolu.`)
+    if (awaiting > 0) lines.push(`${awaiting === 1 ? 'Une question' : `${awaiting} questions`} en attente d'une réponse ${other}.`)
+    if (answered > 0) lines.push(`Vous avez répondu à ${answered === 1 ? 'une question' : `${answered} questions`} ; ${answered === 1 ? 'elle reste ouverte' : 'elles restent ouvertes'} tant qu'elle${answered === 1 ? " n'est pas marquée résolue" : "s ne sont pas marquées résolues"}.`)
+    if (request) {
+      lines.push(
+        owner
+          ? `Relecture demandée le ${formatDateTime(request.created_at)} — aucun avis reçu depuis.`
+          : `Relecture demandée le ${formatDateTime(request.created_at)} par ${request.requested_by.display_name} — aucun avis depuis.`,
+      )
+    }
+    if (review) {
+      lines.push(
+        <>
+          Dernier avis du conseiller : <strong>{review.verdict_label}</strong> ({review.advisor.display_name},{' '}
+          {formatDateTime(review.created_at)}){' '}
+          {review.current ? <Badge tone="ok">À jour</Badge> : <Badge tone="warn">À réexaminer</Badge>}
+          {!review.current && owner && <span className="block text-sm text-muted">Le dossier a changé depuis cet avis ; vous pouvez demander une nouvelle relecture.</span>}
+        </>,
+      )
+    }
+    if (lines.length === 0) lines.push('Aucune question en cours, aucune relecture demandée, aucun avis pour le moment.')
+  }
+  return (
+    <section aria-labelledby="echanges" className="rounded-lg border border-line bg-surface p-4">
+      <h2 id="echanges" className="font-semibold">Échanges et relecture</h2>
+      {relecture.isPending && <Loading />}
+      {relecture.isError && (
+        <p className="mt-1 text-danger-700">
+          Échanges indisponibles : {relecture.error.message}{' '}
+          <button type="button" className="font-medium underline" onClick={() => relecture.refetch()}>Réessayer</button>
+        </p>
+      )}
+      {lines.length > 0 && (
+        <ul className="mt-1 space-y-1">
+          {lines.map((line, i) => <li key={i}>{line}</li>)}
+        </ul>
+      )}
+      {relecture.data && (
+        <Link to={`/d/${dossier.id}/relecture`} className="mt-2 inline-block font-medium text-brand-700 underline">
+          {dossier.archived ? 'Consulter la relecture et les échanges' : 'Ouvrir la relecture et les échanges'}
+        </Link>
+      )}
+    </section>
   )
 }

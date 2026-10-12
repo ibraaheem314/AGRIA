@@ -36,7 +36,7 @@ def campaign_summary(campaign: Campaign, user) -> dict:
             "owner": person(project.owner),
         },
         "status": dossier_status(campaign),
-        "pending": pending_items(campaign),
+        "pending": pending_items(campaign, role_on(user, campaign)),
     }
 
 

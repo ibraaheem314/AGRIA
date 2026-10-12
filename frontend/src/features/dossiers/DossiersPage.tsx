@@ -1,5 +1,5 @@
 import { Link, Navigate } from 'react-router'
-import { formatDateTime, plural } from '../../shared/format'
+import { formatDateTime } from '../../shared/format'
 import { Alert, Badge, ButtonLink, Card, Loading, PageTitle } from '../../shared/ui'
 import { useDossiers, type DossierSummary } from './api'
 import { lastDossier } from './lastDossier'
@@ -77,10 +77,17 @@ function DossierList({ title, items }: { title: string; items: DossierSummary[] 
               {d.project.profile_label} · modifié le {formatDateTime(d.updated_at)}
               {d.role === 'conseiller' && <> · porteur : {d.project.owner.display_name}</>}
               <Badge tone={d.archived ? 'neutral' : 'info'}>{d.status.label}</Badge>
-              {!d.archived && d.pending.review_requested && <Badge tone="warn">Relecture demandée</Badge>}
-              {!d.archived && d.pending.open_questions > 0 && (
-                <Badge tone="warn">{plural(d.pending.open_questions, 'question ouverte', 'questions ouvertes')}</Badge>
+              {!d.archived && d.pending.to_answer > 0 && (
+                <Badge tone="warn">
+                  {d.pending.to_answer === 1 ? '1 question attend votre réponse' : `${d.pending.to_answer} questions attendent votre réponse`}
+                </Badge>
               )}
+              {!d.archived && d.pending.review_requested && (
+                <Badge tone={d.role === 'conseiller' ? 'warn' : 'info'}>
+                  {d.role === 'conseiller' ? 'Relecture demandée' : 'Relecture demandée, en attente d’avis'}
+                </Badge>
+              )}
+              {!d.archived && d.role === 'conseiller' && d.pending.review_stale && <Badge tone="warn">Avis à réexaminer</Badge>}
               {d.project.is_demo && <Badge tone="warn">Démonstration</Badge>}
             </p>
           </Card>

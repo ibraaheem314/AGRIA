@@ -42,7 +42,15 @@ export type FactItem = {
 export type DossierSummary = {
   id: number
   status: { code: string; label: string }
-  pending: { open_questions: number; review_requested: boolean }
+  /** Relatif à la personne connectée : ce qui l'attend et ce qu'elle attend des autres. */
+  pending: {
+    open_questions: number
+    to_answer: number
+    awaiting_reply: number
+    replies_received: number
+    review_requested: boolean
+    review_stale: boolean
+  }
   label: string
   archived: boolean
   archived_at: string | null
