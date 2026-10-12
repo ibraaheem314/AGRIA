@@ -1,10 +1,10 @@
 import { Link, useParams } from 'react-router'
-import { FACT_BY_KEY, factLabel, HOW_KNOWN, SUBJECTS } from '../data/facts'
-import { describe, EMPTY, OUTCOME_LABEL, QUESTION_STATE_LABEL, questionState, SUBJECT_STATE_LABEL, subjectState, type Level } from '../data/model'
+import { FACT_BY_KEY, factLabel, howKnown, SUBJECTS } from '../data/facts'
+import { describe, EMPTY, OUTCOME_LABEL, questionLabel, questionState, subjectState, type Level } from '../data/model'
 import { useStore } from '../data/store'
 import { useDossierCtx } from '../dossier'
 import { Button, ButtonLink, Chip, Note, PageHeader, Panel, SectionTitle, TextLink } from '../ui'
-import { SUBJECT_TONE } from './DossierHome'
+import { SUBJECT_TONE, subjectStateLabel } from './DossierHome'
 
 export const LEVEL_LABEL: Record<Level, string> = { a_completer: 'Pas encore abordé', a_clarifier: 'À éclaircir', a_verifier: 'À confirmer' }
 
@@ -25,7 +25,7 @@ export function SubjectPage() {
     <div className="space-y-6">
       <p><TextLink to={base}>{role === 'conseiller' ? '← Vue d’ensemble' : '← Projet'}</TextLink></p>
       <PageHeader eyebrow="Sujet" title={subject.title}>
-        <Chip tone={SUBJECT_TONE[state]}>{SUBJECT_STATE_LABEL[state]}</Chip>
+        <Chip tone={SUBJECT_TONE[state]}>{subjectStateLabel(state, Boolean(d.archivedAt))}</Chip>
       </PageHeader>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
@@ -35,11 +35,11 @@ export function SubjectPage() {
             const check = checks.find((c) => c.factKey === k)
             const deferred = d.deferred.includes(k)
             return (
-              <Panel key={k} as="article" label={factLabel(k, d.profile)}>
+              <Panel key={k} as="article" label={factLabel(k, d.profile, role)}>
                 <div className="flex flex-wrap items-start justify-between gap-2">
-                  <h2 className="text-lg font-semibold">{factLabel(k, d.profile)}</h2>
+                  <h2 className="text-lg font-semibold">{factLabel(k, d.profile, role)}</h2>
                   <span className="flex flex-wrap gap-1.5">
-                    <Chip tone={f.status === 'inconnu' ? 'warn' : f.status === 'non_renseigne' ? 'muted' : f.status === 'verifie' ? 'info' : 'neutral'}>{HOW_KNOWN[f.status]}</Chip>
+                    <Chip tone={f.status === 'inconnu' ? 'warn' : f.status === 'non_renseigne' ? 'muted' : f.status === 'verifie' ? 'info' : 'neutral'}>{howKnown(f.status, role)}</Chip>
                     {deferred && <Chip tone="muted">Remis à plus tard</Chip>}
                     {f.carried && <Chip tone="warn">Repris, à reconfirmer</Chip>}
                   </span>
@@ -50,7 +50,7 @@ export function SubjectPage() {
                 {check && check.level !== 'a_completer' && (
                   <div className="mt-3">
                     <Note tone="warn">
-                      <strong>{LEVEL_LABEL[check.level]}{check.blocking ? ' (bloquant)' : ''} :</strong> {check.message}.
+                      <strong>{d.archivedAt ? 'Restait à éclaircir à l’archivage' : LEVEL_LABEL[check.level]}{check.blocking ? ' (bloquant)' : ''} :</strong> {check.message}.
                       {f.status === 'verifie' && ' Une information confirmée peut décrire une situation encore à régler.'}
                     </Note>
                   </div>
@@ -58,7 +58,7 @@ export function SubjectPage() {
                 <div className="mt-3 flex flex-wrap gap-2">
                   {canEdit && (
                     <ButtonLink to={`${base}/info/${k}`} variant={f.status === 'non_renseigne' ? 'primary' : 'secondary'}>
-                      {f.status === 'non_renseigne' ? 'Répondre' : 'Modifier'}<span className="sr-only"> : {factLabel(k, d.profile)}</span>
+                      {f.status === 'non_renseigne' ? 'Répondre' : 'Modifier'}<span className="sr-only"> : {factLabel(k, d.profile, role)}</span>
                     </ButtonLink>
                   )}
                   {canEdit && f.status === 'non_renseigne' && !deferred && (
@@ -69,7 +69,7 @@ export function SubjectPage() {
                   {canAsk && (
                     <Link to={`${base}/echanges?cible=information:${k}#nouveau`} className="inline-flex min-h-11 items-center px-2 font-medium text-brand-800 underline underline-offset-2">
                       {role === 'conseiller' ? 'Poser une question au porteur' : d.advisors.length ? 'Poser une question au conseiller' : 'Préparer une question'}
-                      <span className="sr-only"> sur « {factLabel(k, d.profile)} »</span>
+                      <span className="sr-only"> sur « {factLabel(k, d.profile, role)} »</span>
                     </Link>
                   )}
                 </div>
@@ -91,7 +91,7 @@ export function SubjectPage() {
                   <li key={a.id}>
                     <TextLink to={`${base}/demarches/${a.id}`}>{a.title}</TextLink>
                     <p className="text-sm text-muted">
-                      {a.status === 'terminee' ? `Terminée${a.result ? ` · résultat ${OUTCOME_LABEL[a.result.outcome].toLowerCase()}` : ''}` : a.status === 'en_cours' ? 'En cours' : a.status === 'bloquee' ? 'Bloquée' : 'À faire'}
+                      {a.status === 'terminee' ? `Terminée${a.result ? ` · résultat ${OUTCOME_LABEL[a.result.outcome].toLowerCase()}` : ''}` : d.archivedAt ? 'Restait à faire à l’archivage' : a.status === 'en_cours' ? 'En cours' : a.status === 'bloquee' ? 'Bloquée' : 'À faire'}
                     </p>
                   </li>
                 ))}
@@ -109,7 +109,7 @@ export function SubjectPage() {
                   return (
                     <li key={m.id}>
                       <p className="text-sm">« {m.body} »</p>
-                      {st && <Chip tone={st === 'a_repondre' ? 'warn' : st === 'close' ? 'ok' : 'neutral'}>{QUESTION_STATE_LABEL[st]}</Chip>}
+                      {st && <Chip tone={st === 'a_repondre' ? 'warn' : st === 'close' ? 'ok' : 'neutral'}>{questionLabel(d, st, role)}</Chip>}
                     </li>
                   )
                 })}

@@ -3,7 +3,9 @@
  * Aucune requête réseau, aucune écriture dans une base. « Réinitialiser » revient au jeu fictif.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { factLabel, HOW_KNOWN, type Status } from './facts'
+import { factLabel, type Status } from './facts'
+
+const CARRIED_STATUS: Partial<Record<Status, string>> = { declare: 'déclarée', estime: 'estimée', verifie: 'confirmée avec une source' }
 import {
   syncActions, type Action, type Decision, type Dossier, type FactState, type Line, type Message, type PersonId,
   type Review, type Section, type Target, type Value,
@@ -165,7 +167,7 @@ function makeOps(setState: (fn: (s: ProtoState) => ProtoState) => void) {
           facts[key] = {
             status: 'declare',
             value: f.value,
-            source: `Repris de « ${prev.campaign} », où l'information était « ${HOW_KNOWN[f.status].toLowerCase()} »${f.source ? ` (${f.source})` : ''}.`,
+            source: `Repris de « ${prev.campaign} », où l'information était ${CARRIED_STATUS[f.status]}${f.source ? ` (${f.source})` : ''}.`,
             at: now(),
             by: prev.owner,
             carried: true,

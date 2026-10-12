@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { advisorReasons } from '../Shell'
-import { factLabel, HOW_KNOWN, SUBJECTS } from '../data/facts'
+import { factLabel, howKnown, SUBJECTS } from '../data/facts'
 import {
   budgetTotals, describe, DECISION_LABEL, EMPTY, formatDay, formatFcfa, nextStep, OUTCOME_LABEL, PEOPLE, questionState,
   staleSections, SUBJECT_STATE_LABEL, subjectsFor, subjectState, VERDICT_LABEL, type SubjectState,
@@ -133,7 +133,7 @@ function StatePanel() {
   )
 }
 
-function subjectStateLabel(state: SubjectState, archived: boolean): string {
+export function subjectStateLabel(state: SubjectState, archived: boolean): string {
   if (!archived) return SUBJECT_STATE_LABEL[state]
   return { non_aborde: 'Non abordé', inconnu: 'Restait inconnu', ouvert: 'Restait à éclaircir', rien_signale: 'Rien de signalé' }[state]
 }
@@ -153,44 +153,7 @@ function AdvisorOverview() {
         {since && <p className="text-sm">Vous êtes attribuée à ce dossier depuis le {formatDay(since)}. Les informations du porteur sont en lecture seule.</p>}
       </PageHeader>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_21rem]">
-        <div className="space-y-6">
-          <Panel label="Contexte en bref">
-            <SectionTitle>Contexte en bref</SectionTitle>
-            <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
-              {keyFacts.map((k) => {
-                const f = d.facts[k] ?? EMPTY
-                return (
-                  <div key={k}>
-                    <dt className="text-sm text-muted">{factLabel(k, d.profile)}</dt>
-                    <dd className="font-medium">{describe(k, f)}</dd>
-                    {f.status !== 'non_renseigne' && f.status !== 'inconnu' && <dd className="text-sm text-muted">{HOW_KNOWN[f.status]}</dd>}
-                  </div>
-                )
-              })}
-            </dl>
-          </Panel>
-          <Panel label="Points ouverts">
-            <SectionTitle>Points ouverts ({open.length})</SectionTitle>
-            <ul className="divide-y divide-line">
-              {open.map((c) => {
-                const action = d.actions.find((a) => a.key === c.actionKey)
-                const subject = SUBJECTS.find((s) => s.facts.includes(c.factKey))!
-                return (
-                  <li key={c.key} className="py-3">
-                    <p className="font-medium">{c.message}{c.blocking && <span className="ml-2"><Chip tone="warn">Bloquant</Chip></span>}</p>
-                    <p className="text-sm text-muted">{c.why}</p>
-                    <p className="mt-1 text-sm">
-                      <TextLink to={`${base}/sujet/${subject.key}`}>Consulter le sujet « {subject.title} »</TextLink>
-                      {action && <> · Démarche : {action.title} ({action.status === 'terminee' ? `terminée, résultat ${action.result ? OUTCOME_LABEL[action.result.outcome].toLowerCase() : ''}` : 'non terminée'})</>}
-                    </p>
-                  </li>
-                )
-              })}
-            </ul>
-            {notYet.length > 0 && <p className="mt-2 text-sm text-muted">Pas encore abordé par le porteur : {notYet.map((c) => factLabel(c.factKey, d.profile)).join(', ')}.</p>}
-          </Panel>
-        </div>
-        <aside aria-label="Votre intervention" className="space-y-4">
+        <aside aria-label="Votre intervention" className="space-y-4 lg:order-2">
           <section className="rounded-xl bg-surface p-5 ring-2 ring-brand-700/40">
             <h2 className="text-lg font-semibold">Votre intervention</h2>
             {d.archivedAt ? (
@@ -238,6 +201,43 @@ function AdvisorOverview() {
           )}
           <Note tone="neutral">Votre avis porte sur la préparation du dossier ; il ne garantit ni la faisabilité ni la rentabilité du projet.</Note>
         </aside>
+        <div className="space-y-6 lg:order-1">
+          <Panel label="Contexte en bref">
+            <SectionTitle>Contexte en bref</SectionTitle>
+            <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
+              {keyFacts.map((k) => {
+                const f = d.facts[k] ?? EMPTY
+                return (
+                  <div key={k}>
+                    <dt className="text-sm text-muted">{factLabel(k, d.profile, 'conseiller')}</dt>
+                    <dd className="font-medium">{describe(k, f)}</dd>
+                    {f.status !== 'non_renseigne' && f.status !== 'inconnu' && <dd className="text-sm text-muted">{howKnown(f.status, 'conseiller')}</dd>}
+                  </div>
+                )
+              })}
+            </dl>
+          </Panel>
+          <Panel label="Points ouverts">
+            <SectionTitle>Points ouverts ({open.length})</SectionTitle>
+            <ul className="divide-y divide-line">
+              {open.map((c) => {
+                const action = d.actions.find((a) => a.key === c.actionKey)
+                const subject = SUBJECTS.find((s) => s.facts.includes(c.factKey))!
+                return (
+                  <li key={c.key} className="py-3">
+                    <p className="font-medium">{c.message}{c.blocking && <span className="ml-2"><Chip tone="warn">Bloquant</Chip></span>}</p>
+                    <p className="text-sm text-muted">{c.why}</p>
+                    <p className="mt-1 text-sm">
+                      <TextLink to={`${base}/sujet/${subject.key}`}>Consulter le sujet « {subject.title} »</TextLink>
+                      {action && <> · Démarche : {action.title} ({action.status === 'terminee' ? `terminée, résultat ${action.result ? OUTCOME_LABEL[action.result.outcome].toLowerCase() : ''}` : 'non terminée'})</>}
+                    </p>
+                  </li>
+                )
+              })}
+            </ul>
+            {notYet.length > 0 && <p className="mt-2 text-sm text-muted">Pas encore abordé par le porteur : {notYet.map((c) => factLabel(c.factKey, d.profile, 'conseiller')).join(', ')}.</p>}
+          </Panel>
+        </div>
       </div>
     </div>
   )

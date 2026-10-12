@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { useUnsavedChanges } from '../../../src/shared/unsaved'
-import { FACT_BY_KEY, factLabel, HOW_KNOWN, subjectOf, type FieldDef, type Status } from '../data/facts'
+import { FACT_BY_KEY, factLabel, howKnown, subjectOf, type FieldDef, type Status } from '../data/facts'
 import { computeChecks, describe, EMPTY, formatDay, OUTCOME_LABEL, PEOPLE, type FactState, type Value } from '../data/model'
 import { useStore } from '../data/store'
 import { useDossierCtx } from '../dossier'
@@ -26,7 +26,7 @@ export function FactPage() {
   return (
     <div className="space-y-6">
       <p><TextLink to={from ? `${base}/demarches/${from.id}` : `${base}/sujet/${subject.key}`}>← {from ? 'Démarche' : subject.title}</TextLink></p>
-      <PageHeader eyebrow={subject.title} title={factLabel(factKey, d.profile)}>{def.why}</PageHeader>
+      <PageHeader eyebrow={subject.title} title={factLabel(factKey, d.profile, role)}>{def.why}</PageHeader>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
         <div className="space-y-4">
           {from?.result && (
@@ -43,7 +43,7 @@ export function FactPage() {
           )}
           {canEdit ? <FactForm key={factKey} factKey={factKey} state={f} fromAction={from?.id} /> : (
             <Panel>
-              <Chip tone={f.status === 'inconnu' ? 'warn' : 'neutral'}>{HOW_KNOWN[f.status]}</Chip>
+              <Chip tone={f.status === 'inconnu' ? 'warn' : 'neutral'}>{howKnown(f.status, role)}</Chip>
               <p className="mt-2 text-lg">{describe(factKey, f)}</p>
               {f.source && <p className="mt-1 text-sm text-muted">Source ou précision : {f.source}</p>}
               <p className="mt-2 text-sm text-muted">{role === 'conseiller' ? 'Lecture seule : seul le porteur modifie ses informations.' : 'Campagne archivée : consultation seulement.'}</p>
@@ -57,7 +57,7 @@ export function FactPage() {
               <ol className="mt-2 space-y-2 text-sm">
                 {history.map((h, i) => (
                   <li key={i} className="border-l-2 border-line pl-2">
-                    <p className="font-medium">{HOW_KNOWN[h.status]}</p>
+                    <p className="font-medium">{howKnown(h.status, role)}</p>
                     <p>{describe(factKey, h as FactState)}</p>
                     <p className="text-muted">{formatDay(h.at)} · {PEOPLE[h.by].name}</p>
                   </li>

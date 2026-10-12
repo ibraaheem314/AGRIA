@@ -25,12 +25,17 @@ export function ActionsPage() {
   const [adding, setAdding] = useState(false)
   const [title, setTitle] = useState('')
   const { allowNextNavigation } = useUnsavedChanges(adding && title.trim() !== '')
-  const groups: [ActionStatus, string][] = [['en_cours', 'En cours'], ['a_faire', 'À faire'], ['bloquee', 'Bloquées'], ['terminee', 'Terminées']]
+  const archived = Boolean(d.archivedAt)
+  // Campagne archivée : formulations historiques, états enregistrés conservés (rien n'est clôturé après coup).
+  const groups: [ActionStatus[], string][] = archived
+    ? [[['en_cours', 'a_faire', 'bloquee'], 'Restait à faire à l’archivage'], [['terminee'], 'Démarches terminées pendant cette campagne']]
+    : [[['en_cours'], 'En cours'], [['a_faire'], 'À faire'], [['bloquee'], 'Bloquées'], [['terminee'], 'Terminées']]
   return (
     <div className="space-y-6">
       <PageHeader title="Démarches" actions={canEdit && !adding ? <Button variant="secondary" onClick={() => setAdding(true)}>Ajouter une démarche personnelle</Button> : undefined}>
-        Proposées à partir de votre dossier quand une information est inconnue ou à confirmer. Contenu générique, non relu par un
-        spécialiste.
+        {archived
+          ? 'Historique de cette campagne : les démarches telles qu’elles étaient à l’archivage.'
+          : 'Proposées à partir du dossier quand une information est inconnue ou à confirmer. Contenu générique, non relu par un spécialiste.'}
       </PageHeader>
       {adding && (
         <Panel>
@@ -41,12 +46,13 @@ export function ActionsPage() {
         </Panel>
       )}
       <div className="grid gap-6 md:grid-cols-2">
-        {groups.map(([status, label]) => {
-          const items = d.actions.filter((a) => a.status === status)
+        {groups.map(([statuses, label]) => {
+          const items = d.actions.filter((a) => statuses.includes(a.status))
           if (items.length === 0) return null
+          const key = statuses.join('-')
           return (
-            <section key={status} aria-labelledby={`g-${status}`} className={status === 'terminee' ? 'md:col-span-2' : ''}>
-              <SectionTitle id={`g-${status}`}>{label} ({items.length})</SectionTitle>
+            <section key={key} aria-labelledby={`g-${key}`} className={statuses.includes('terminee') || archived ? 'md:col-span-2' : ''}>
+              <SectionTitle id={`g-${key}`}>{label} ({items.length})</SectionTitle>
               <ul className="divide-y divide-line overflow-hidden rounded-xl bg-surface ring-1 ring-line">
                 {items.map((a) => <ActionRow key={a.id} a={a} base={base} />)}
               </ul>
@@ -65,6 +71,7 @@ function ActionRow({ a, base }: { a: Action; base: string }) {
       <TextLink to={`${base}/demarches/${a.id}`}>{a.title}</TextLink>
       <p className="text-sm text-muted">
         {a.factKey ? subjectOf(a.factKey).title : 'Démarche personnelle'}
+        {a.status !== 'terminee' && ` · ${STATUS[a.status].label.toLowerCase()}`}
         {a.result && ` · résultat ${OUTCOME_LABEL[a.result.outcome].toLowerCase()}`}
         {a.status === 'bloquee' && a.blockedReason && ` · ${a.blockedReason}`}
       </p>
@@ -84,7 +91,10 @@ export function ActionPage() {
     <div className="space-y-6">
       <p><TextLink to={`${base}/demarches`}>← Démarches</TextLink></p>
       <PageHeader eyebrow={a.factKey ? subjectOf(a.factKey).title : 'Démarche personnelle'} title={a.title}>
-        <span className="flex flex-wrap items-center gap-2"><Chip tone={STATUS[a.status].tone}>{STATUS[a.status].label}</Chip>{a.goal && <span>{a.goal}</span>}</span>
+        <span className="flex flex-wrap items-center gap-2">
+          <Chip tone={STATUS[a.status].tone}>{d.archivedAt && a.status !== 'terminee' ? `${STATUS[a.status].label} à l’archivage` : STATUS[a.status].label}</Chip>
+          {a.goal && <span>{a.goal}</span>}
+        </span>
       </PageHeader>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
         <div className="space-y-4">

@@ -4,7 +4,7 @@ import { useScrollToHash } from '../../../src/shared/hash'
 import { useUnsavedChanges } from '../../../src/shared/unsaved'
 import { factLabel } from '../data/facts'
 import {
-  DECISION_LABEL, formatDay, PEOPLE, pendingRequest, QUESTION_STATE_LABEL, questionState, SECTION_LABEL, staleSections, VERDICT_LABEL,
+  DECISION_LABEL, formatDay, PEOPLE, pendingRequest, questionLabel, questionState, SECTION_LABEL, staleSections, VERDICT_LABEL,
   type Decision, type Message, type Target,
 } from '../data/model'
 import { useStore } from '../data/store'
@@ -33,7 +33,7 @@ export function ExchangesPage() {
             <p className="mt-1">L'attribution est faite par l'équipe AGRIA. Aucune disponibilité, aucun délai ni aucune réponse ne peut être promis.</p>
             <h3 className="mt-3 font-semibold">Ce que vous pouvez faire dès maintenant</h3>
             <ul className="mt-1 list-disc space-y-1 pl-5">
-              <li>Noter vos questions : elles restent dans le dossier et seront visibles par un conseiller s'il en est attribué un.</li>
+              <li>Préparer vos questions : elles sont enregistrées ici, dans votre dossier. Personne ne les reçoit pour l'instant ; elles seront consultables par un conseiller s'il en est attribué un.</li>
               <li>Demander une relecture : la demande est enregistrée, sans réponse garantie.</li>
               <li>Continuer vos démarches et votre budget, et noter vous-même une décision.</li>
             </ul>
@@ -79,7 +79,7 @@ function Thread({ m, writable }: { m: Message; writable: boolean }) {
           {m.kind === 'question' ? 'Question' : 'Commentaire'} de {PEOPLE[m.author].name} · {formatDay(m.at)}
           {m.target.type !== 'dossier' && <> · à propos de « {m.target.label} »</>}
         </p>
-        {st && <Chip tone={st === 'a_repondre' ? 'warn' : st === 'close' ? 'ok' : 'neutral'}>{QUESTION_STATE_LABEL[st]}</Chip>}
+        {st && <Chip tone={st === 'a_repondre' ? 'warn' : st === 'close' ? 'ok' : 'neutral'}>{questionLabel(d, st, role)}</Chip>}
       </div>
       <p className="mt-1 whitespace-pre-line text-lg">{m.body}</p>
       {m.replies.length > 0 && (
@@ -91,10 +91,10 @@ function Thread({ m, writable }: { m: Message; writable: boolean }) {
         <form className="mt-3 space-y-2" onSubmit={(e) => { e.preventDefault(); if (!body.trim()) return; ops.post(d.id, { author: viewer, kind: 'reponse', target: m.target, body: body.trim(), parentId: m.id }); allowNextNavigation(); setBody('') }}>
           <Field label="Répondre">{(p) => <textarea {...p} rows={2} className={input} value={body} onChange={(e) => setBody(e.target.value)} />}</Field>
           <div className="flex flex-wrap gap-2">
-            <Button type="submit" variant={st === 'a_repondre' ? 'primary' : 'secondary'} disabled={!body.trim()}>Envoyer la réponse</Button>
-            {m.kind === 'question' && <Button variant="quiet" onClick={() => ops.resolve(d.id, m.id)}>Marquer comme résolue</Button>}
+            <Button type="submit" variant={st === 'a_repondre' ? 'primary' : 'secondary'} disabled={!body.trim()}>Ajouter ma réponse au dossier</Button>
+            {m.kind === 'question' && <Button variant="quiet" onClick={() => ops.resolve(d.id, m.id)}>Clôturer l'échange</Button>}
           </div>
-          <p className="text-xs text-muted">Une réponse ne clôt pas la question : elle reste ouverte jusqu'à être marquée résolue.</p>
+          <p className="text-xs text-muted">Une réponse ne clôt pas l'échange : il reste ouvert jusqu'à ce que l'un de vous le clôture. Aucun email ni SMS n'est envoyé.</p>
         </form>
       )}
     </li>
@@ -112,25 +112,41 @@ function useTarget(): Target {
 }
 
 function NewMessage() {
-  const { dossier: d, viewer } = useDossierCtx()
+  const { dossier: d, viewer, role } = useDossierCtx()
   const { ops } = useStore()
   const target = useTarget()
   const [kind, setKind] = useState<'question' | 'commentaire'>('question')
   const [body, setBody] = useState('')
-  const [sent, setSent] = useState(false)
+  const [sent, setSent] = useState<string | null>(null)
   const { allowNextNavigation } = useUnsavedChanges(body.trim() !== '')
+  // Sans conseiller, la question est enregistrée dans le dossier ; avec, elle y est partagée.
+  const shared = role === 'conseiller' || d.advisors.length > 0
+  const other = role === 'conseiller' ? 'le porteur' : d.advisors.length ? PEOPLE[d.advisors[0]!.id].name : ''
+  const noun = kind === 'question' ? 'question' : 'commentaire'
   return (
     <section aria-labelledby="nouveau" className="rounded-xl bg-surface p-4 ring-1 ring-line">
-      <h2 id="nouveau" className="text-lg font-semibold">Nouveau message</h2>
+      <h2 id="nouveau" className="text-lg font-semibold">{shared ? 'Nouveau message dans le dossier' : 'Préparer une question'}</h2>
       <p className="mt-1 text-sm">À propos de : <strong>{target.label}</strong></p>
-      {sent && <p role="status" className="mt-2 font-medium text-ok-700">Message envoyé.{d.advisors.length === 0 ? ' Il sera visible par un conseiller s’il en est attribué un.' : ''}</p>}
-      <form className="mt-3 space-y-3" onSubmit={(e) => { e.preventDefault(); if (!body.trim()) return; ops.post(d.id, { author: viewer, kind, target, body: body.trim() }); allowNextNavigation(); setBody(''); setSent(true) }}>
+      {!shared && <p className="mt-1 text-sm text-muted">Aucun conseiller n'est attribué : votre question est enregistrée dans votre dossier, personne ne la reçoit pour l'instant.</p>}
+      {sent && <p role="status" className="mt-2 font-medium text-ok-700">{sent}</p>}
+      <form className="mt-3 space-y-3" onSubmit={(e) => {
+        e.preventDefault()
+        if (!body.trim()) return
+        ops.post(d.id, { author: viewer, kind, target, body: body.trim() })
+        allowNextNavigation()
+        setBody('')
+        setSent(shared
+          ? `${noun === 'question' ? 'Question partagée' : 'Commentaire partagé'} dans le dossier : ${other} le verra en ouvrant le dossier. Aucun email ni SMS n'est envoyé.`
+          : `${noun === 'question' ? 'Question enregistrée' : 'Commentaire enregistré'} dans votre dossier (onglet Conseiller). Aucun conseiller ne le reçoit pour l'instant ; il sera consultable par un conseiller s'il en est attribué un.`)
+      }}>
         <fieldset className="flex flex-wrap gap-4"><legend className="sr-only">Type de message</legend>
-          <label className="flex items-center gap-2"><input type="radio" name="kind" className="size-5 accent-brand-700" checked={kind === 'question'} onChange={() => setKind('question')} />Question</label>
-          <label className="flex items-center gap-2"><input type="radio" name="kind" className="size-5 accent-brand-700" checked={kind === 'commentaire'} onChange={() => setKind('commentaire')} />Commentaire</label>
+          <label className="flex min-h-11 items-center gap-2"><input type="radio" name="kind" className="size-5 accent-brand-700" checked={kind === 'question'} onChange={() => setKind('question')} />Question</label>
+          <label className="flex min-h-11 items-center gap-2"><input type="radio" name="kind" className="size-5 accent-brand-700" checked={kind === 'commentaire'} onChange={() => setKind('commentaire')} />Commentaire</label>
         </fieldset>
-        <Field label="Message">{(p) => <textarea {...p} rows={3} className={input} value={body} onChange={(e) => { setBody(e.target.value); setSent(false) }} />}</Field>
-        <Button type="submit" disabled={!body.trim()}>Envoyer</Button>
+        <Field label="Message">{(p) => <textarea {...p} rows={3} className={input} value={body} onChange={(e) => { setBody(e.target.value); setSent(null) }} />}</Field>
+        <Button type="submit" disabled={!body.trim()}>
+          {shared ? (role === 'conseiller' ? 'Partager avec le porteur' : 'Partager avec le conseiller') : kind === 'question' ? 'Enregistrer ma question' : 'Enregistrer mon commentaire'}
+        </Button>
       </form>
     </section>
   )

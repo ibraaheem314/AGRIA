@@ -143,9 +143,14 @@ export function factsFor(profile: Profile): FactDef[] {
   return FACTS.filter((f) => !f.profiles || f.profiles.includes(profile))
 }
 
-export function factLabel(key: string, profile: Profile): string {
+export type ViewerRole = 'porteur' | 'conseiller'
+
+/** Libellé d'une information ; vu par le conseiller, il ne s'adresse pas à lui (« Vos… »). */
+export function factLabel(key: string, profile: Profile, role: ViewerRole = 'porteur'): string {
   const def = FACT_BY_KEY[key]!
-  return profile === 'producteur' && def.labelProducteur ? def.labelProducteur : def.label
+  const label = profile === 'producteur' && def.labelProducteur ? def.labelProducteur : def.label
+  if (role === 'conseiller' && label.startsWith('Vos ')) return `${label.charAt(4).toUpperCase()}${label.slice(5)} du porteur`
+  return label
 }
 
 /** Proposition UX1 : le dossier se lit par sujet, chaque sujet réunissant informations, points et démarches. */
@@ -155,8 +160,8 @@ export const SUBJECTS: Subject[] = [
   { key: 'eau', title: "L'eau", facts: ['eau'] },
   { key: 'culture', title: 'La culture et la période', facts: ['culture', 'periode'] },
   { key: 'vente', title: 'La vente', facts: ['debouches'] },
-  { key: 'moyens', title: 'Vos moyens', facts: ['temps_disponible', 'main_oeuvre', 'materiel', 'apport'] },
-  { key: 'experience', title: 'Votre expérience', facts: ['experience', 'changements'] },
+  { key: 'moyens', title: 'Les moyens', facts: ['temps_disponible', 'main_oeuvre', 'materiel', 'apport'] },
+  { key: 'experience', title: "L'expérience", facts: ['experience', 'changements'] },
 ]
 
 export function subjectOf(factKey: string): Subject {
@@ -165,6 +170,17 @@ export function subjectOf(factKey: string): Subject {
 
 /** Libellés de présentation des états existants (mêmes valeurs que l'API). */
 export type Status = 'non_renseigne' | 'inconnu' | 'declare' | 'estime' | 'verifie'
+/** D'où vient l'information, dit à la bonne personne : le porteur ou le conseiller qui la lit. */
+export function howKnown(status: Status, role: ViewerRole): string {
+  return role === 'porteur' ? HOW_KNOWN[status] : HOW_KNOWN_ADVISOR[status]
+}
+const HOW_KNOWN_ADVISOR: Record<Status, string> = {
+  non_renseigne: 'Pas encore abordé',
+  inconnu: 'Inconnu du porteur pour l’instant',
+  declare: 'Déclaré par le porteur',
+  estime: 'Estimation du porteur',
+  verifie: 'Confirmé par le porteur, source indiquée',
+}
 export const HOW_KNOWN: Record<Status, string> = {
   non_renseigne: 'Pas encore abordé',
   inconnu: 'Je ne sais pas encore',

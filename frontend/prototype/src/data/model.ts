@@ -178,7 +178,7 @@ export function subjectState(d: Dossier, s: Subject, checks: Check[]): SubjectSt
 /** Résumé lisible d'une information (valeurs saisies, sans interprétation). */
 export function describe(key: string, state: FactState): string {
   if (state.status === 'non_renseigne') return 'Pas encore abordé'
-  if (state.status === 'inconnu') return 'Je ne sais pas encore'
+  if (state.status === 'inconnu') return 'Inconnu pour l’instant'
   const def = FACT_BY_KEY[key]!
   const parts: string[] = []
   for (const f of def.fields) {
@@ -221,12 +221,20 @@ export function questionState(d: Dossier, m: Message, viewer: 'porteur' | 'conse
   if (roleOf(d, last.author) === viewer) return mine ? 'en_attente' : 'repondu'
   return mine ? 'reponse_recue' : 'a_repondre'
 }
+/** État d'un échange en clair, sans laisser croire à une notification : partagé dans le dossier. */
+export function questionLabel(d: Dossier, st: QuestionState, viewer: 'porteur' | 'conseiller'): string {
+  if (st === 'en_attente') {
+    if (viewer === 'porteur' && d.advisors.length === 0) return 'Enregistrée, aucun conseiller attribué'
+    return 'Partagée, en attente de réponse'
+  }
+  return QUESTION_STATE_LABEL[st]
+}
 export const QUESTION_STATE_LABEL: Record<QuestionState, string> = {
   a_repondre: 'Attend votre réponse',
   en_attente: 'En attente d’une réponse',
-  reponse_recue: 'Réponse reçue, question ouverte',
-  repondu: 'Vous avez répondu, question ouverte',
-  close: 'Résolue',
+  reponse_recue: 'Réponse reçue, échange ouvert',
+  repondu: 'Vous avez répondu, échange ouvert',
+  close: 'Échange clôturé',
 }
 
 export function staleSections(d: Dossier, r: Review): Section[] {
