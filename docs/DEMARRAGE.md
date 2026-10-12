@@ -32,7 +32,11 @@ cd backend
 .venv\Scripts\python manage.py migrate
 .venv\Scripts\python manage.py load_content        # modèles de préparation (idempotent)
 cd ..
+```
 
+Après chaque récupération de nouvelles révisions, relancer `manage.py migrate` sur la base de travail **avant** de démarrer le serveur. La révision du 12 octobre 2026 (parcours débutant) ajoute deux migrations : `preparation 0002_issue_du_resultat` et `budget 0002_postes_a_examiner`. Sans elles, le serveur répond par des erreurs.
+
+```powershell
 # 5. Frontend
 cd frontend
 npm ci

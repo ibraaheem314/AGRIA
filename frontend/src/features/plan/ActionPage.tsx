@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router'
 import { ApiError } from '../../shared/api'
@@ -6,7 +7,7 @@ import { formatDate, formatDateTime, todayInDakar } from '../../shared/format'
 import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { useCurrentDossier } from '../dossiers/DossierLayout'
 import { isDetailed } from '../dossiers/guidance'
-import { ACTION_TONE, useActionHistory, usePreparation, useUpdateAction, type ActionStatus, type PlanAction, type ResultOutcome } from './api'
+import { ACTION_TONE, preparationKey, useActionHistory, usePreparation, useUpdateAction, type ActionStatus, type PlanAction, type ResultOutcome } from './api'
 
 const OUTCOMES: { value: ResultOutcome; label: string; help: string }[] = [
   { value: 'favorable', label: 'Favorable', help: 'La vérification confirme une situation qui convient.' },
@@ -115,6 +116,7 @@ type Mode = 'idle' | 'terminer' | 'bloquer' | 'echeance'
 
 function StatusForm({ dossierId, action }: { dossierId: number; action: PlanAction }) {
   const update = useUpdateAction(dossierId, action.id)
+  const queryClient = useQueryClient()
   const [mode, setMode] = useState<Mode>('idle')
   const [result, setResult] = useState('')
   const [outcome, setOutcome] = useState<ResultOutcome | ''>('')
@@ -132,7 +134,9 @@ function StatusForm({ dossierId, action }: { dossierId: number; action: PlanActi
   function send(body: Parameters<typeof update.mutate>[0], message: string) {
     setDone(null)
     update.mutate(body, {
-      onSuccess: (r) => {
+      onSuccess: async (r) => {
+        // Le message n'apparaît qu'avec l'état relu : jamais « terminée » à côté d'un statut périmé.
+        await queryClient.refetchQueries({ queryKey: preparationKey(dossierId) }, { cancelRefetch: false })
         setDone(r.changed ? message : 'Aucun changement à enregistrer.')
         setMode('idle')
       },
@@ -154,7 +158,7 @@ function StatusForm({ dossierId, action }: { dossierId: number; action: PlanActi
 
   return (
     <Card>
-      <h2 className="font-semibold">Mettre à jour</h2>
+      <h2 className="font-semibold">Où en est la démarche</h2>
       {done && <p role="status" className="mt-2 font-medium text-ok-700">{done}</p>}
       {error && (
         <div className="mt-2">
@@ -208,7 +212,7 @@ function StatusForm({ dossierId, action }: { dossierId: number; action: PlanActi
                 </legend>
                 {OUTCOMES.map((o) => (
                   <label key={o.value} className="flex items-start gap-2">
-                    <input type="radio" name="outcome" className="mt-1 size-5 accent-brand-700" checked={outcome === o.value}
+                    <input type="radio" name="outcome" className="mt-1 size-5 shrink-0 accent-brand-700" checked={outcome === o.value}
                       onChange={() => setOutcome(o.value)} />
                     <span>
                       <span className="font-medium">{o.label}</span>
@@ -301,9 +305,9 @@ function NextStep({ dossier, action }: { dossier: ReturnType<typeof useCurrentDo
     )
   }
   const hint: Record<string, string> = {
-    favorable: 'Si le résultat confirme la situation, indiquez-la et, si vous le pouvez, sa source.',
+    favorable: 'Indiquez la situation confirmée. « Vérifié » demande en plus de dire ce qui le confirme.',
     defavorable: 'Décrivez la situation réelle, même défavorable : le point restera ouvert, c’est normal.',
-    incertain: 'Vous pouvez garder « Je ne sais pas » ou indiquer une estimation : le point restera ouvert.',
+    incertain: 'Indiquez ce que vous savez maintenant, même partiel : le point peut rester ouvert.',
   }
   return (
     <Card className="border-brand-700">

@@ -1,3 +1,5 @@
+import re
+
 from django.db import transaction
 from rest_framework import serializers, status
 from rest_framework.decorators import api_view
@@ -18,6 +20,16 @@ from preparation.models import (
     CampaignPlan,
 )
 
+REPO_PATH = re.compile(r"\s*\((?:[\w.-]+/)+[\w.-]+\.\w+\)")
+
+
+def public_source(text: str) -> str:
+    """Source lisible par le porteur : sans référence aux fichiers du dépôt.
+
+    Le contenu versionné est immuable (empreinte) : on nettoie à l'affichage.
+    """
+    return REPO_PATH.sub("", text)
+
 
 def template_payload(template) -> dict:
     content = template.content
@@ -30,7 +42,7 @@ def template_payload(template) -> dict:
         "review_note": content["review"].get("note"),
         "reviewer": content["review"].get("reviewer"),
         "review_date": content["review"].get("date"),
-        "source": content["source"],
+        "source": public_source(content["source"]),
         "scope": content["scope"],
     }
 

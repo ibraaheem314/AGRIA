@@ -45,7 +45,7 @@ export function SectionsView({ snapshot, dossier, level = 3 }: { snapshot: Snaps
           <H className="text-lg font-semibold">Plan d'action</H>
           {snapshot.plan.template && (
             <p className="text-sm text-muted">
-              Modèle {snapshot.plan.template.code} v{snapshot.plan.template.version} —{' '}
+              Contenu générique de préparation (version {snapshot.plan.template.version}) —{' '}
               {snapshot.plan.template.review_status === 'relu' ? 'relu' : 'non relu par un spécialiste'}
             </p>
           )}

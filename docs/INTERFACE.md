@@ -1,6 +1,6 @@
 # Guide d'interface
 
-Mise à jour : 11 octobre 2026 (brique 6). Ce guide décrit les conventions **appliquées dans le code** (`frontend/src`) et la façon dont elles sont vérifiées.
+Mise à jour : 12 octobre 2026 (parcours débutant). Ce guide décrit les conventions **appliquées dans le code** (`frontend/src`) et la façon dont elles sont vérifiées.
 
 ## Navigation
 
@@ -13,9 +13,14 @@ Mise à jour : 11 octobre 2026 (brique 6). Ce guide décrit les conventions **ap
 
 | État | Présentation |
 |---|---|
-| Information non renseignée / je ne sais pas / déclarée / estimée / vérifiée | Badge avec le texte de l'état ; la source est affichée si elle existe |
+| Information non renseignée / je ne sais pas / déclarée / estimée / vérifiée | Badge avec le texte de l'état (« Vérifié (source indiquée) », jamais en vert) ; la source est affichée si elle existe |
+| Situation encore ouverte | Ligne « Situation : point encore ouvert » sous l'information, même si elle est vérifiée (ex. accès « en discussion ») |
+| Vérifications impossibles ou absentes | « Informations insuffisantes pour établir les vérifications » (dossier vide) ; « Aucun point n'est signalé par les règles disponibles… ce n'est pas une validation » |
 | Point à vérifier | Message, niveau (à compléter, à clarifier, à vérifier), « Bloquant » le cas échéant, « Pourquoi ? » |
-| Démarche | À faire, en cours, bloquée (avec motif), terminée (avec résultat et date) |
+| Démarche | À faire, en cours, bloquée (avec motif), terminée (avec résultat, date et issue : favorable, défavorable, incertaine) |
+| Après une démarche terminée | Carte « Et maintenant : mettre le dossier à jour » et bouton « Mettre à jour : [information] » ; pendant la mise à jour, le résultat est rappelé sans rien préremplir ; après l'enregistrement, « Point encore ouvert : … » ou « Plus aucun point n'est signalé… » |
+| Saisie pas à pas (débutant) | Une information à la fois ; « Enregistrer et continuer », « Remettre à plus tard » (rien n'est enregistré) ; compte de saisie, sans pourcentage ; le focus va au titre de l'information suivante |
+| Postes à examiner (budget) | Liste facultative : « Ajouter au budget » (poste à chiffrer, sans quantité ni prix) ou « Laisser de côté » (réversible) |
 | Budget | Phrase complète : vide, incomplet (« ce n'est pas le coût total »), complet avec estimations, complet |
 | Avis | Conclusion, auteur, date, périmètre, version examinée ; « À jour » ou « À réexaminer » avec les sections modifiées |
 | Contenu | « Non relu par un spécialiste » visible sur le plan et dans la synthèse |
@@ -51,6 +56,7 @@ La couleur accompagne toujours un texte : elle ne porte jamais seule un statut.
 |---|---|
 | `e2e/qualite.spec.ts` | axe-core (WCAG 2.1 A/AA) sans violation grave ou critique, et pas de défilement horizontal à 360 px, sur 14 écrans dont un dossier rempli |
 | `e2e/parcours.spec.ts` | Clavier seul (ordinateur), hors connexion réel, session expirée, mot de passe erroné |
+| `e2e/pas-a-pas.spec.ts` | Saisie pas à pas, report distinct de « Je ne sais pas », reprise, protection de saisie, focus ; producteur en accès direct |
 | Autres fichiers `e2e/*.spec.ts` | Chaque parcours exécuté en vue ordinateur et en vue téléphone (Pixel 7) |
 
 ## Limites

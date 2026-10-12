@@ -18,7 +18,7 @@ La vision à terme couvre la préparation, le suivi de campagne et le bilan. La 
 | Débutant avec projet concret | Je prépare ma première campagne | Accès envisagé au terrain, ressources disponibles, connaissances et vérifications à effectuer |
 | Producteur déjà actif, peu accompagné | Je prépare ma prochaine campagne | Pratiques précédentes, difficultés constatées, moyens existants et changements envisagés |
 
-Les explications s'adaptent à l'expérience **par leur présentation** : pour le débutant, un guide « comment avancer », des justifications et des étapes visibles ; pour le producteur, une vue directe où les justifications et les étapes se déplient à la demande. Le contenu des explications, les points à vérifier, les règles de qualité et les permissions restent identiques (D-043). Il n'existe pas d'explications d'initiation spécifiques au débutant : elles relèveraient d'un contenu relu par un spécialiste. Aucun double produit ni double base de données.
+Les explications s'adaptent à l'expérience **par leur présentation** : pour le débutant, un guide « comment avancer », des justifications et des étapes visibles ; pour le producteur, une vue directe où les justifications et les étapes se déplient à la demande. Le contenu des explications, les points à vérifier, les règles de qualité et les permissions restent identiques (D-047). Il n'existe pas d'explications d'initiation spécifiques au débutant : elles relèveraient d'un contenu relu par un spécialiste. Aucun double produit ni double base de données.
 
 Le premier pilote peut ne retenir qu'un profil si les entretiens révèlent des besoins incompatibles. Les curieux sans démarche concrète ne constituent pas la cible initiale.
 
@@ -54,6 +54,8 @@ Dernier retour du conseiller
 [Aucun retour pour le moment / commentaire daté]
 [Ouvrir la discussion du dossier]
 ```
+
+Le débutant peut renseigner son projet **pas à pas**, une information à la fois (lieu, accès au terrain, eau, puis le reste). « Je ne sais pas » est une réponse enregistrée ; « remettre à plus tard » n'enregistre rien. L'avancement affiché est celui de la saisie, jamais une mesure de faisabilité (D-049). Le producteur garde l'accès direct à chaque information.
 
 L'accueil répond à trois questions : où en est mon projet, quelle est ma prochaine action, sur quoi ai-je besoin d'aide ?
 Un compteur de tâches réalisées n'est ni une probabilité de réussite ni une validation agronomique.
@@ -93,6 +95,7 @@ Chaque action possède un objectif, des étapes courtes, une explication, une é
 - Les tâches de préparation sont prioritaires ; pas de calendrier agronomique universel généré à partir d'une seule date.
 - Une modification importante du projet signale le besoin de revoir le plan ; elle ne réécrit pas silencieusement les actions terminées.
 - L'explication est disponible au moment de faire l'action, sans imposer un cours complet.
+- Terminer une action demande son résultat et son issue (favorable, défavorable, incertaine). Terminer ne veut pas dire résolu : l'information du dossier n'est jamais modifiée automatiquement ni marquée « vérifiée » ; l'action propose de la mettre à jour, puis le recalcul dit si le point reste ouvert (D-048).
 
 **Acceptation :** terminer une action enregistre son résultat ; un envoi échoué ne montre pas de succès ; le conseiller peut comprendre ce qui a réellement été fait.
 
@@ -106,6 +109,7 @@ Liste minimale : poste, quantité, unité, prix unitaire, source/devis, date et 
 - Éviter le double compte d'un équipement déjà détenu.
 - Les hypothèses de recettes, si collectées, restent séparées et non garanties.
 - Aucun crédit, paiement, scoring financier ou dossier bancaire automatique.
+- Une liste courte et facultative de postes à examiner (accès au terrain, eau, semences ou plants, matériel, main-d'œuvre, transport) aide à ne rien oublier ; un poste ajouté n'a ni quantité ni prix et reste « à chiffrer » (D-050). Ce n'est ni un budget complet ni une recommandation d'achat.
 
 **Acceptation :** une ligne non chiffrée laisse le budget marqué incomplet ; les unités et arrondis sont définis ; deux envois de la même ligne ne la dupliquent pas.
 

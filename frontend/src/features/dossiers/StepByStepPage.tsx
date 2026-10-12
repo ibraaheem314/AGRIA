@@ -128,8 +128,7 @@ export function StepByStepPage() {
             </p>
           )}
           <p className="mt-2 text-sm">
-            « Je ne sais pas » est une réponse acceptée : elle est enregistrée et devient un point à vérifier.
-            « Remettre à plus tard » n'enregistre rien.
+            « Je ne sais pas » est enregistré et devient un point à vérifier ; « Remettre à plus tard » n'enregistre rien.
           </p>
           <div className="mt-4">
             <FactForm

@@ -435,7 +435,7 @@ function LineForm({
           <legend className="font-medium">Type de dépense</legend>
           {budget.choices.categories.map((c) => (
             <label key={c.value} className="flex items-center gap-2">
-              <input type="radio" name="category" className="size-5 accent-brand-700" checked={form.category === c.value} onChange={() => set('category', c.value)} />
+              <input type="radio" name="category" className="size-5 shrink-0 accent-brand-700" checked={form.category === c.value} onChange={() => set('category', c.value)} />
               {c.label}
             </label>
           ))}
@@ -458,14 +458,14 @@ function LineForm({
           </Field>
         </div>
         <label className="flex items-start gap-2">
-          <input type="checkbox" className="mt-1 size-5 accent-brand-700" checked={form.already_owned} onChange={(e) => set('already_owned', e.target.checked)} />
+          <input type="checkbox" className="mt-1 size-5 shrink-0 accent-brand-700" checked={form.already_owned} onChange={(e) => set('already_owned', e.target.checked)} />
           <span>Déjà détenu : listé pour mémoire, sans être compté dans les totaux.</span>
         </label>
         <fieldset className="space-y-2">
           <legend className="font-medium">Prix</legend>
           {budget.choices.price_statuses.map((s) => (
             <label key={s.value} className="flex items-center gap-2">
-              <input type="radio" name="price_status" className="size-5 accent-brand-700" checked={form.price_status === s.value} onChange={() => set('price_status', s.value)} />
+              <input type="radio" name="price_status" className="size-5 shrink-0 accent-brand-700" checked={form.price_status === s.value} onChange={() => set('price_status', s.value)} />
               {s.label}
             </label>
           ))}

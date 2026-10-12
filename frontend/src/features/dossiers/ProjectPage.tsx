@@ -2,7 +2,7 @@ import { useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { ApiError, newRequestId } from '../../shared/api'
 import { useUnsavedChanges } from '../../shared/unsaved'
-import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
+import { Alert, Badge, Button, ButtonLink, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { useBudget } from '../budget/api'
 import { budgetSentence } from '../budget/BudgetPage'
 import { formatDateTime } from '../../shared/format'
@@ -40,9 +40,9 @@ export function ProjectPage() {
           Un dossier complet n'est pas une garantie de faisabilité : il rend visibles ce qui est connu et ce qui reste à vérifier.
         </p>
         {owner && !dossier.archived && dossier.project.profile === 'debutant' && counts.non_renseigne > 0 && (
-          <Link to={`/d/${dossier.id}/projet/pas-a-pas`} className="mt-2 inline-block font-medium text-brand-700 underline">
+          <ButtonLink to={`/d/${dossier.id}/projet/pas-a-pas`} className="mt-3">
             Renseigner pas à pas ({counts.non_renseigne} restante{counts.non_renseigne > 1 ? 's' : ''})
-          </Link>
+          </ButtonLink>
         )}
       </Card>
 
@@ -112,7 +112,7 @@ function NewCampaignCard({ dossier }: { dossier: Dossier }) {
             {(p) => <input {...p} className={inputClass} maxLength={120} value={label} onChange={(e) => setLabel(e.target.value)} />}
           </Field>
           <label className="flex items-start gap-2">
-            <input type="checkbox" className="mt-1 size-5 accent-brand-700" checked={reuse} onChange={(e) => setReuse(e.target.checked)} />
+            <input type="checkbox" className="mt-1 size-5 shrink-0 accent-brand-700" checked={reuse} onChange={(e) => setReuse(e.target.checked)} />
             <span>
               Reprendre les informations sur le lieu (localisation, terrain, eau) comme point de départ. Elles seront
               marquées « à revérifier » ; démarches, budget et résultats ne sont pas recopiés.

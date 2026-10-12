@@ -113,6 +113,9 @@ def test_nouveau_dossier_lie_au_modele_et_sans_demarche(porteur, dossier):
     assert data["template"]["code"] == "preparation-generique"
     assert data["template"]["review_status"] == "non_relu"
     assert data["template"]["review_label"] == "Non relu par un spécialiste"
+    # Aucune référence aux fichiers du dépôt dans ce qui est montré au porteur.
+    assert "docs/" not in data["template"]["source"]
+    assert data["template"]["source"].startswith("Rédaction de l'équipe AGRIA")
     assert {c["level"] for c in data["checks"]} == {"a_completer"}
     assert len(data["checks"]) == 11  # débutant : pas de « changements envisagés »
     assert data["actions"] == []

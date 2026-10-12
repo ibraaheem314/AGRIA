@@ -48,9 +48,9 @@ Compte ─┬─ Projet (profil débutant/producteur, is_demo)
         │           ├─ Information (clé du registre, état, valeur, source, row_version)
         │           │     └─ Révision d'information (ajout seul, numérotée par context_version)
         │           ├─ Plan (modèle de préparation figé pour ce dossier, plan_version)
-        │           │     └─ Démarche (état, motif de blocage, résultat + date, prérequis, row_version)
+        │           │     └─ Démarche (état, motif de blocage, résultat + date + issue, prérequis, row_version)
         │           │           └─ Évènement de démarche (ajout seul)
-        │           ├─ Poste de budget (catégorie, quantité, unité, prix FCFA, état du prix, source, date, retiré)
+        │           ├─ Poste de budget (catégorie, quantité, unité, prix FCFA, état du prix, source, date, retiré, élément « à examiner »)
         │           │     └─ Évènement de budget (ajout seul, état complet du poste)
         │           ├─ Attribution conseiller (active ou close, jamais effacée)
         │           ├─ Demande de relecture (versions au moment de la demande)
@@ -74,12 +74,14 @@ Compte ─┬─ Projet (profil débutant/producteur, is_demo)
 | Un conseiller n'a qu'une attribution active par dossier | `assignment_one_active_per_advisor` |
 | Prix « manquant » si et seulement si aucun prix n'est saisi | `budget_missing_iff_no_price` |
 | Prix « connu » ⇒ source et date ; « estimé » ⇒ source | `budget_known_has_source_and_date`, `budget_estimate_has_source` |
+| Un élément « à examiner » n'a qu'un poste actif par dossier | `budget_unique_active_suggestion` |
 
 ### Invariants garantis par le code et vérifiés par des tests
 
 - Les points à vérifier sont **calculés** à partir des informations et du modèle (fonction pure `preparation/engine.py`), et jamais stockés : ils ne peuvent donc pas diverger du contexte.
 - Une modification d'information ajoute, dans la même transaction, les démarches devenues nécessaires. Elle ne modifie, ne supprime et ne recrée jamais une démarche existante.
 - Un modèle chargé est immuable : recharger une même version avec un contenu différent est refusé. Un dossier garde la version du modèle avec laquelle son plan a été créé.
+- Terminer une démarche exige son issue (favorable, défavorable, incertaine). Une démarche n'écrit jamais dans les informations du dossier : la mise à jour passe par le formulaire de l'information, comme toute autre (D-048). Les démarches terminées avant cette règle n'ont pas d'issue.
 - Une démarche ne peut être terminée tant qu'un de ses prérequis, présent dans le plan, n'est pas terminé.
 - Un avis porte sur la version que le conseiller a lue : l'interface envoie les versions affichées à l'ouverture du formulaire, et le serveur refuse l'avis (409) si une section du périmètre a changé entre-temps.
 - Un avis est « à réexaminer » dès qu'une section de son périmètre change de version (calcul, jamais de suppression). L'instantané conservé permet de relire exactement la version examinée.

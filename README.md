@@ -4,12 +4,13 @@
 
 AGRIA aide un porteur de projet débutant ou un producteur peu accompagné à préparer sa prochaine campagne, en suivant le parcours : **contexte → points à vérifier → démarches → budget → relecture par un conseiller → décision** (poursuivre, modifier ou différer).
 
-## Où en est le projet (11 octobre 2026)
+## Où en est le projet (12 octobre 2026)
 
 | Niveau | État |
 |---|---|
 | **Fondations techniques** | Livrées : les six fonctions de la première version (F1–F6 du [cahier des charges](docs/PRODUIT.md)) |
 | **Version locale** | **Finalisée et démontrable au 12/10/2026** pour un usage accompagné (écarts T-01 à T-03 corrigés, parcours débutant, producteur et conseiller vérifiés au navigateur, démonstration reproductible). Voir [AVANCEMENT.md](docs/AVANCEMENT.md), « Clôture de la version locale ». |
+| **Parcours débutant amélioré (12/10/2026)** | **Livré et vérifié techniquement** : saisie pas à pas, démarche terminée reliée à l'information (issue du résultat, mise à jour explicite, recalcul expliqué), premier budget guidé, états vides explicites. **Compréhension à tester avec de vrais utilisateurs** ; liste des postes et ordre de saisie à relire par un spécialiste. Voir [AVANCEMENT.md](docs/AVANCEMENT.md), « Parcours débutant » |
 | **Contrôles exécutés** | Résultats locaux et versions exactes dans [AVANCEMENT.md](docs/AVANCEMENT.md). Runtime courant : Python 3.14.8. **CI GitHub jamais exécutée.** |
 | **Préparation du terrain** | Kit d'enquête G1 et protocole G2 prêts, non exécutés : [VALIDATION_TERRAIN.md](docs/VALIDATION_TERRAIN.md) |
 | **Validation par un spécialiste** | **Aucune.** Le contenu est générique, sans prescription agronomique, et marqué « non relu » dans l'application |
@@ -19,6 +20,8 @@ AGRIA aide un porteur de projet débutant ou un producteur peu accompagné à pr
 Le code est sur la branche `refonte/fondations` ; l'ancien prototype est archivé sur `archive/prototype-2026-10-11`. Rien n'a été poussé ni déployé. **Le pilote n'est pas prêt à démarrer** : les étapes et leurs conditions sont dans la [roadmap](ROADMAP.md).
 
 ### Actions du propriétaire en attente
+
+- **Appliquer les migrations sur la base de travail** avant de relancer le serveur : `cd backend; .venv\Scripts\python manage.py migrate` (deux nouvelles migrations du 12/10/2026). La base de travail n'a pas été modifiée pendant cette mission.
 
 - **Révoquer les clés** OpenWeather et Agromonitoring, visibles publiquement dans `lib/config.ts` sur `master` et dans l'historique. Révoquer aussi par précaution les clés OpenRouter, AirVisual et HuggingFace, et changer le mot de passe email qui figurait dans `.env`. Voir [SECURITE.md](docs/SECURITE.md) §2. Aucune révocation n'est confirmée à ce jour.
 - Fixer J0, les seuils de G1 et les plafonds de temps et de dépenses (D-011), puis lancer les premiers contacts ([ROADMAP](ROADMAP.md), E4–E5).

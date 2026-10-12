@@ -215,7 +215,7 @@ export function FactForm({
                 value={s.value}
                 checked={draft.status === s.value}
                 onChange={() => setDraft((d) => ({ ...d, status: s.value }))}
-                className="mt-1 size-5 accent-brand-700"
+                className="mt-1 size-5 shrink-0 accent-brand-700"
               />
               <span>
                 <span className="block font-medium">{s.label}</span>

@@ -7,6 +7,7 @@ Mise à jour : 11 octobre 2026 (préparation du pilote). Promesse à tester : *A
 | Niveau | État | Preuve ou référence |
 |---|---|---|
 | Fondations techniques (F1–F6) | **Livrées** sur `refonte/fondations` | [AVANCEMENT.md](docs/AVANCEMENT.md), briques 0 à 7 |
+| Parcours débutant (pas à pas, démarche reliée à l'information, budget guidé) | **Livré et vérifié techniquement** ; compréhension **à tester** en G1/G2 | [AVANCEMENT.md](docs/AVANCEMENT.md), « Parcours débutant » ; D-048 à D-050 |
 | Contrôles exécutés | **Locaux uniquement** ; runtime courant Python 3.14.8, résultats détaillés dans le rapport | [AVANCEMENT.md](docs/AVANCEMENT.md), lots et corrections après revue |
 | CI GitHub | Configurée, **jamais exécutée** (aucun envoi) | [RESUME_PR.md](docs/RESUME_PR.md) |
 | Préparation du terrain | **Kit G1 et protocole G2 prêts**, non exécutés | [VALIDATION_TERRAIN.md](docs/VALIDATION_TERRAIN.md) |

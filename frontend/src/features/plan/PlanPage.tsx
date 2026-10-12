@@ -13,10 +13,11 @@ export function TemplateNotice({ template }: { template: Template }) {
   return (
     <details className="rounded-md border border-line bg-surface p-3 text-sm">
       <summary className="cursor-pointer font-medium">
-        Contenu : {template.title} (version {template.version}) —{' '}
+        Contenu générique —{' '}
         <span className={relu ? 'text-ok-700' : 'text-warn-700'}>{template.review_label}</span>
       </summary>
       <div className="mt-2 space-y-1 text-muted">
+        <p>{template.title}, version {template.version}.</p>
         <p>Source : {template.source}</p>
         <p>Domaine d'application : {template.scope.pays}{template.scope.note ? ` — ${template.scope.note}` : ''}</p>
         {template.review_note && <p>{template.review_note}</p>}

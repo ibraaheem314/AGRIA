@@ -18,7 +18,9 @@ export function TodayPage() {
   const detailed = isDetailed(dossier)
 
   const nextAction = prep.data?.actions.find((a) => a.id === prep.data?.next_action_id)
-  const blockingChecks = prep.data?.checks.filter((c) => c.blocking) ?? []
+  // Les informations vides bloquantes sont regroupées : la liste ne répète pas « non renseigné ».
+  const blockingChecks = prep.data?.checks.filter((c) => c.blocking && c.level !== 'a_completer') ?? []
+  const blockingEmpty = prep.data?.checks.filter((c) => c.blocking && c.level === 'a_completer') ?? []
   const blockedActions = prep.data?.actions.filter((a) => a.status === 'bloquee') ?? []
   const nextFact = dossier.facts.find((f) => f.state.status === 'non_renseigne')
   const deferral = dossier.status.code === 'differe' ? relecture.data?.decisions.find((d) => d.choice === 'differer') : undefined
@@ -80,7 +82,11 @@ export function TodayPage() {
         <Card>
           <h2 className="font-semibold">Comment avancer</h2>
           <ol className="mt-2 list-decimal space-y-1 pl-5">
-            <li>Dans <strong>Mon projet</strong>, indiquez ce que vous savez. « Je ne sais pas » est une réponse acceptée : elle devient un point à vérifier.</li>
+            <li>
+              {stepByStep
+                ? <>Renseignez votre projet, pas à pas ou dans <strong>Mon projet</strong>.</>
+                : <>Dans <strong>Mon projet</strong>, indiquez ce que vous savez. « Je ne sais pas » est une réponse acceptée : elle devient un point à vérifier.</>}
+            </li>
             <li>Dans <strong>Mon plan</strong>, suivez les démarches proposées et notez leur résultat réel.</li>
             <li>Chiffrez le <strong>budget provisoire</strong>, même incomplet.</li>
             <li>Posez vos questions et demandez une relecture à votre conseiller, s'il vous a été attribué.</li>
@@ -118,7 +124,20 @@ export function TodayPage() {
       {prep.isSuccess && (
         <Card>
           <h2 className="font-semibold">{dossier.archived ? 'Points restés ouverts à l’archivage' : 'Points bloquants'}</h2>
-          {blockingChecks.length === 0 && blockedActions.length === 0 ? (
+          {blockingEmpty.length > 0 && (
+            <p className="mt-1">
+              À renseigner d'abord : {blockingEmpty.map((c) => c.fact_label).join(', ')}.{' '}
+              {active && (
+                <Link
+                  to={stepByStep ? `/d/${dossier.id}/projet/pas-a-pas` : `/d/${dossier.id}/projet/${blockingEmpty[0]!.fact_key}`}
+                  className="text-brand-700 underline"
+                >
+                  {stepByStep ? 'Renseigner pas à pas' : 'Compléter'}
+                </Link>
+              )}
+            </p>
+          )}
+          {blockingChecks.length === 0 && blockedActions.length === 0 && blockingEmpty.length === 0 ? (
             <p className="mt-1 text-muted">
               Aucun point bloquant n'est signalé par les règles disponibles. Ce n'est pas une validation du projet.
             </p>

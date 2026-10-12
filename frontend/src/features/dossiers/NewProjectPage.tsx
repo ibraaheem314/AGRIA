@@ -76,7 +76,7 @@ export function NewProjectPage() {
                   value={choice.value}
                   checked={form.profile === choice.value}
                   onChange={() => setForm((f) => ({ ...f, profile: choice.value }))}
-                  className="mt-1 size-5 accent-brand-700"
+                  className="mt-1 size-5 shrink-0 accent-brand-700"
                 />
                 <span>
                   <span className="block font-medium">{choice.title}</span>

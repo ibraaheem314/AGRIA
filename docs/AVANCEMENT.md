@@ -345,7 +345,7 @@ Classes d'écart : **défaut** (fonctionnement), **finition** (parcours), **limi
 |---|---|---|---|---|---|---|---|
 | F1 | Dossier persistant, « je ne sais pas », états, reprise, réutilisation par le producteur, droits | Nouveau projet, Mon projet, fiche d'information ; `/api/projects`, `/api/dossiers/{id}/informations` | `test_dossiers`, `dossier.spec`, `recette.spec`, `recette.py` | T-01 : saisie perdue sans avertissement en quittant la page | Finition | Haute | Confirmation avant toute navigation, retour du navigateur, déconnexion ; avertissement au rechargement ; aucun brouillon local. **Fermé** (`finition.spec`) |
 | F1 | Isolation d'un dossier à l'autre | Mise en page du dossier | `recette.spec` | État d'un formulaire conservé d'un dossier à l'autre (formulaire « nouvelle campagne » resté ouvert) | Défaut | Haute | Pages réinitialisées à chaque dossier. **Fermé** (`recette.spec`, `finition.spec`) |
-| F2 | Points à vérifier expliqués, pas de note universelle | Mon plan ; `/preparation` | `test_preparation`, `plan.spec` | T-03 : promesse d'explications adaptées au profil plus forte que le produit ; texte « Expérience » inexact | Finition | Moyenne | Présentation détaillée (débutant, conseiller) ou directe (producteur), même contenu, même moteur ; textes corrigés (D-043). **Fermé** (`finition.spec`) |
+| F2 | Points à vérifier expliqués, pas de note universelle | Mon plan ; `/preparation` | `test_preparation`, `plan.spec` | T-03 : promesse d'explications adaptées au profil plus forte que le produit ; texte « Expérience » inexact | Finition | Moyenne | Présentation détaillée (débutant, conseiller) ou directe (producteur), même contenu, même moteur ; textes corrigés (D-047). **Fermé** (`finition.spec`) |
 | F2 | Contenu relu pour la zone et la culture | Modèle `preparation-generique` | `test_publication_d_une_version_relue…` | Contenu non relu | Dépendance externe | — | Relecture par un spécialiste (ROADMAP E7). **Ouvert** |
 | F3 | Démarches avec objectif, étapes, prérequis, statut, résultat | Mon plan, fiche démarche | `test_preparation`, `plan.spec` | T-02 : sur un dossier archivé, « Ma prochaine action » et « Poser une question » restaient proposés | Défaut | Haute | Accueil de consultation, liens d'action retirés, protections serveur inchangées. **Fermé** |
 | F4 | Budget transparent | Budget provisoire ; `/budget` | `test_budget*`, `budget.spec` | Phrase « totalisent 0 FCFA » sans aucun poste chiffré ; « poste(s) » | Finition | Basse | Phrase exacte, pluriels accordés. **Fermé** |
@@ -390,3 +390,25 @@ Commits : `0e816a7` (corrections), `af39144` (démonstration et assistance), pui
 - La présentation détaillée ou directe dépend du profil du projet ; il n'existe pas de réglage individuel.
 
 Les serveurs de développement lancés par le fondateur sur les ports 8000 et 5173 pendant cette mission n'ont pas été touchés. La démonstration a utilisé les ports 8002 et 5175.
+
+# Parcours débutant (12/10/2026)
+
+Mission : améliorer le parcours débutant à partir des difficultés observées à l'essai (créer un projet → premières informations → comprendre les vérifications → réaliser une démarche → actualiser le dossier → préparer le budget). Essais sur la base e2e et des données fictives uniquement ; la base de travail et le dossier d'essai du fondateur n'ont pas été touchés.
+
+| Lot | Livré | Commit |
+|---|---|---|
+| 1. États vides et sens des statuts | Trois états distincts sur Mon plan (informations insuffisantes, points ouverts, rien de signalé par les règles disponibles, jamais une validation) ; « Vérifié (source indiquée) », jamais en vert ; ligne « Situation : point encore ouvert » sous une information, même vérifiée | `ceda138` |
+| 2. Démarche terminée reliée à l'information | Issue obligatoire (favorable, défavorable, incertaine) ; carte « Et maintenant » et bouton « Mettre à jour : [information] » ; résultat rappelé pendant la mise à jour sans rien préremplir ; message de recalcul après l'enregistrement ; cas démarche personnelle, point disparu, archivé, conseiller (D-048) | `c31f935` |
+| 3. Premiers pas du débutant | Page « Renseigner mon projet pas à pas » ; report local distinct de « Je ne sais pas » ; reprise sur les données enregistrées ; entrées depuis l'accueil, Mon projet et Mon plan ; producteur inchangé (D-049) | `6c8b83d` |
+| 4. Premier budget guidé | Postes à examiner sans quantité ni prix, sans doublon (contrainte en base), « laisser de côté » réversible ; explication montant chiffré / à chiffrer / moyens / limites (D-050) | `7e4559d` |
+| 5. Présentation et documentation | Action principale mise en avant (pas-à-pas, mise à jour), informations vides bloquantes regroupées à l'accueil, version du contenu repliée, plus de chemin de fichier dans la source affichée, radios de taille constante, message de démarche affiché avec l'état relu ; registre des décisions corrigé (D-043 Python, D-047 présentation par profil, lignes replacées dans le bon tableau) | ce lot |
+
+### Ce qui est livré, vérifié, à valider
+
+| Niveau | Contenu |
+|---|---|
+| **Vérifié techniquement** | Tests serveur et navigateur listés dans la recette ci-dessous |
+| **À tester avec des utilisateurs** | Compréhension des statuts et de « Situation : point encore ouvert » ; utilité du pas-à-pas et du report ; lecture du message de recalcul ; usage réel des postes à examiner |
+| **À relire par un spécialiste** | Ordre de saisie proposé ; liste et libellés des postes à examiner ; textes d'aide des issues |
+
+Avant de relancer le serveur sur la base de travail : `manage.py migrate` (migrations `preparation 0002_issue_du_resultat`, `budget 0002_postes_a_examiner`).

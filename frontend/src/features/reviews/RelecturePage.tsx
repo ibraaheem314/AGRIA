@@ -231,7 +231,7 @@ function ReviewForm({ dossierId, relecture }: { dossierId: number; relecture: Re
             <label key={s.value} className="flex items-center gap-2">
               <input
                 type="checkbox"
-                className="size-5 accent-brand-700"
+                className="size-5 shrink-0 accent-brand-700"
                 checked={scope.includes(s.value as Section)}
                 onChange={(e) =>
                   setScope((cur) => (e.target.checked ? [...cur, s.value as Section] : cur.filter((x) => x !== s.value)))
@@ -246,7 +246,7 @@ function ReviewForm({ dossierId, relecture }: { dossierId: number; relecture: Re
           <legend className="font-medium">Conclusion sur ce périmètre</legend>
           {relecture.choices.verdicts.map((v) => (
             <label key={v.value} className="flex items-center gap-2">
-              <input type="radio" name="verdict" className="size-5 accent-brand-700" checked={verdict === v.value} onChange={() => setVerdict(v.value)} />
+              <input type="radio" name="verdict" className="size-5 shrink-0 accent-brand-700" checked={verdict === v.value} onChange={() => setVerdict(v.value)} />
               {v.label}
             </label>
           ))}
@@ -379,10 +379,10 @@ function NewMessage({ dossierId, targetType, targetRef }: { dossierId: number; t
         <fieldset className="flex flex-wrap gap-4">
           <legend className="sr-only">Type de message</legend>
           <label className="flex items-center gap-2">
-            <input type="radio" name="kind" className="size-5 accent-brand-700" checked={kind === 'question'} onChange={() => setKind('question')} /> Question
+            <input type="radio" name="kind" className="size-5 shrink-0 accent-brand-700" checked={kind === 'question'} onChange={() => setKind('question')} /> Question
           </label>
           <label className="flex items-center gap-2">
-            <input type="radio" name="kind" className="size-5 accent-brand-700" checked={kind === 'commentaire'} onChange={() => setKind('commentaire')} /> Commentaire
+            <input type="radio" name="kind" className="size-5 shrink-0 accent-brand-700" checked={kind === 'commentaire'} onChange={() => setKind('commentaire')} /> Commentaire
           </label>
         </fieldset>
         <Field label="Message" error={error?.fieldMessage('body') ?? error?.fieldMessage('target_ref')}>
@@ -424,7 +424,7 @@ function DecisionForm({ dossierId, relecture }: { dossierId: number; relecture: 
           <legend className="font-medium">Décision</legend>
           {relecture.choices.decisions.map((d) => (
             <label key={d.value} className="flex items-center gap-2">
-              <input type="radio" name="choice" className="size-5 accent-brand-700" checked={choice === d.value} onChange={() => setChoice(d.value)} />
+              <input type="radio" name="choice" className="size-5 shrink-0 accent-brand-700" checked={choice === d.value} onChange={() => setChoice(d.value)} />
               {d.label}
             </label>
           ))}
