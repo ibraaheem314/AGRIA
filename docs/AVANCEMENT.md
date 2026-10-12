@@ -412,3 +412,37 @@ Mission : améliorer le parcours débutant à partir des difficultés observées
 | **À relire par un spécialiste** | Ordre de saisie proposé ; liste et libellés des postes à examiner ; textes d'aide des issues |
 
 Avant de relancer le serveur sur la base de travail : `manage.py migrate` (migrations `preparation 0002_issue_du_resultat`, `budget 0002_postes_a_examiner`).
+
+### Recette (lot 6)
+
+Tests ciblés ajoutés :
+
+| Comportement | Preuve |
+|---|---|
+| Dossier vide : seules des informations à compléter, jamais « rien à signaler » | `test_dossier_vide_ne_signale_que_des_informations_a_completer` |
+| Information vérifiée décrivant une situation non réglée : point toujours ouvert | `test_information_verifiee_decrivant_une_situation_non_reglee_reste_un_point_ouvert` |
+| Issue obligatoire ; une démarche terminée (favorable, défavorable, incertaine) ne modifie jamais l'information | `test_terminer_exige_l_issue_du_resultat`, `test_demarche_terminee_ne_modifie_jamais_l_information` (3 issues) |
+| Mise à jour explicite et recalcul ; démarche personnelle sans information liée | `test_actualisation_explicite_recalcule_le_point`, `test_demarche_personnelle_sans_information_liee`, `e2e/plan.spec.ts` (3 scénarios : incertain, favorable sans « vérifié » automatique puis point disparu, défavorable + démarche personnelle + vue conseiller + dossier archivé) |
+| Pas-à-pas : reprise, report distinct de « Je ne sais pas », protection de saisie, focus ; producteur direct | `e2e/pas-a-pas.spec.ts` |
+| Postes à examiner : sans prix ni quantité, sans doublon, retrait puis rajout, permissions et archive | 5 tests `test_poste_a_examiner_*` / `test_postes_a_examiner_*`, `e2e/budget.spec.ts` |
+| Source du contenu sans chemin de fichier | assertion ajoutée dans `test_preparation` |
+| Accessibilité et 360 px, page pas-à-pas comprise | `e2e/qualite.spec.ts` |
+
+Parcours observé au navigateur (script temporaire supprimé après usage, captures hors dépôt, vues ordinateur 1280 px et téléphone Pixel 7, base `agria_e2e`, données fictives) : création du compte et du projet débutant → pas-à-pas (lieu déclaré, terrain « en discussion », eau remise à plus tard, culture « Je ne sais pas ») → déconnexion, reconnexion et reprise à « Période envisagée » → Mon projet et Mon plan → démarche « Confirmer l'accès au terrain » terminée avec un résultat incertain → « Mettre à jour : Accès au terrain » (résultat rappelé, rien de prérempli) → enregistrement : « Point encore ouvert » → budget partiel (deux postes à chiffrer, un laissé de côté) → synthèse (issue « incertain » affichée). Corrections issues de cette observation : radio « Vérifié » rétrécie, message « démarche terminée » affiché avant l'état relu, aide de l'issue « incertain » inexacte, titres « Mettre à jour » en double, informations vides répétées à l'accueil.
+
+Parcours producteur (accès direct, pas de pas-à-pas imposé) et conseiller (lecture seule de la démarche, mise à jour réservée au porteur) : vérifiés par `pas-a-pas.spec`, `plan.spec`, `finition.spec` et `relecture.spec`.
+
+| Commande (Python 3.14.8) | Résultat |
+|---|---|
+| `backend\.venv\Scripts\python scripts\dev.py check --e2e` | ruff, format, migrations à jour, **166 pytest**, eslint, TypeScript, build ; Playwright **53 réussis**, 1 ignoré (clavier physique sur téléphone) |
+| `backend\.venv\Scripts\python scripts\recette.py` | Redémarrage, restauration, session et CSRF par HTTP : OK |
+
+Un premier passage complet a échoué sur le test clavier (`parcours.spec`), qui tabulait avant l'affichage de la page de l'information ; il passait isolément. Le test attend désormais le titre et le formulaire ; le passage complet suivant est entièrement réussi.
+
+### Limites restantes
+
+- **Compréhension non testée avec de vrais utilisateurs** : statuts, « Situation : point encore ouvert », message de recalcul, pas-à-pas.
+- **Ordre de saisie, liste des postes à examiner et aides des issues : non relus par un spécialiste.**
+- Le report « à plus tard » et les postes « laissés de côté » sont propres au navigateur : ils ne suivent pas la personne sur un autre appareil (l'information reste simplement non renseignée).
+- Les démarches terminées avant cette version n'ont pas d'issue enregistrée.
+- Base de travail et base de démonstration **non migrées** pendant la mission : `manage.py migrate` (travail) et `dev.py demo-init --reset` (démonstration) restent à lancer par le fondateur.

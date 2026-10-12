@@ -39,6 +39,10 @@ test.describe('parcours au clavier', () => {
     await expect(page.getByRole('heading', { name: 'Aujourd’hui' })).toBeVisible()
 
     await page.goto(`/d/${id}/projet/eau`)
+    // On tabule une fois la page affichée, comme une personne au clavier.
+    await expect(page.getByRole('heading', { level: 1, name: "Accès à l'eau" })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Historique' })).toBeVisible()
+    await expect(page.getByText('Chargement', { exact: false })).toHaveCount(0)
     await tabTo(page, /Je ne sais pas/)
     await page.keyboard.press('Space')
     await expect(page.getByLabel('Je ne sais pas')).toBeChecked()
