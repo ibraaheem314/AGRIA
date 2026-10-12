@@ -18,6 +18,28 @@ Consultation le **11 octobre 2026**. Les sites officiels ont été lus directeme
 
 Ce tableau n'est pas une étude de marché. L'existence d'un accompagnement ne prouve ni qu'il couvre les besoins, ni qu'AGRIA apporte une valeur supplémentaire.
 
+## Portes d'entrée vérifiées pour la première vague de G1
+
+Vérification du **12 octobre 2026** sur les sites officiels, sauf mention contraire. Ce sont des **canaux institutionnels publics**, pas des personnes. Aucune de ces structures n'a été contactée ni n'a donné son accord : un contact public n'est pas un accord, et une institution existante n'est pas forcément disponible.
+
+Le classement combine deux critères : la **pertinence** pour l'objectif (un conseiller et deux personnes préparant une campagne) et la **possibilité concrète** d'obtenir une mise en relation.
+
+| Rang | Structure, rôle | Territoire et public établis | Pourquoi la contacter | Canal public vérifié | Inconnu | Demande à formuler |
+|---|---|---|---|---|---|---|
+| 1 | **CNCR**, organisation faîtière paysanne | National. 28 fédérations et unions, dont la **FPMN (Fédération des producteurs maraîchers des Niayes)**, la FNGIEH/S (horticulteurs) et l'APOV (producteurs d'oignon de la Vallée) | Accès à des **producteurs actifs** en maraîchage, la filière candidate | cncr@cncr.org ; +221 33 827 74 53 (lun.–ven., 9 h–18 h) ; formulaire sur [cncr.org](https://www.cncr.org/) ; liste des membres sur [cncr.org/nos-membres](https://www.cncr.org/nos-membres/) | Délai de réponse ; possibilité de transmettre aux fédérations ; contact propre de la FPMN | Une mise en relation avec la FPMN ou la FNGIEH/S pour échanger avec 2 producteurs qui préparent leur prochaine campagne |
+| 2 | **Enda Pronat**, ONG d'accompagnement agroécologique (créée en 1982, selon des sources secondaires) | Producteurs et productrices en transition agroécologique (plus de 1 500 accompagnés selon le site), périmètres maraîchers cités (Thiaglé, Kodiolel, Ndoga Babacar), Podor, Ndiob | Des **animateurs de terrain** connaissent la préparation réelle des campagnes ; accès possible à des producteurs | info@endapronat.org ; +221 33 889 34 39 ; [endapronat.org/contact](https://endapronat.org/contact/) | Zones actives aujourd'hui (les Niayes ne figurent pas sur le site consulté) ; disponibilité des équipes | Un échange de 30 minutes avec une personne qui accompagne des producteurs, et éventuellement une mise en relation avec 1 ou 2 producteurs |
+| 3 | **ANCAR**, agence publique de conseil agricole et rural | Couverture nationale annoncée. Bras technique du ministère de l'Agriculture | Le **conseil public** est l'alternative actuelle à comprendre ; on y trouve des conseillers de terrain | dg@ancar.gouv.sn ; +221 33 859 14 14 (lun.–ven., 8 h–17 h) ; formulaire sur [ancar.gouv.sn/contact](https://ancar.gouv.sn/contact/) | Aucun contact régional publié ; circuit d'autorisation interne probable | Un échange avec un conseiller agricole et rural sur la façon dont il accompagne la préparation d'une campagne |
+| Repli A | **ANIDA**, agence d'aménagement de fermes villageoises et familiales Naatangué | Public principal annoncé : jeunes et femmes. Ferme familiale : 0,5 ha de maraîchage | Accès possible à des **débutants avec un projet concret** | anida@anida.sn ; +221 33 859 06 60 (lun.–ven., 8 h–17 h) ; [anida.sn/contact-2](https://www.anida.sn/contact-2/) | Accompagnement après installation ; localisation des fermes ; aucun appel à candidature daté | Une mise en relation avec 1 ou 2 jeunes qui préparent leur première campagne |
+| Repli B | **ISRA**, institut de recherche agricole (Direction générale) | National. Le site du **CDH** (horticulture) était inaccessible le 12/10/2026 (lu le 11/10) | Orientation vers un spécialiste horticole : utile pour comprendre les erreurs courantes en G1, puis pour la relecture du contenu en G2 | dgisra@isra.sn ; unival@isra.sn ; +221 33 859 17 25 ; [isra.sn/comment-nous-contacter](https://isra.sn/comment-nous-contacter/) | Contact du CDH ; disponibilité | Une orientation vers une personne du CDH qui accepterait un échange de 30 minutes |
+
+**Écartées pour la première vague :**
+
+- **FPMN en direct** : aucun site officiel. Les seuls contacts trouvés viennent d'annuaires tiers et de documents de projet (2012–2020), dont des coordonnées personnelles. Passer par le CNCR.
+- **FONGS** : site officiel inaccessible (erreur SSL), contacts publics datant de 2008–2010.
+- **DER/FJ** : site officiel inaccessible ; c'est un financeur, hors du périmètre d'AGRIA.
+
+**Voie complémentaire, non vérifiable ici :** le réseau personnel du fondateur. C'est souvent le plus rapide pour trouver les deux premières personnes qui préparent une campagne. Elles doivent répondre aux critères du §2 de VALIDATION_TERRAIN.
+
 ## Contexte historique des premières pistes (irrigation, stockage)
 
 | Acteur / source | Offre ou constat publié | Conséquence à vérifier pour AGRIA |

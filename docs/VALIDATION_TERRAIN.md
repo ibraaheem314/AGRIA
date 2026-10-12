@@ -57,7 +57,7 @@ Pour démarrer, viser un premier échange avec un conseiller et deux personnes p
 
 ### 2.4 Canaux possibles
 
-Ce sont des pistes de prise de contact, **pas des partenaires** : réseau personnel du fondateur ; organisations de producteurs (fédérations membres du CNCR) ; zones de l'ANCAR ; fermes et programmes de l'ANIDA ; programmes d'appui aux jeunes ; marchés et points de vente d'intrants ; groupes WhatsApp de producteurs déjà fréquentés par le fondateur. Repères : [MARCHE_SENEGAL.md](MARCHE_SENEGAL.md).
+Ce sont des pistes de prise de contact, **pas des partenaires** : réseau personnel du fondateur ; organisations de producteurs (fédérations membres du CNCR) ; zones de l'ANCAR ; fermes et programmes de l'ANIDA ; programmes d'appui aux jeunes ; marchés et points de vente d'intrants ; groupes WhatsApp de producteurs déjà fréquentés par le fondateur. Repères et canaux vérifiés pour la première vague : [MARCHE_SENEGAL.md](MARCHE_SENEGAL.md).
 
 Pour une structure, demander seulement une mise en relation. Ne rien annoncer comme un partenariat.
 
@@ -138,6 +138,32 @@ Questions ouvertes, sur des faits récents. Relancer par « pouvez-vous me racon
 5. Qui finance votre travail ? Un accompagnement par dossier est-il envisageable, et payé par qui ?
 6. Pourriez-vous relire un contenu de préparation et deux ou trois dossiers ? Combien de temps cela vous demanderait-il, et à quelles conditions ?
 7. Qu'est-ce qui vous ferait refuser un outil comme celui-ci ?
+
+### 3.2 Version courte : 40 minutes, pour les premiers échanges
+
+Elle tient dans les 45 minutes annoncées par les messages (§2.5) et laisse 5 minutes de marge. On n'y présente la fiche AGRIA qu'à la fin. Une réaction positive n'est pas une preuve de demande.
+
+| Temps | Thème | Questions |
+|---|---|---|
+| 2 min | Ouverture | But, durée, anonymat, droit d'arrêter, rien à vendre. Consentement noté (oui/non) |
+| 5 min | Projet ou campagne | Quel projet ou quelle campagne préparez-vous ? Où, quelle culture, pour quand ? Première campagne ou suivante ? |
+| 7 min | Dernière démarche | Quelle est la dernière chose que vous avez faite pour la préparer ? Quand, avec qui ? Pouvez-vous me montrer une trace (message, devis, cahier) ? |
+| 7 min | Blocage actuel | Qu'est-ce qui vous bloque aujourd'hui ? Que se passe-t-il s'il n'est pas réglé ? Est-ce déjà arrivé lors d'une campagne passée, et qu'est-ce que cela a coûté ? |
+| 5 min | Solutions et conseils utilisés | Vers qui ou vers quoi vous tournez-vous ? Qu'avez-vous payé pour cela ? Qu'est-ce qui n'a pas marché ? |
+| 4 min | Temps et argent engagés | Combien de temps et d'argent avez-vous déjà mis dans la préparation (déplacements, appels, attente) ? |
+| 3 min | Décision et paiement | Qui décide des dépenses ? Qui pourrait payer un accompagnement : vous, la famille, une organisation, un programme ? |
+| 3 min | Langue, téléphone, connexion | Quelle langue pour lire ou écouter ? Quel téléphone ? Internet régulier ? Qui vous aide pour l'écrit ? |
+| 4 min | **Seulement maintenant :** fiche | Montrer la fiche de préparation papier (§5) : qu'est-ce qui est utile, inutile, manquant ? Accepteriez-vous de préparer un vrai dossier avec un conseiller ? À quelles conditions ? Noter la réponse mot pour mot |
+
+Pour un conseiller : utiliser le §3.1 (7 questions, environ 30 minutes).
+
+**Prise de notes**, une ligne par point important :
+
+| Thème | Observé (montré, constaté) | Déclaré (dit) | Notre interprétation |
+|---|---|---|---|
+| | | | |
+
+Niveau d'engagement exprimé, à cocher : aucun / intérêt verbal / accord écrit / paiement. Ce sont des niveaux distincts, à ne jamais additionner.
 
 ## 4. Fiche d'entretien
 
