@@ -207,3 +207,90 @@ def test_permissions_budget(porteur, autre, make_user, session, dossier):
         == 403
     )
     assert BudgetLine.objects.count() == 1
+
+
+# Lot 4 : premier budget guidé (postes à examiner).
+
+
+def suggestion(sess, dossier, key, request_id=None):
+    return sess.post(
+        url(dossier, f"/a-examiner/{key}"), {"request_id": request_id or str(uuid.uuid4())}
+    )
+
+
+def test_postes_a_examiner_proposes_sans_prix_ni_quantite(porteur, dossier):
+    data = get_budget(porteur, dossier)
+    assert [s["key"] for s in data["suggestions"]] == [
+        "acces_terrain", "eau", "semences", "materiel", "main_oeuvre", "transport",
+    ]  # fmt: skip
+    assert not any(s["added"] for s in data["suggestions"])
+    assert data["lines"] == []  # rien n'est créé tant que le porteur n'ajoute pas
+
+    response = suggestion(porteur, dossier, "semences")
+    assert response.status_code == 201
+    line = response.json()
+    assert line["label"] == "Semences ou plants"
+    assert (line["quantity"], line["unit_price"], line["amount"]) == (None, None, None)
+    assert line["price_status"] == "manquant"
+    assert line["state"] == "incomplet"
+    data = get_budget(porteur, dossier)
+    # Un poste inconnu ne compte jamais pour zéro : le budget est incomplet, pas « 0 FCFA ».
+    assert data["totals"]["overall"]["status"] == "incomplet"
+    assert data["totals"]["overall"]["incomplete"] == 1
+    assert {s["key"]: s["added"] for s in data["suggestions"]}["semences"] is True
+
+
+def test_poste_a_examiner_sans_doublon(porteur, dossier):
+    first = suggestion(porteur, dossier, "eau").json()
+    # Nouvelle visite, nouvel identifiant de requête : le poste existant est renvoyé.
+    again = suggestion(porteur, dossier, "eau")
+    assert again.status_code == 200
+    assert again.json()["id"] == first["id"]
+    # Reprise de la même requête : rien de plus.
+    rid = str(uuid.uuid4())
+    suggestion(porteur, dossier, "transport", rid)
+    assert suggestion(porteur, dossier, "transport", rid).status_code == 200
+    assert BudgetLine.objects.count() == 2
+    assert BudgetEvent.objects.filter(kind="ajout").count() == 2
+
+
+def test_poste_a_examiner_retire_puis_rajoute(porteur, dossier):
+    line = suggestion(porteur, dossier, "materiel").json()
+    porteur.post(url(dossier, f"/postes/{line['id']}/retirer"), {"expected_version": 1})
+    assert {s["key"]: s["added"] for s in get_budget(porteur, dossier)["suggestions"]}[
+        "materiel"
+    ] is False
+    again = suggestion(porteur, dossier, "materiel")
+    assert again.status_code == 201
+    assert again.json()["id"] != line["id"]
+
+
+def test_poste_a_examiner_modifiable_comme_les_autres(porteur, dossier):
+    line = suggestion(porteur, dossier, "main_oeuvre").json()
+    body = {
+        **poste(label="Main-d'œuvre (repiquage)", unit="jour", quantity="4", unit_price=None,
+                price_status="manquant", source=""),
+        "expected_version": 1,
+    }  # fmt: skip
+    body.pop("request_id")
+    response = porteur.put(url(dossier, f"/postes/{line['id']}"), body)
+    assert response.status_code == 200
+    assert response.json()["quantity"] == "4"
+    # L'élément reste marqué ajouté : il n'est plus proposé.
+    assert {s["key"]: s["added"] for s in get_budget(porteur, dossier)["suggestions"]}[
+        "main_oeuvre"
+    ] is True
+
+
+def test_poste_a_examiner_permissions_et_archive(porteur, autre, make_user, session, dossier):
+    assert suggestion(porteur, dossier, "inconnu").status_code == 404
+    assert suggestion(autre, dossier, "eau").status_code == 404
+    user = make_user("conseil-budget@example.sn", advisor=True)
+    AdvisorAssignment.objects.create(campaign_id=dossier["id"], advisor=user)
+    assert suggestion(session(user), dossier, "eau").status_code == 403
+
+    from dossiers.models import Campaign
+
+    Campaign.objects.filter(pk=dossier["id"]).update(archived_at=timezone.now())
+    assert suggestion(porteur, dossier, "eau").status_code == 403
+    assert BudgetLine.objects.count() == 0

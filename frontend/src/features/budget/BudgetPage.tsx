@@ -5,7 +5,9 @@ import { useUnsavedChanges } from '../../shared/unsaved'
 import { formatDate, formatDateTime, formatDecimal, formatFcfa, plural } from '../../shared/format'
 import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { useCurrentDossier } from '../dossiers/DossierLayout'
+import { isDetailed } from '../dossiers/guidance'
 import {
+  useAddSuggestion,
   useBudget,
   useBudgetHistory,
   useCreateLine,
@@ -14,6 +16,7 @@ import {
   type Budget,
   type BudgetLine,
   type LineInput,
+  type Suggestion,
   type Totals,
 } from './api'
 
@@ -51,6 +54,7 @@ export function BudgetPage() {
   const [flash, setFlash] = useState<string | null>(null)
   const [showHistory, setShowHistory] = useState(false)
   const owner = dossier.role === 'porteur' && !dossier.archived
+  const detailed = isDetailed(dossier)
 
   if (budget.isPending) return <Loading label="Chargement du budget…" />
   if (budget.isError) return <Alert tone="danger" role="alert" title="Budget indisponible">{budget.error.message}</Alert>
@@ -89,7 +93,27 @@ export function BudgetPage() {
           )}
           .
         </p>
-        <details className="mt-3 text-sm">
+        <details className="mt-3 text-sm" open={detailed}>
+          <summary className="cursor-pointer font-medium">Ce que ces chiffres veulent dire</summary>
+          <ul className="mt-1 list-disc space-y-1 pl-5">
+            <li>
+              <strong>Montant chiffré</strong> : la somme des postes qui ont une quantité et un prix
+              {overall.lines - overall.owned - overall.incomplete > 0 ? ` (${formatFcfa(overall.priced_total)})` : ''}.
+            </li>
+            <li>
+              <strong>À chiffrer</strong> : {overall.incomplete > 0 ? plural(overall.incomplete, 'poste') + ' sans montant' : 'aucun poste sans montant'}.
+              Un poste à chiffrer ne compte jamais pour zéro : tant qu'il en reste, le coût total n'est pas connu.
+            </li>
+            <li>
+              <strong>Moyens disponibles</strong> : la somme indiquée dans le dossier, telle que vous l'avez déclarée.
+            </li>
+            <li>
+              <strong>Limites</strong> : comparer ces montants ne dit pas si le projet est faisable. Des postes peuvent
+              manquer, les estimations peuvent changer, et aucune recette n'est prévue ici.
+            </li>
+          </ul>
+        </details>
+        <details className="mt-2 text-sm">
           <summary className="cursor-pointer font-medium">Règles de calcul</summary>
           <ul className="mt-1 list-disc space-y-0.5 pl-5 text-muted">
             {data.rules.map((r) => <li key={r}>{r}</li>)}
@@ -98,6 +122,15 @@ export function BudgetPage() {
       </Card>
 
       {flash && <Alert tone="ok" role="status">{flash}</Alert>}
+
+      {owner && (
+        <Suggestions
+          dossierId={dossier.id}
+          items={data.suggestions}
+          detailed={detailed}
+          onAdded={(label) => setFlash(`« ${label} » ajouté au budget, à chiffrer : indiquez quantité et prix avec « Modifier ».`)}
+        />
+      )}
 
       {owner && editing === null && (
         <Button onClick={() => { setFlash(null); setEditing('new') }}>Ajouter un poste</Button>
@@ -143,6 +176,126 @@ export function BudgetPage() {
         {showHistory && <History dossierId={dossier.id} />}
       </section>
     </div>
+  )
+}
+
+// « Laisser de côté » : repère de ce navigateur seulement, rien n'est enregistré côté serveur.
+const asideKey = (dossierId: number) => `agria.budget-de-cote.${dossierId}`
+
+function readAside(dossierId: number): string[] {
+  try {
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(asideKey(dossierId)) ?? '[]')
+    return Array.isArray(parsed) ? parsed.filter((k): k is string => typeof k === 'string') : []
+  } catch {
+    return []
+  }
+}
+
+function writeAside(dossierId: number, keys: string[]) {
+  try {
+    if (keys.length) window.localStorage.setItem(asideKey(dossierId), JSON.stringify(keys))
+    else window.localStorage.removeItem(asideKey(dossierId))
+  } catch {
+    // Stockage indisponible : le choix vaut pour cette visite seulement.
+  }
+}
+
+/** Postes à examiner : une aide pour ne rien oublier, pas un budget complet ni un conseil d'achat. */
+function Suggestions({
+  dossierId,
+  items,
+  detailed,
+  onAdded,
+}: {
+  dossierId: number
+  items: Suggestion[]
+  detailed: boolean
+  onAdded: (label: string) => void
+}) {
+  const add = useAddSuggestion(dossierId)
+  // Un identifiant par élément : un nouvel essai après un échec réseau ne crée pas de doublon.
+  const requestIds = useRef(new Map<string, string>())
+  const [aside, setAside] = useState<string[]>(() => readAside(dossierId))
+  const pending = items.filter((s) => !s.added && !aside.includes(s.key))
+  const setAsideItems = items.filter((s) => !s.added && aside.includes(s.key))
+  if (pending.length === 0 && setAsideItems.length === 0) return null
+
+  function updateAside(keys: string[]) {
+    setAside(keys)
+    writeAside(dossierId, keys)
+  }
+
+  function addItem(item: Suggestion) {
+    let requestId = requestIds.current.get(item.key)
+    if (!requestId) {
+      requestId = newRequestId()
+      requestIds.current.set(item.key, requestId)
+    }
+    add.mutate(
+      { key: item.key, request_id: requestId },
+      {
+        onSuccess: () => {
+          requestIds.current.delete(item.key)
+          onAdded(item.label)
+        },
+      },
+    )
+  }
+
+  const content = (
+    <div className="space-y-3">
+      <p className="text-sm">
+        Une liste générique pour ne rien oublier : ce n'est ni un budget complet ni une recommandation d'achat. Un
+        poste ajouté n'a ni quantité ni prix ; vous le chiffrez ensuite, quand vous avez l'information.
+      </p>
+      {add.error && <Alert tone="danger" role="alert">Non ajouté : {add.error.message}</Alert>}
+      <ul className="space-y-2">
+        {pending.map((item) => (
+          <li key={item.key} className="rounded-md border border-line p-3">
+            <p className="font-medium">{item.label}</p>
+            <p className="text-sm text-muted">{item.help}</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Button
+                variant="secondary"
+                busy={add.isPending && add.variables?.key === item.key}
+                disabled={add.isPending}
+                onClick={() => addItem(item)}
+              >
+                Ajouter au budget<span className="sr-only"> : {item.label}</span>
+              </Button>
+              <Button variant="ghost" onClick={() => updateAside([...aside, item.key])}>
+                Laisser de côté<span className="sr-only"> : {item.label}</span>
+              </Button>
+            </div>
+          </li>
+        ))}
+      </ul>
+      {pending.length === 0 && <p className="text-sm">Chaque élément a été ajouté ou laissé de côté.</p>}
+      {setAsideItems.length > 0 && (
+        <p className="text-sm text-muted">
+          Laissés de côté : {setAsideItems.map((s) => s.label).join(', ')}.{' '}
+          <button type="button" className="font-medium text-brand-700 underline" onClick={() => updateAside([])}>
+            Les proposer à nouveau
+          </button>
+        </p>
+      )}
+    </div>
+  )
+
+  return (
+    <section aria-labelledby="a-examiner" className="rounded-lg border border-line bg-surface p-4">
+      {detailed ? (
+        <>
+          <h2 id="a-examiner" className="mb-2 font-semibold">Postes à examiner</h2>
+          {content}
+        </>
+      ) : (
+        <details>
+          <summary id="a-examiner" className="cursor-pointer font-semibold">Postes à examiner ({pending.length})</summary>
+          <div className="mt-2">{content}</div>
+        </details>
+      )}
+    </section>
   )
 }
 

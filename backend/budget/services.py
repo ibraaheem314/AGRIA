@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 from django.utils import timezone
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import NotFound, ValidationError
 
 from agria.errors import Conflict
-from budget import calc
+from budget import calc, suggestions
 from budget.models import BudgetEvent, BudgetLine
 from dossiers.models import Campaign
 
@@ -122,6 +122,38 @@ def create_line(*, campaign: Campaign, data: dict, request_id, author) -> tuple[
     line = BudgetLine.objects.create(
         campaign=campaign, client_request_id=request_id, created_by=author, **values
     )
+    _record(line, "ajout", author)
+    return line, True
+
+
+def add_suggestion(*, campaign: Campaign, key: str, request_id, author) -> tuple[BudgetLine, bool]:
+    """Ajoute un poste « à examiner », sans quantité ni prix. `campaign` verrouillée.
+
+    Sans doublon : si un poste actif existe déjà pour cet élément, il est renvoyé tel quel.
+    """
+    suggestion = suggestions.BY_KEY.get(key)
+    if suggestion is None:
+        raise NotFound("Élément inconnu.")
+    existing = (
+        BudgetLine.objects.filter(
+            campaign=campaign, suggestion_key=key, removed_at__isnull=True
+        ).first()
+        or BudgetLine.objects.filter(campaign=campaign, client_request_id=request_id).first()
+    )
+    if existing:
+        return existing, False
+    values = clean(
+        {
+            "category": suggestion["category"],
+            "label": suggestion["label"],
+            "unit": "forfait",
+            "price_status": "manquant",
+        }
+    )
+    line = BudgetLine.objects.create(
+        campaign=campaign, client_request_id=request_id, suggestion_key=key, created_by=author,
+        **values,
+    )  # fmt: skip
     _record(line, "ajout", author)
     return line, True
 

@@ -43,6 +43,10 @@ urlpatterns = [
     # Budget provisoire
     path("api/dossiers/<int:campaign_id>/budget", budget_api.budget),
     path("api/dossiers/<int:campaign_id>/budget/historique", budget_api.budget_history),
+    path(
+        "api/dossiers/<int:campaign_id>/budget/a-examiner/<slug:key>",
+        budget_api.budget_suggestion,
+    ),
     path("api/dossiers/<int:campaign_id>/budget/postes/<int:line_id>", budget_api.budget_line),
     path(
         "api/dossiers/<int:campaign_id>/budget/postes/<int:line_id>/retirer",

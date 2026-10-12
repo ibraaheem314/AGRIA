@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
-from budget import calc, services
+from budget import calc, services, suggestions
 from budget.models import BudgetEvent, BudgetLine
 from dossiers.access import campaign_for_owner_write, campaign_for_read
 from dossiers.presenters import person
@@ -33,6 +33,20 @@ def line_payload(line: BudgetLine) -> dict:
     }
 
 
+def suggestions_payload(lines) -> list[dict]:
+    added = {line.suggestion_key for line in lines if line.suggestion_key}
+    return [
+        {
+            "key": s["key"],
+            "label": s["label"],
+            "help": s["help"],
+            "category_label": calc.CATEGORIES[s["category"]],
+            "added": s["key"] in added,
+        }
+        for s in suggestions.SUGGESTIONS
+    ]
+
+
 def budget_payload(campaign) -> dict:
     lines = list(services.active_lines(campaign))
     apport = campaign.facts.filter(key="apport").first()
@@ -46,6 +60,7 @@ def budget_payload(campaign) -> dict:
             else {"status": "non_renseigne", "montant": None}
         ),
         "rules": RULES,
+        "suggestions": suggestions_payload(lines),
         "choices": {
             "categories": [{"value": k, "label": v} for k, v in calc.CATEGORIES.items()],
             "units": [{"value": k, "label": v} for k, v in calc.UNITS.items()],
@@ -90,6 +105,25 @@ def budget(request, campaign_id: int):
         line, created = services.create_line(
             campaign=campaign, data=values, request_id=request_id, author=request.user
         )
+    return Response(
+        line_payload(line), status=status.HTTP_201_CREATED if created else status.HTTP_200_OK
+    )
+
+
+class SuggestionSerializer(serializers.Serializer):
+    request_id = serializers.UUIDField()
+
+
+@api_view(["POST"])
+def budget_suggestion(request, campaign_id: int, key: str):
+    data = SuggestionSerializer(data=request.data)
+    data.is_valid(raise_exception=True)
+    with transaction.atomic():
+        campaign = campaign_for_owner_write(request.user, campaign_id, lock=True)
+        line, created = services.add_suggestion(
+            campaign=campaign, key=key, request_id=data.validated_data["request_id"],
+            author=request.user,
+        )  # fmt: skip
     return Response(
         line_payload(line), status=status.HTTP_201_CREATED if created else status.HTTP_200_OK
     )

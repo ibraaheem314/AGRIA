@@ -45,8 +45,12 @@ export type Budget = {
   totals: { overall: Totals; by_category: Record<string, Totals> }
   apport: { status: FactStatus; montant: number | null }
   rules: string[]
+  suggestions: Suggestion[]
   choices: { categories: Choice[]; units: Choice[]; price_statuses: Choice[] }
 }
+
+/** Élément de la liste « postes à examiner » : aide générique, sans prix ni quantité. */
+export type Suggestion = { key: string; label: string; help: string; category_label: string; added: boolean }
 
 export type BudgetEvent = {
   budget_version: number
@@ -115,6 +119,15 @@ export function useRemoveLine(dossierId: number) {
         method: 'POST',
         body: { expected_version },
       }),
+    onSuccess: invalidate,
+  })
+}
+
+export function useAddSuggestion(dossierId: number) {
+  const invalidate = useInvalidate(dossierId)
+  return useMutation({
+    mutationFn: ({ key, request_id }: { key: string; request_id: string }) =>
+      api<BudgetLine>(`/dossiers/${dossierId}/budget/a-examiner/${key}`, { method: 'POST', body: { request_id } }),
     onSuccess: invalidate,
   })
 }

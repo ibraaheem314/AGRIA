@@ -171,7 +171,8 @@ export function StepByStepPage() {
               </p>
               <div className="mt-3 flex flex-wrap gap-3">
                 <ButtonLink to={`/d/${dossier.id}/plan`}>Voir Mon plan</ButtonLink>
-                <ButtonLink to={`/d/${dossier.id}/projet`} variant="secondary">Voir tout le projet</ButtonLink>
+                <ButtonLink to={`/d/${dossier.id}/projet/budget`} variant="secondary">Préparer le budget provisoire</ButtonLink>
+                <ButtonLink to={`/d/${dossier.id}/projet`} variant="ghost">Voir tout le projet</ButtonLink>
               </div>
             </>
           )}

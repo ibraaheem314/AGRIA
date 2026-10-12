@@ -4,7 +4,8 @@ Invariants garantis par la base :
 - prix « manquant » si et seulement si aucun prix unitaire n'est saisi ;
 - un prix « connu » porte une source et une date ; un prix « estimé » porte une source ;
 - quantité strictement positive, prix unitaire positif ou nul ;
-- un identifiant de requête client ne crée qu'un poste.
+- un identifiant de requête client ne crée qu'un poste ;
+- un élément de la liste « postes à examiner » n'a qu'un poste actif par campagne.
 Un poste n'est jamais effacé : il est retiré (removed_at) et reste dans l'historique.
 """
 
@@ -31,6 +32,8 @@ class BudgetLine(models.Model):
     removed_at = models.DateTimeField(null=True, blank=True)
     row_version = models.PositiveIntegerField(default=1)
     client_request_id = models.UUIDField(null=True, blank=True, editable=False)
+    # Poste ajouté depuis la liste « postes à examiner » : au plus un poste actif par élément.
+    suggestion_key = models.CharField(max_length=30, blank=True, default="", editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -58,6 +61,11 @@ class BudgetLine(models.Model):
             ),
             models.UniqueConstraint(
                 fields=["campaign", "client_request_id"], name="budget_unique_request"
+            ),
+            models.UniqueConstraint(
+                fields=["campaign", "suggestion_key"],
+                condition=~Q(suggestion_key="") & Q(removed_at__isnull=True),
+                name="budget_unique_active_suggestion",
             ),
         ]
 

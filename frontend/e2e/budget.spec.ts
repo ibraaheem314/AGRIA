@@ -61,3 +61,32 @@ test('budget incomplet, validation, reprise réseau sans doublon et retrait hist
   await expect(page.getByText('Retrait : Semences')).toBeVisible()
   await expect(page.getByText('Ajout : Semences')).toBeVisible()
 })
+
+test('premier budget guidé : postes à examiner sans prix inventé, sans doublon, laissés de côté', async ({ page }) => {
+  await register(page, 'Fatou')
+  const id = await createProject(page)
+  await page.goto(`/d/${id}/projet/budget`)
+  const guide = page.getByRole('region', { name: 'Postes à examiner' })
+  await expect(guide).toContainText(/ni un budget complet ni une recommandation d.achat/)
+
+  // Ajouter : le poste est à chiffrer, jamais compté pour zéro.
+  await guide.getByRole('button', { name: 'Ajouter au budget : Semences ou plants' }).click()
+  await expect(page.getByText(/« Semences ou plants » ajouté au budget, à chiffrer/)).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Semences ou plants' })).toBeVisible()
+  await expect(page.getByText('Quantité manquante (forfait) × prix manquant = montant manquant')).toBeVisible()
+  await expect(page.getByText(/^Budget incomplet : 1 poste sans montant\. Aucun poste n’est encore chiffré\.$/).first()).toBeVisible()
+  await expect(guide.getByRole('button', { name: /Semences ou plants/ })).toHaveCount(0)
+
+  // Laisser de côté, revenir plus tard : pas de doublon, choix conservé, réversible.
+  await guide.getByRole('button', { name: 'Laisser de côté : Transport' }).click()
+  await expect(guide).toContainText('Laissés de côté : Transport.')
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Semences ou plants' })).toHaveCount(1)
+  await expect(guide).toContainText('Laissés de côté : Transport.')
+  await guide.getByRole('button', { name: 'Les proposer à nouveau' }).click()
+  await expect(guide.getByRole('button', { name: 'Ajouter au budget : Transport' })).toBeVisible()
+
+  // Les postes libres restent possibles ; les limites de la comparaison sont expliquées.
+  await expect(page.getByRole('button', { name: 'Ajouter un poste' })).toBeVisible()
+  await expect(page.getByText(/comparer ces montants ne dit pas si le projet est faisable/)).toBeVisible()
+})
