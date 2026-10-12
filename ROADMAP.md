@@ -1,6 +1,8 @@
 # Roadmap AGRIA
 
-Mise à jour : 11 octobre 2026 (préparation du pilote). Promesse à tester : *AGRIA aide une personne à préparer sa prochaine campagne agricole, identifier ce qui lui manque et organiser ses démarches avec un conseiller.*
+Mise à jour : 12 octobre 2026 (conception du parcours cible avant intégration). Promesse à tester : *AGRIA aide une personne à préparer sa prochaine campagne agricole, identifier ce qui lui manque et organiser ses démarches avec un conseiller.*
+
+**Cap produit : Sénégal d'abord, préparation accompagnée d'une campagne, débutant avec projet concret et producteur peu accompagné.** Le conseiller intervient sur le même dossier. Le suivi de production, la formation généraliste et les services financiers restent hors du premier produit. Zone, culture, profil de lancement et payeur restent à valider sur le terrain.
 
 ## Où en est le projet
 
@@ -8,6 +10,7 @@ Mise à jour : 11 octobre 2026 (préparation du pilote). Promesse à tester : *A
 |---|---|---|
 | Fondations techniques (F1–F6) | **Livrées** sur `refonte/fondations` | [AVANCEMENT.md](docs/AVANCEMENT.md), briques 0 à 7 |
 | Parcours débutant (pas à pas, démarche reliée à l'information, budget guidé) | **Livré et vérifié techniquement** ; compréhension **à tester** en G1/G2 | [AVANCEMENT.md](docs/AVANCEMENT.md), « Parcours débutant » ; D-048 à D-050 |
+| Expérience cible et frontend | **Conception à réaliser** ; la finition des écrans existants ne vaut pas validation du parcours cible | UX1–UX3 ci-dessous ; D-051 |
 | Contrôles exécutés | **Locaux uniquement** ; runtime courant Python 3.14.8, résultats détaillés dans le rapport | [AVANCEMENT.md](docs/AVANCEMENT.md), lots et corrections après revue |
 | CI GitHub | Configurée, **jamais exécutée** (aucun envoi) | [RESUME_PR.md](docs/RESUME_PR.md) |
 | Préparation du terrain | **Kit G1 et protocole G2 prêts**, non exécutés | [VALIDATION_TERRAIN.md](docs/VALIDATION_TERRAIN.md) |
@@ -19,7 +22,21 @@ Mise à jour : 11 octobre 2026 (préparation du pilote). Promesse à tester : *A
 
 ## Prochaines étapes
 
-**Recette technique de la version locale fermée le 12/10/2026** ([AVANCEMENT.md](docs/AVANCEMENT.md), « Clôture de la version locale ») : version démontrable pour un usage accompagné. Restent hors code : révocations (E1), CI distante (E3), enquête G1 (E4–E6), contenu relu (E7) et, seulement si nécessaire, mise en service (E9).
+**Recette technique de la version locale fermée le 12/10/2026** ([AVANCEMENT.md](docs/AVANCEMENT.md), « Clôture de la version locale ») : version démontrable pour un usage accompagné. Cette clôture ne signifie pas que l'expérience cible est conçue ou validée. **Prochaine tâche produit : UX1**, un prototype navigable isolé, avant toute intégration générale au frontend. Les corrections livrées et le backend sont conservés comme socle.
+
+### Conception de l'expérience (priorité produit actuelle)
+
+| # | Étape | Livrable et limite | Condition de sortie |
+|---|---|---|---|
+| UX1 | Concevoir et matérialiser le parcours cible | Prototype cliquable local, données fictives, sans écriture vers les API métier. Parcours principal : idée concrète → première synthèse utile avant dossier complet → démarche → résultat et actualisation → budget partiel → échange avec un conseiller. Vues producteur et conseiller sur le même modèle de dossier. Présentation téléphone et ordinateur. Réutiliser l'outillage du dépôt sans remplacer l'application actuelle. | Le fondateur peut exécuter les scénarios sans impasse ; rendu inspecté, interactions vérifiées ; correspondance avec les fonctions F1–F6 et écarts identifiés. Un prototype utilisable est livré, pas seulement un document ou des captures. |
+| UX2 | Évaluer le prototype | Essai du fondateur, puis observations de compréhension auprès des profils visés quand des participants sont disponibles. Consigner séparément observations réelles et hypothèses ; G1 reste une enquête sur les besoins, pas une démonstration commerciale. | Choix explicite du fondateur sur le parcours à intégrer et les points à corriger. Une approbation visuelle ne vaut ni preuve d'utilité ni validation agronomique ; sans participants, cette limite reste ouverte. |
+| UX3 | Intégrer progressivement le parcours retenu | Seulement après UX2 : lots reliés aux API existantes, maintien des données, permissions, historique, états incomplets, archivage et protections de saisie. Découpage précis établi à partir du prototype retenu. | Parcours intégrés et vérifiés sur ordinateur et téléphone ; contrôles adaptés aux changements puis vérification complète du code livré. Aucun déploiement implicite. |
+
+**Règle d'arrêt de UX1 :** livrer le prototype et son scénario d'essai, puis recueillir le retour ; ne pas convertir automatiquement la proposition en refonte de l'application. Toute fonctionnalité nouvelle doit expliquer le problème observé, son lien avec la préparation d'une campagne et ce qu'elle remplace ou simplifie. Les idées hors objectif vont dans la liste différée.
+
+### Terrain et exploitation (étapes conservées)
+
+Restent hors code : révocations (E1), CI distante (E3), enquête G1 (E4–E6), contenu relu (E7) et, seulement si nécessaire, mise en service (E9). UX1–UX3 ne sont pas des prérequis aux entretiens G1 et ne constituent pas une validation du marché.
 
 Suivre les dépendances du tableau, pas une séquence obligatoire de E1 à E10. La révocation des clés est urgente ; l'enquête G1 (E4–E6) peut avancer en parallèle des travaux techniques (E2–E3). Ni une fusion GitHub, ni un hébergement, ni la suppression d'un ancien environnement Python ne sont nécessaires aux entretiens.
 
@@ -58,10 +75,10 @@ Aucune n'est à développer maintenant. Chacune se réexamine sur preuve, avec u
 
 ## Hors périmètre
 
-Capteurs ou plateforme IoT, chatbot généraliste, marketplace, paiement, crédit ou assurance, prévision de rendement, application mobile native, architecture distribuée, extension géographique ou multi-filières, refonte visuelle générale.
+Capteurs ou plateforme IoT, chatbot généraliste, marketplace, paiement, crédit ou assurance, prévision de rendement, application mobile native, architecture distribuée, extension géographique ou multi-filières. La conception visuelle et des parcours est autorisée dans UX1–UX3, uniquement pour servir la préparation accompagnée ; une refonte de marque ou un ajout décoratif sans objectif d'usage n'est pas la mission.
 
 ## Revue hebdomadaire
 
-Noter l'étape en cours, les preuves nouvelles, le temps et les dépenses, les risques, la prochaine action avec son responsable et son échéance, et les décisions. Limiter le travail en parallèle à une étape de terrain et une tâche technique directement utile.
+Noter l'étape en cours, les preuves nouvelles, le temps et les dépenses, les risques, la prochaine action avec son responsable et son échéance, et les décisions. Limiter le travail en parallèle à une étape de terrain et une tâche produit ou technique directement utile. Étape produit active : **UX1** ; UX2 et UX3 ne sont pas réalisées.
 
 Références : [produit](docs/PRODUIT.md), [stratégie](docs/STRATEGIE.md), [terrain](docs/VALIDATION_TERRAIN.md), [décisions](docs/DECISIONS.md), [avancement](docs/AVANCEMENT.md).

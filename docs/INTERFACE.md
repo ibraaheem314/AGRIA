@@ -2,6 +2,8 @@
 
 Mise à jour : 12 octobre 2026 (écrans selon le rôle et priorité de l'accueil). Ce guide décrit les conventions **appliquées dans le code** (`frontend/src`) et la façon dont elles sont vérifiées.
 
+**Conception à venir (D-051) :** UX1 dans [ROADMAP.md](../ROADMAP.md) autorise un prototype navigable distinct pour réexaminer les parcours, la navigation et la composition visuelle. Les conventions ci-dessous décrivent l'existant ; elles ne figent pas la proposition. Les droits, la fidélité des données et l'accessibilité restent des exigences. Distinguer toute proposition de ce qui est effectivement intégré.
+
 ## Navigation
 
 - Porteur : **Aujourd'hui · Mon projet · Mon plan · Aide**. Conseiller : Aujourd'hui · Projet · Plan · Aide (même structure, libellés neutres).
