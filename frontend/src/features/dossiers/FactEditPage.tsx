@@ -9,6 +9,7 @@ import { dossierKey, useFactHistory, useSaveFact, type Dossier, type FactItem, t
 import { describeValue, STATUS_LABEL, STATUS_TONE } from './factDisplay'
 import { SituationLine, useOpenPoints } from './ProjectPage'
 import { useCurrentDossier } from './DossierLayout'
+import { words } from './roles'
 import { fetchPreparation, preparationKey, usePreparation } from '../plan/api'
 
 type EditableStatus = Exclude<FactStatus, 'non_renseigne'>
@@ -77,7 +78,7 @@ export function FactEditPage() {
   return (
     <div className="space-y-6">
       <p className="no-print">
-        <Link to={`/d/${dossier.id}/projet`} className="text-brand-700 underline">{dossier.role === 'conseiller' ? '← Projet' : '← Mon projet'}</Link>
+        <Link to={`/d/${dossier.id}/projet`} className="text-brand-700 underline">{words(dossier).backToProject}</Link>
       </p>
       <PageTitle subtitle={fact.why}>{fact.label}</PageTitle>
       <FactSituation dossierId={dossier.id} factKey={fact.key} />

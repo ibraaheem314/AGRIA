@@ -10,6 +10,7 @@ import { usePreparation, type Check } from '../plan/api'
 import { useCreateCampaign, type Dossier, type FactItem } from './api'
 import { describeValue, STATUS_LABEL, STATUS_TONE } from './factDisplay'
 import { useCurrentDossier } from './DossierLayout'
+import { words } from './roles'
 
 export function factCounts(dossier: Dossier) {
   const counts = { total: dossier.facts.length, non_renseigne: 0, inconnu: 0, declare: 0, estime: 0, verifie: 0 }
@@ -25,7 +26,11 @@ export function ProjectPage() {
 
   return (
     <div className="space-y-6">
-      <PageTitle subtitle={`${dossier.label} · ${dossier.project.profile_label}`}>{dossier.project.name}</PageTitle>
+      <PageTitle
+        subtitle={`${dossier.label} · ${dossier.project.profile_label}${owner ? '' : ` · porteur : ${dossier.project.owner.display_name}`}`}
+      >
+        {dossier.project.name}
+      </PageTitle>
 
       <Card>
         <h2 className="font-semibold">Ce que contient le dossier</h2>
@@ -166,7 +171,7 @@ function FactRow({
       {empty && <p className="mt-1 text-sm text-muted">{fact.why}</p>}
       <p className="mt-2">
         <Link to={`/d/${dossierId}/projet/${fact.key}`} className="font-medium text-brand-700 underline">
-          {editable ? (empty ? 'Compléter' : 'Mettre à jour') : 'Voir le détail et l’historique'}
+          {editable ? (empty ? 'Compléter' : 'Mettre à jour') : 'Consulter l’information'}
           <span className="sr-only"> : {fact.label}</span>
         </Link>
       </p>
@@ -205,11 +210,12 @@ export function useOpenPoints(dossierId: number): Map<string, Check> {
 
 /** Le statut dit d'où vient l'information ; la situation, elle, peut rester à régler. */
 export function SituationLine({ check, dossierId }: { check: Check; dossierId: number }) {
+  const w = words(useCurrentDossier())
   return (
     <p className="mt-2 rounded-md border border-warn-700/30 bg-warn-50 px-2 py-1 text-sm text-warn-700">
       <strong>Situation : point encore ouvert.</strong> {check.message}.{' '}
       <Link to={check.action ? `/d/${dossierId}/plan/${check.action.id}` : `/d/${dossierId}/plan`} className="underline">
-        {check.action ? 'Voir la démarche' : 'Voir Mon plan'}
+        {check.action ? 'Voir la démarche' : w.seePlan}
       </Link>
     </p>
   )

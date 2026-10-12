@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useMatch, useNavigate } from 'react
 import { useLogout, useMe } from '../features/auth/session'
 import { useDossiers } from '../features/dossiers/api'
 import { forgetDossier, lastDossier } from '../features/dossiers/lastDossier'
+import { words } from '../features/dossiers/roles'
 import { UnsavedChangesProvider, useConfirmLeave } from '../shared/unsaved'
 
 /** En-tête, navigation principale (Aujourd'hui · Mon projet · Mon plan · Aide) et contenu. */
@@ -49,13 +50,14 @@ function Layout() {
   const user = me.data?.user
   const dossiers = useDossiers({ enabled: Boolean(user) })
   // Le conseiller consulte le dossier d'un autre : libellés adaptés, même structure.
-  const advisorView = dossiers.data?.find((d) => String(d.id) === dossierId)?.role === 'conseiller'
+  const current = dossiers.data?.find((d) => String(d.id) === dossierId)
+  const w = words(current ?? { role: 'porteur', archived: false })
 
   const links = dossierId
     ? [
         { to: `/d/${dossierId}`, label: 'Aujourd’hui', end: true },
-        { to: `/d/${dossierId}/projet`, label: advisorView ? 'Projet' : 'Mon projet', end: false },
-        { to: `/d/${dossierId}/plan`, label: advisorView ? 'Plan' : 'Mon plan', end: false },
+        { to: `/d/${dossierId}/projet`, label: w.projectNav, end: false },
+        { to: `/d/${dossierId}/plan`, label: w.planNav, end: false },
         { to: '/aide', label: 'Aide', end: true },
       ]
     : [{ to: '/aide', label: 'Aide', end: true }]

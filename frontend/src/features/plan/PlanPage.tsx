@@ -6,6 +6,7 @@ import { formatDate, plural } from '../../shared/format'
 import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { useCurrentDossier } from '../dossiers/DossierLayout'
 import { isDetailed } from '../dossiers/guidance'
+import { words } from '../dossiers/roles'
 import { ACTION_TONE, LEVEL_TONE, useCreateAction, usePreparation, type Check, type PlanAction, type Template } from './api'
 
 export function TemplateNotice({ template }: { template: Template }) {
@@ -28,6 +29,7 @@ export function TemplateNotice({ template }: { template: Template }) {
 }
 
 export function CheckItem({ check, dossierId, detailed = true }: { check: Check; dossierId: number; detailed?: boolean }) {
+  const w = words(useCurrentDossier())
   return (
     <Card as="li">
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -47,7 +49,7 @@ export function CheckItem({ check, dossierId, detailed = true }: { check: Check;
       )}
       <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
         <Link to={`/d/${dossierId}/projet/${check.fact_key}`} className="font-medium text-brand-700 underline">
-          {check.level === 'a_completer' ? 'Compléter' : 'Mettre à jour'} : {check.fact_label}
+          {w.factLink(check.level === 'a_completer')} : {check.fact_label}
         </Link>
         {check.action && (
           <Link to={`/d/${dossierId}/plan/${check.action.id}`} className="font-medium text-brand-700 underline">
@@ -111,7 +113,7 @@ export function PlanPage() {
 
   return (
     <div className="space-y-6">
-      <PageTitle subtitle="Ce qu'il reste à vérifier, et les démarches pour y parvenir.">Mon plan</PageTitle>
+      <PageTitle subtitle="Ce qu'il reste à vérifier, et les démarches pour y parvenir.">{words(dossier).planTitle}</PageTitle>
       <TemplateNotice template={data.template} />
 
       <section aria-labelledby="points" className="space-y-3">

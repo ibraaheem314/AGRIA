@@ -6,6 +6,7 @@ import { formatDate, formatDateTime, formatDecimal, formatFcfa, plural } from '.
 import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { useCurrentDossier } from '../dossiers/DossierLayout'
 import { isDetailed } from '../dossiers/guidance'
+import { words } from '../dossiers/roles'
 import {
   useAddSuggestion,
   useBudget,
@@ -63,7 +64,7 @@ export function BudgetPage() {
 
   return (
     <div className="space-y-6">
-      <p><Link to={`/d/${dossier.id}/projet`} className="text-brand-700 underline">{dossier.role === 'conseiller' ? '← Projet' : '← Mon projet'}</Link></p>
+      <p><Link to={`/d/${dossier.id}/projet`} className="text-brand-700 underline">{words(dossier).backToProject}</Link></p>
       <PageTitle subtitle="Une estimation des dépenses de préparation et de campagne. Aucune recette ni rentabilité n’est calculée.">
         Budget provisoire
       </PageTitle>

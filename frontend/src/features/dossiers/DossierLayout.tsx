@@ -43,7 +43,7 @@ export function DossierLayout() {
       )}
       {d.role === 'conseiller' && (
         <Alert tone="info">
-          Vous consultez le dossier de {d.project.owner.display_name} en tant que conseiller : les informations du porteur sont en lecture seule.
+          Vous consultez le dossier de <strong>{d.project.owner.display_name}</strong> (« {d.project.name} », campagne « {d.label} ») en tant que conseiller : les informations du porteur sont en lecture seule.{!d.archived && ' Vous pouvez poser des questions, répondre et donner un avis.'}
         </Alert>
       )}
       {d.archived && (

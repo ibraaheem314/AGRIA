@@ -6,6 +6,7 @@ import { Alert, Button, ButtonLink, Card, PageTitle } from '../../shared/ui'
 import type { Dossier, FactItem } from './api'
 import { useCurrentDossier } from './DossierLayout'
 import { FactForm } from './FactEditPage'
+import { canEdit } from './roles'
 
 /**
  * Ordre de saisie proposé pas à pas : d'abord le lieu, l'accès au terrain et l'eau, dont dépendent
@@ -65,7 +66,7 @@ export function StepByStepPage() {
   const current = pending[0]
   const answered = facts.length - empty.length
   const unknown = facts.filter((f) => f.state.status === 'inconnu').length
-  const editable = dossier.role === 'porteur' && !dossier.archived
+  const editable = canEdit(dossier)
 
   useEffect(() => {
     if (!moveFocus.current) return
@@ -95,8 +96,10 @@ export function StepByStepPage() {
       <p className="no-print">
         <Link to={`/d/${dossier.id}/projet`} className="text-brand-700 underline">← Voir tout le projet</Link>
       </p>
-      <PageTitle subtitle="Une information à la fois. Vous pouvez reprendre plus tard : ce qui est enregistré est conservé.">
-        Renseigner mon projet pas à pas
+      <PageTitle
+        subtitle={editable ? 'Une information à la fois. Vous pouvez reprendre plus tard : ce qui est enregistré est conservé.' : undefined}
+      >
+        {editable ? 'Renseigner mon projet pas à pas' : 'Saisie pas à pas'}
       </PageTitle>
 
       <p className="text-sm text-muted">

@@ -7,6 +7,7 @@ import { formatDate, formatDateTime, todayInDakar } from '../../shared/format'
 import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { useCurrentDossier } from '../dossiers/DossierLayout'
 import { isDetailed } from '../dossiers/guidance'
+import { canEdit, words } from '../dossiers/roles'
 import { ACTION_TONE, preparationKey, useActionHistory, usePreparation, useUpdateAction, type ActionStatus, type PlanAction, type ResultOutcome } from './api'
 
 const OUTCOMES: { value: ResultOutcome; label: string; help: string }[] = [
@@ -41,7 +42,7 @@ export function ActionPage() {
 
   return (
     <div className="space-y-6">
-      <p><Link to={`/d/${dossier.id}/plan`} className="text-brand-700 underline">{dossier.role === 'conseiller' ? '← Plan' : '← Mon plan'}</Link></p>
+      <p><Link to={`/d/${dossier.id}/plan`} className="text-brand-700 underline">{words(dossier).backToPlan}</Link></p>
       <PageTitle subtitle={action.goal}>{action.title}</PageTitle>
       <p className="flex flex-wrap items-center gap-2">
         <Badge tone={ACTION_TONE[action.status]}>{action.status_label}</Badge>
@@ -279,14 +280,19 @@ function ActionHistory({ dossierId, actionId }: { dossierId: number; actionId: n
  */
 function NextStep({ dossier, action }: { dossier: ReturnType<typeof useCurrentDossier>; action: PlanAction }) {
   const fact = action.related_fact
-  const owner = dossier.role === 'porteur' && !dossier.archived
+  const owner = canEdit(dossier)
   if (!fact) {
     return (
       <Card>
-        <h2 className="font-semibold">Et maintenant ?</h2>
+        <h2 className="font-semibold">{owner ? 'Et maintenant ?' : 'Information liée'}</h2>
         <p className="mt-1 text-sm">
-          Cette démarche personnelle n'est liée à aucune information du dossier. Si son résultat change une information,
-          mettez-la à jour dans <Link to={`/d/${dossier.id}/projet`} className="underline">Mon projet</Link>.
+          Cette démarche personnelle n'est liée à aucune information du dossier.
+          {owner && (
+            <>
+              {' '}Si son résultat change une information, mettez-la à jour dans{' '}
+              <Link to={`/d/${dossier.id}/projet`} className="underline">Mon projet</Link>.
+            </>
+          )}
         </p>
       </Card>
     )
@@ -310,13 +316,13 @@ function NextStep({ dossier, action }: { dossier: ReturnType<typeof useCurrentDo
     incertain: 'Indiquez ce que vous savez maintenant, même partiel : le point peut rester ouvert.',
   }
   return (
-    <Card className="border-brand-700">
-      <h2 className="font-semibold">Et maintenant : mettre le dossier à jour</h2>
+    <Card className={owner ? 'border-brand-700' : ''}>
+      <h2 className="font-semibold">{owner ? 'Et maintenant : mettre le dossier à jour' : 'Information liée : point encore ouvert'}</h2>
       <p className="mt-1">
         Le résultat est enregistré, mais le point « {action.linked_check.message} » reste ouvert tant que l'information
         « {fact.label} » n'est pas mise à jour. Elle ne change jamais automatiquement.
       </p>
-      {action.result_outcome && <p className="mt-1 text-sm text-muted">{hint[action.result_outcome]}</p>}
+      {owner && action.result_outcome && <p className="mt-1 text-sm text-muted">{hint[action.result_outcome]}</p>}
       {owner ? (
         <Link
           to={`/d/${dossier.id}/projet/${fact.key}?depuis=${action.id}`}
@@ -325,9 +331,14 @@ function NextStep({ dossier, action }: { dossier: ReturnType<typeof useCurrentDo
           Mettre à jour : {fact.label}
         </Link>
       ) : (
-        <p className="mt-2 text-sm text-muted">
-          {dossier.archived ? 'Dossier archivé : plus de mise à jour possible.' : 'La mise à jour revient au porteur du projet.'}
-        </p>
+        <>
+          <p className="mt-2 text-sm text-muted">
+            {dossier.archived ? 'Dossier archivé : plus de mise à jour possible.' : 'La mise à jour revient au porteur du projet.'}
+          </p>
+          <Link to={`/d/${dossier.id}/projet/${fact.key}`} className="mt-1 inline-block text-sm font-medium text-brand-700 underline">
+            Consulter l’information : {fact.label}
+          </Link>
+        </>
       )}
     </Card>
   )
