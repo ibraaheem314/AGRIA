@@ -1,6 +1,6 @@
 # Guide d'interface
 
-Mise à jour : 12 octobre 2026 (parcours débutant). Ce guide décrit les conventions **appliquées dans le code** (`frontend/src`) et la façon dont elles sont vérifiées.
+Mise à jour : 12 octobre 2026 (écrans selon le rôle et priorité de l'accueil). Ce guide décrit les conventions **appliquées dans le code** (`frontend/src`) et la façon dont elles sont vérifiées.
 
 ## Navigation
 
@@ -8,6 +8,17 @@ Mise à jour : 12 octobre 2026 (parcours débutant). Ce guide décrit les conven
 - Le budget est une section du projet (`/d/:id/projet/budget`). La relecture et la synthèse sont accessibles depuis l'accueil.
 - Sur téléphone, la navigation est en bas de l'écran (cibles de 48 px de haut) ; sur ordinateur, sous l'en-tête.
 - Les adresses portent l'identifiant du dossier : un lien envoyé au conseiller ouvre le bon dossier.
+- Un lien vers une ancre (`#messages`, `#decisions`, `#donner-avis`) amène à la section et y place le focus une fois la page chargée.
+
+## Vocabulaire selon le rôle
+
+Déduit d'une seule règle, celle du serveur : seul le porteur d'un dossier non archivé modifie les informations, les démarches et le budget (`frontend/src/features/dossiers/roles.ts`). Aucun lien ne promet une modification que sa destination refuse.
+
+| Contexte | Titres et navigation | Lien vers une information | Actions propres |
+|---|---|---|---|
+| Porteur, dossier actif | « Mon projet », « Mon plan » | « Compléter » ou « Mettre à jour » | Toutes celles du porteur |
+| Porteur, dossier archivé | « Mon projet », « Mon plan » | « Consulter l'information » | Relire la synthèse, préparer une autre campagne |
+| Conseiller | « Projet », « Plan », titre « Plan du projet », retours « ← Projet » et « ← Plan du projet » ; bandeau nommant le porteur, le projet et la campagne | « Consulter l'information » | Poser une question, répondre, donner un avis |
 
 ## Accueil : une seule action principale
 
@@ -54,7 +65,10 @@ Conseiller (consultation) :
 | Saisie pas à pas (débutant) | Une information à la fois ; « Enregistrer et continuer », « Remettre à plus tard » (rien n'est enregistré) ; compte de saisie, sans pourcentage ; le focus va au titre de l'information suivante |
 | Postes à examiner (budget) | Liste facultative : « Ajouter au budget » (poste à chiffrer, sans quantité ni prix) ou « Laisser de côté » (réversible) |
 | Budget | Phrase complète : vide, incomplet (« ce n'est pas le coût total »), complet avec estimations, complet |
-| Avis | Conclusion, auteur, date, périmètre, version examinée ; « À jour » ou « À réexaminer » avec les sections modifiées |
+| Avis | Conclusion, auteur (conseiller), date, périmètre ; « À jour » ou « À réexaminer » avec les sections modifiées ; version examinée dans « Voir la version examinée » |
+| Question (pour la personne connectée) | « Attend votre réponse », « En attente d'une réponse », « Réponse reçue, question ouverte », « Vous avez répondu, question ouverte », « Résolue » : d'après le dernier message du fil ; une réponse ne clôt jamais une question ; aucun « non lu » (pas de suivi de lecture) |
+| Relecture | « Relecture demandée — aucun avis reçu depuis » seulement si aucun avis n'est postérieur à la demande ; sans conseiller : « aucune réponse ni aucun avis ne peut être promis » |
+| Décision | Dernière décision du porteur (poursuivre, modifier, différer) avec auteur, date et motif, distincte de l'avis ; « Poursuivre » n'est pas une approbation d'AGRIA ; « Le dossier a été modifié depuis cette décision » si ses versions ont changé (aucun statut de validité) |
 | Contenu | « Non relu par un spécialiste » visible sur le plan et dans la synthèse |
 | Démonstration | Bandeau « Exemple de démonstration » |
 | Envoi en cours | Bouton désactivé avec indicateur ; rien n'est annoncé comme enregistré |
@@ -89,6 +103,9 @@ La couleur accompagne toujours un texte : elle ne porte jamais seule un statut.
 | `e2e/qualite.spec.ts` | axe-core (WCAG 2.1 A/AA) sans violation grave ou critique, et pas de défilement horizontal à 360 px, sur 14 écrans dont un dossier rempli |
 | `e2e/parcours.spec.ts` | Clavier seul (ordinateur), hors connexion réel, session expirée, mot de passe erroné |
 | `e2e/pas-a-pas.spec.ts` | Saisie pas à pas, report distinct de « Je ne sais pas », reprise, protection de saisie, focus ; producteur en accès direct |
+| `e2e/accueil.spec.ts` | Une seule action principale (débutant, producteur, démarche en cours puis bloquée), dernière décision, invitation à relire les précisions, erreur de chargement sans faux « rien à faire » |
+| `e2e/roles.spec.ts` | Conseiller et dossier archivé : titres de consultation, aucun lien promettant une modification, refus serveur de l'écriture |
+| `e2e/echanges.spec.ts` | Qui doit agir : questions dans les deux sens, relances, réponse qui ne clôt pas, relecture demandée, avis à jour puis à réexaminer, destination des liens |
 | Autres fichiers `e2e/*.spec.ts` | Chaque parcours exécuté en vue ordinateur et en vue téléphone (Pixel 7) |
 
 ## Limites

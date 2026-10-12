@@ -115,25 +115,25 @@ Remove-Item Env:DB_NAME; cd ..
 | `demo-producteur@agria.invalid` | Producteur : campagne précédente archivée, nouvelle campagne au lieu « à revérifier », vue directe |
 | `demo-conseiller@agria.invalid` | Conseiller attribué au dossier du débutant |
 
-Utiliser une fenêtre de navigation privée par compte (ou se déconnecter entre deux rôles). Les dossiers portent le bandeau « Exemple de démonstration ».
+**Changer de rôle :** se déconnecter (« Se déconnecter ») avant de se connecter avec un autre compte, ou utiliser des **profils de navigateur distincts** (ou deux navigateurs différents). Plusieurs fenêtres privées d'un même navigateur partagent souvent la même session : la dernière connexion remplace alors la précédente dans toutes ces fenêtres. Les dossiers portent le bandeau « Exemple de démonstration ».
 
 ### Parcours de dix minutes
 
 | Temps | Rôle | Étapes | Résultat attendu |
 |---|---|---|---|
-| 0–3 min | Débutant | Ouvrir le dossier « Exemple fictif — maraîchage ». Lire Aujourd'hui, puis Mon plan | Carte « Renseigner mon projet pas à pas » (4 informations sur 11), prochaine démarche, points bloquants « Accès au terrain encore en discussion » et « Source d'eau inconnue » ; « Contenu générique — Non relu par un spécialiste » |
-| | | Ouvrir la démarche « Identifier une source d'eau utilisable » | Terminée, résultat « incertain » ; carte « Et maintenant : mettre le dossier à jour » : le point reste ouvert, rien n'a changé automatiquement |
-| | | « Mettre à jour : Accès à l'eau » → « Déclaré », source « Puits » → Enregistrer | Le résultat de la démarche est rappelé sans rien préremplir. Retour à la démarche avec « Point encore ouvert : Disponibilité de l'eau déclarée mais non vérifiée » |
-| | | Mon projet → Voir le budget provisoire | « Budget incomplet : 1 poste sans montant… ce n'est pas le coût total » ; postes à examiner proposés, sans prix |
-| 3–6 min | Conseiller | Mes dossiers → dossier du débutant (« Relecture demandée ») | Bandeau « lecture seule » ; navigation « Projet · Plan » |
-| | | Projet → Accès au terrain → « Poser une question sur cette information » → envoyer | « À propos de : Information « Accès au terrain » » puis « Message envoyé. » ; aucun bouton d'enregistrement sur les informations |
-| | | Relecture : « Rédiger un avis » → Contexte du projet, « Revu avec réserves », avis et réserves → enregistrer | « Avis enregistré. » |
-| 6–9 min | Débutant | Aujourd'hui | « Une question du conseiller attend votre réponse : « Accès au terrain » » et l'avis « Revu avec réserves » |
-| | | « Répondre au conseiller » → répondre. Puis Mon projet → Accès au terrain → modifier les précisions → Enregistrer | Réponse visible sous la question |
-| | | Relecture | L'avis est « À réexaminer » (« Modifié depuis cet avis : Contexte du projet ») |
-| | | Décision « Modifier le projet » avec un motif → Enregistrer, puis « Voir la synthèse du dossier » | « Décision enregistrée. » ; la synthèse reprend informations et statuts, démarches et résultat incertain, budget incomplet, avis (à jour ou à réexaminer), questions et décision |
-| 9–10 min | Producteur | Mes dossiers | Campagne active et « Dossiers archivés (consultation) » séparés |
-| | | Ouvrir « Prochaine contre-saison (exemple) » → Mon projet | Lieu et eau repris « Déclaré », avec « à revérifier pour cette campagne » et la source d'origine ; budget vide ; aucune démarche ni résultat repris ; accès direct à chaque information |
+| 0–3 min | Débutant | Ouvrir le dossier « Exemple fictif — maraîchage », lire Aujourd'hui | Une seule carte « À faire maintenant » (démarche « Confirmer l'accès au terrain pour toute la campagne ») ; « Aussi possible » : renseigner les informations restantes pas à pas ; « Échanges et relecture » : une question en attente d'une réponse du conseiller, relecture demandée sans avis reçu |
+| | | Mon plan → démarche « Identifier une source d'eau utilisable » | Terminée, résultat « incertain » ; « Et maintenant : mettre le dossier à jour » : rien n'a changé automatiquement |
+| | | « Mettre à jour : Accès à l'eau » → « Déclaré », source « Puits » → Enregistrer | Le résultat de la démarche est rappelé sans rien préremplir ; retour à la démarche avec « Point encore ouvert : Disponibilité de l'eau déclarée mais non vérifiée » |
+| | | Budget (depuis le résumé de l'accueil) | « Budget incomplet… ce n'est pas le coût total » ; postes à examiner, sans prix |
+| 3–6 min | Conseiller | Se déconnecter, se connecter en conseiller. Mes dossiers | Badges « 1 question attend votre réponse » et « Relecture demandée » |
+| | | Ouvrir le dossier | Bandeau nommant le porteur, le projet et la campagne ; « À faire maintenant » : répondre à la question du porteur ; « Aussi possible » : examiner le dossier et rédiger un avis ; navigation « Projet · Plan » |
+| | | Plan → titre « Plan du projet » ; liens « Consulter l'information » ; ouvrir « Accès au terrain » → « Poser une question sur cette information » → envoyer | Aucun lien « Compléter » ou « Mettre à jour » ; « À propos de : Information « Accès au terrain » » puis « Message envoyé. » |
+| | | Relecture : répondre à la question du porteur, puis « Rédiger un avis » → Contexte du projet, « Revu avec réserves », avis et réserves → enregistrer | « Avis enregistré. » ; la question du porteur passe à « Vous avez répondu, question ouverte » |
+| 6–9 min | Débutant | Se déconnecter, se reconnecter en débutant. Aujourd'hui | « À faire maintenant · Une réponse est attendue de vous » ; « Échanges et relecture » : réponse reçue à votre question (encore ouverte), dernier avis « Revu avec réserves » « À jour » |
+| | | « Répondre au conseiller » → répondre. Puis Mon projet → Accès au terrain → modifier les précisions → Enregistrer | La page s'ouvre sur les échanges ; réponse visible sous la question |
+| | | Relecture → décision « Modifier le projet » avec un motif → Enregistrer, puis Aujourd'hui et la synthèse | Avis « À réexaminer » ; à l'accueil, « Dernière décision du porteur : Modifier le projet » avec auteur, date et motif ; la synthèse reprend informations, démarches, budget incomplet, avis et décision |
+| 9–10 min | Producteur | Se déconnecter, se connecter en producteur. Mes dossiers | Campagne active et « Dossiers archivés (consultation) » séparés |
+| | | Ouvrir « Prochaine contre-saison (exemple) » → Mon projet | Lieu et eau repris « Déclaré », « à revérifier pour cette campagne » ; budget vide ; aucune démarche ni résultat repris ; accès direct à chaque information |
 
 Facultatif : pour voir le pas-à-pas depuis le début, créer un compte (« Créer un compte ») puis un projet « Je prépare ma première campagne ».
 

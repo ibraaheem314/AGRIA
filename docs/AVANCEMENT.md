@@ -495,3 +495,35 @@ Recette isolée : base `agria_e2e` recréée à chaque lancement (ports 8001 et 
 - La compréhension par de vrais utilisateurs **n'est pas validée** par cette inspection : les questions de retour du fondateur sont dans [DEMARRAGE.md](DEMARRAGE.md).
 - Contenu agronomique et listes d'aide non relus par un spécialiste.
 - Parcours de démonstration vérifié en vue ordinateur seulement sur les données de `seed_demo` ; les mêmes écrans ont été vus à 390 px dans les parcours A et B.
+
+# Écrans selon le rôle et priorité de l'accueil (12/10/2026)
+
+Finition ciblée à partir des captures du fondateur. Essais sur `agria_e2e` (ports 8001 et 5174) avec des données fictives ; base de travail, AgriCool, `agria_demo` et serveurs 8000/5173 et 8002/5175 non touchés.
+
+| Lot | Écarts constatés | Livré | Commit |
+|---|---|---|---|
+| 1. Libellés selon le rôle | Le conseiller voyait « Mon plan » et « Mettre à jour : Accès au terrain » vers une page en lecture seule | Vocabulaire déduit de la règle du serveur (`roles.ts`) : « Plan du projet », « Consulter l'information », bandeau nommant porteur, projet et campagne ; dossier archivé en vocabulaire de consultation | `d7567e3` |
+| 2. Une priorité sur l'accueil | « Continuer là où j'en étais » à côté d'une autre « prochaine action » ; démarche sur l'eau proposée puis « À renseigner d'abord : Accès au terrain » ; liens `#messages` ouvrant le haut de page | Table de décision (INTERFACE.md) appliquée par un calcul unique (`priority.ts`) ; une carte « À faire maintenant », le reste dans « Aussi possible » ; la démarche « peut avancer en parallèle de la saisie » ; ancres atteintes avec focus | `deff245` |
+| 3. Qui doit agir | « Aucun retour pour le moment » malgré une relecture demandée ; « En attente de votre part » comptant des questions qui n'attendaient pas la personne connectée | État de chaque question calculé par le serveur pour la personne connectée (dernier message du fil, relances, réponse qui ne clôt pas, aucun « non lu ») ; compteurs par rôle ; carte « Échanges et relecture » ; accueil conseiller centré sur ses interventions | `8a173f6` |
+| 4. Décisions et allègement | Décision « Modifier » ou « Poursuivre » absente de l'accueil | Dernière décision du porteur avec auteur, date, motif, distincte de l'avis ; « Poursuivre » n'est pas une approbation ; « modifié depuis » factuel ; accueil réduit (résumé unique, guide replié, détails techniques en second niveau) ; invitation à relire précisions et source | `7f19034` |
+| 5. Scénarios et inspection | Accord « Signalée(s) », décision repoussant l'action principale hors du premier écran à 390 px, bandeau d'archivage en double, démarche bloquée listée deux fois | Corrigés ; tests ajoutés | `1aef2eb` |
+
+### Vérifications exécutées
+
+- Tests ajoutés : `roles.spec`, `accueil.spec` (6 scénarios), `echanges.spec`, tests serveur des états de question et des compteurs (`test_relecture`).
+- Inspection au navigateur (script temporaire supprimé, captures hors dépôt) : débutant, producteur, conseiller, dossier archivé, en 1280 px et 390 px ; premier écran examiné ; destination et résultat de chaque bouton principal vérifiés (pas-à-pas, information, échange avec focus, formulaire d'avis).
+- Guide de démonstration rejoué sur les données de `seed_demo` (vue ordinateur) : chaque résultat attendu observé.
+
+| Commande (Python 3.14.8, révision `1aef2eb`) | Résultat |
+|---|---|
+| `backend\.venv\Scripts\python scripts\dev.py check --e2e` | ruff, format, migrations à jour, **169 pytest**, eslint, TypeScript, build ; Playwright **69 réussis**, 1 ignoré (clavier physique sur téléphone) |
+
+`recette.py` non relancé : ni persistance, ni migration, ni script concerné n'a changé.
+
+### Limites et décisions ouvertes
+
+- Compréhension par de vrais utilisateurs **non validée**.
+- L'ordre de priorité de l'accueil est un choix de présentation (documenté) ; il n'interdit aucune action et ne repose sur aucune dépendance agronomique.
+- Le bandeau du conseiller occupe une part notable du premier écran à 390 px.
+- Sans suivi de lecture, une réponse reçue n'est jamais présentée comme « nouvelle ».
+- Les compteurs de « Mes dossiers » sont calculés à chaque affichage de la liste (peu de dossiers aujourd'hui ; à surveiller si le nombre augmente).
