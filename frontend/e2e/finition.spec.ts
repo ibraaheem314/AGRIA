@@ -142,7 +142,9 @@ test.describe('T-02 : dossiers archivés et différés', () => {
     await page.goto(`/d/${id}`)
     await expect(page.getByRole('heading', { name: 'Projet différé' })).toBeVisible()
     await expect(page.getByText('Eau non garantie en saison sèche.')).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Si vous reprenez la préparation' })).toBeVisible()
+    // La décision est rappelée avant la reprise ; une seule action principale.
+    await expect(page.getByRole('heading', { name: 'Reprendre la préparation' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Enregistrer une nouvelle décision' })).toBeVisible()
   })
 })
 
@@ -153,7 +155,7 @@ test.describe('T-03 : accompagnement selon le profil, même moteur', () => {
     await setUnknownWater(page, id)
     await page.goto(`/d/${id}`)
     await expect(page.getByRole('heading', { name: 'Comment avancer' })).toBeVisible()
-    await expect(page.getByText(/^Pourquoi \? Sans eau identifiée/)).toBeVisible()
+    await expect(page.getByText(/Sans eau identifiée.*Elle peut avancer en parallèle de la saisie\./)).toBeVisible()
 
     const ctx = await browser.newContext()
     const prod = await ctx.newPage()
@@ -162,7 +164,10 @@ test.describe('T-03 : accompagnement selon le profil, même moteur', () => {
     await setUnknownWater(prod, pid)
     await prod.goto(`/d/${pid}`)
     await expect(prod.getByRole('heading', { name: 'Comment avancer' })).toHaveCount(0)
-    await expect(prod.getByRole('link', { name: 'Ouvrir la démarche' })).toBeVisible()
+    // Vue directe : l'information bloquante d'abord, la démarche reste accessible, sans justification.
+    await expect(prod.getByRole('link', { name: 'Compléter cette information' })).toBeVisible()
+    await expect(prod.getByRole('link', { name: "Identifier une source d'eau utilisable" })).toBeVisible()
+    await expect(prod.getByText(/Sans eau identifiée/)).toHaveCount(0)
     await prod.goto(`/d/${pid}/plan`)
     // Même point à vérifier, justification repliée.
     await expect(prod.getByRole('heading', { name: "Source d'eau inconnue" })).toBeVisible()

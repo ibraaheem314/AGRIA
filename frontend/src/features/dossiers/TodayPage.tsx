@@ -6,6 +6,7 @@ import { useRelecture } from '../reviews/api'
 import { useCurrentDossier } from './DossierLayout'
 import { isDetailed } from './guidance'
 import { BudgetCard, factCounts } from './ProjectPage'
+import { ownerHome, type HomePlan } from './priority'
 
 /** Accueil : prochaine démarche, points bloquants, état du dossier, retours disponibles. */
 export function TodayPage() {
@@ -17,12 +18,10 @@ export function TodayPage() {
   const active = owner && !dossier.archived
   const detailed = isDetailed(dossier)
 
-  const nextAction = prep.data?.actions.find((a) => a.id === prep.data?.next_action_id)
   // Les informations vides bloquantes sont regroupées : la liste ne répète pas « non renseigné ».
   const blockingChecks = prep.data?.checks.filter((c) => c.blocking && c.level !== 'a_completer') ?? []
   const blockingEmpty = prep.data?.checks.filter((c) => c.blocking && c.level === 'a_completer') ?? []
   const blockedActions = prep.data?.actions.filter((a) => a.status === 'bloquee') ?? []
-  const nextFact = dossier.facts.find((f) => f.state.status === 'non_renseigne')
   const deferral = dossier.status.code === 'differe' ? relecture.data?.decisions.find((d) => d.choice === 'differer') : undefined
   const starting = ['brouillon', 'a_completer'].includes(dossier.status.code)
   // Échanges qui demandent l'attention du porteur : questions du conseiller sans réponse de sa part,
@@ -34,8 +33,9 @@ export function TodayPage() {
   const answered = threads.filter(
     (m) => m.kind === 'question' && m.author_role === 'porteur' && !m.resolved_at && m.replies.some((r) => r.author_role === 'conseiller'),
   )
-  // Débutant : la saisie pas à pas est l'action principale tant qu'il reste des informations vides.
   const stepByStep = active && dossier.project.profile === 'debutant' && counts.non_renseigne > 0
+  // Action principale : une seule, calculée à un seul endroit, une fois le plan et les échanges lus.
+  const home = prep.data && !relecture.isPending ? ownerHome(dossier, prep.data, toAnswer.length) : null
 
   return (
     <div className="space-y-4">
@@ -61,31 +61,13 @@ export function TodayPage() {
           ) : (
             <p className="mt-1">Une décision de différer ce projet est enregistrée.</p>
           )}
-          <p className="mt-2 text-sm text-muted">
-            Le dossier reste modifiable. {owner ? 'Pour reprendre la préparation, enregistrez une nouvelle décision dans ' : 'Voir '}
-            <Link to={`/d/${dossier.id}/relecture`} className="text-brand-700 underline">Relecture et échanges</Link>.
-          </p>
+          <p className="mt-2 text-sm text-muted">Le dossier reste modifiable.</p>
         </Card>
       )}
 
       {!owner && <AdvisorPending dossierId={dossier.id} />}
 
-      {stepByStep && (
-        <Card className="border-brand-700">
-          <h2 className="font-semibold">Renseigner mon projet pas à pas</h2>
-          <p className="mt-1">
-            Une information à la fois, en commençant par le lieu, l'accès au terrain et l'eau. « Je ne sais pas » est une
-            réponse acceptée ; vous pouvez aussi remettre une question à plus tard.
-          </p>
-          <p className="mt-1 text-sm text-muted">
-            {plural(counts.total - counts.non_renseigne, 'information a', 'informations ont')} une réponse enregistrée
-            sur {counts.total}.
-          </p>
-          <ButtonLink to={`/d/${dossier.id}/projet/pas-a-pas`} className="mt-3">
-            {counts.non_renseigne === counts.total ? 'Commencer' : 'Continuer là où j’en étais'}
-          </ButtonLink>
-        </Card>
-      )}
+      {active && home && <HomeActions plan={home} dossierId={dossier.id} />}
 
       {active && detailed && starting && (
         <Card>
@@ -104,38 +86,13 @@ export function TodayPage() {
         </Card>
       )}
 
-      {active && !(stepByStep && !nextAction) && (
-        <Card>
-          <h2 className="font-semibold">{dossier.status.code === 'differe' ? 'Si vous reprenez la préparation' : 'Ma prochaine action'}</h2>
-          {nextAction ? (
-            <>
-              <p className="mt-1 font-medium">{nextAction.title}</p>
-              {detailed && nextAction.explanation && <p className="text-sm text-muted">Pourquoi ? {nextAction.explanation}</p>}
-              <Link to={`/d/${dossier.id}/plan/${nextAction.id}`} className="mt-2 inline-block font-medium text-brand-700 underline">
-                {detailed ? 'Voir les étapes' : 'Ouvrir la démarche'}
-              </Link>
-            </>
-          ) : nextFact ? (
-            <>
-              <p className="mt-1 font-medium">Compléter : {nextFact.label}</p>
-              {detailed && <p className="text-sm text-muted">Pourquoi ? {nextFact.why}</p>}
-              <Link to={`/d/${dossier.id}/projet/${nextFact.key}`} className="mt-2 inline-block font-medium text-brand-700 underline">
-                Compléter cette information
-              </Link>
-              {detailed && <p className="mt-1 text-sm text-muted">« Je ne sais pas » est une réponse acceptée.</p>}
-            </>
-          ) : (
-            prep.isSuccess && <p className="mt-1 text-muted">Aucune démarche ouverte pour l'instant.</p>
-          )}
-        </Card>
-      )}
-
       {prep.isSuccess && (
         <Card>
           <h2 className="font-semibold">{dossier.archived ? 'Points restés ouverts à l’archivage' : 'Points bloquants'}</h2>
           {blockingEmpty.length > 0 && (
             <p className="mt-1">
-              À renseigner d'abord : {blockingEmpty.map((c) => c.fact_label).join(', ')}.{' '}
+              {blockingEmpty.length === 1 ? 'Information bloquante non renseignée' : 'Informations bloquantes non renseignées'} :{' '}
+              {blockingEmpty.map((c) => c.fact_label).join(', ')}.{' '}
               {active && (
                 <Link
                   to={stepByStep ? `/d/${dossier.id}/projet/pas-a-pas` : `/d/${dossier.id}/projet/${blockingEmpty[0]!.fact_key}`}
@@ -280,5 +237,48 @@ function AdvisorPending({ dossierId }: { dossierId: number }) {
         Relecture et échanges
       </Link>
     </Card>
+  )
+}
+
+/** Une seule action mise en avant ; les autres restent accessibles juste dessous. */
+function HomeActions({ plan, dossierId }: { plan: HomePlan; dossierId: number }) {
+  const { primary, secondary } = plan
+  return (
+    <>
+      {primary ? (
+        <Card className="border-brand-700 ring-1 ring-brand-700">
+          <p className="text-sm font-medium text-brand-800">À faire maintenant · {primary.heading}</p>
+          <h2 className="mt-1 text-lg font-semibold">{primary.title}</h2>
+          {primary.why && <p className="mt-1 text-sm text-muted">{primary.why}</p>}
+          <ButtonLink to={primary.to} className="mt-3">{primary.label}</ButtonLink>
+        </Card>
+      ) : (
+        <Card>
+          <h2 className="font-semibold">Aucune démarche ouverte pour l’instant</h2>
+          <p className="mt-1 text-sm text-muted">
+            Les démarches apparaissent quand une information est inconnue ou reste à vérifier. Vous pouvez compléter le
+            budget provisoire ou demander une relecture.
+          </p>
+          <p className="mt-2 flex flex-wrap gap-x-4">
+            <Link to={`/d/${dossierId}/projet/budget`} className="font-medium text-brand-700 underline">Budget provisoire</Link>
+            <Link to={`/d/${dossierId}/relecture`} className="font-medium text-brand-700 underline">Relecture et échanges</Link>
+          </p>
+        </Card>
+      )}
+      {secondary.length > 0 && (
+        <section aria-labelledby="aussi-possible" className="rounded-lg border border-line bg-surface p-4">
+          <h2 id="aussi-possible" className="font-semibold">Aussi possible</h2>
+          <ul className="mt-2 space-y-2">
+            {secondary.map((a) => (
+              <li key={a.key}>
+                <span className="text-sm text-muted">{a.heading} : </span>
+                <Link to={a.to} className="font-medium text-brand-700 underline">{a.title}</Link>
+                {a.why && <span className="block text-sm text-muted">{a.why}</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </>
   )
 }

@@ -2,6 +2,7 @@ import { useRef, useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { ApiError, newRequestId } from '../../shared/api'
 import { useUnsavedChanges } from '../../shared/unsaved'
+import { useScrollToHash } from '../../shared/hash'
 import { formatDateTime } from '../../shared/format'
 import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { useCurrentDossier } from '../dossiers/DossierLayout'
@@ -26,6 +27,7 @@ import { usePreparation } from '../plan/api'
 export function RelecturePage() {
   const dossier = useCurrentDossier()
   const relecture = useRelecture(dossier.id)
+  useScrollToHash(relecture.isSuccess)
   if (relecture.isPending) return <Loading label="Chargement de la relecture…" />
   if (relecture.isError) return <Alert tone="danger" role="alert" title="Relecture indisponible">{relecture.error.message}</Alert>
   const data = relecture.data

@@ -7,8 +7,7 @@ test('débutant : pas à pas, report distinct de « Je ne sais pas », reprise s
   await register(page, 'Awa')
   const id = await createProject(page)
   await page.goto(`/d/${id}`)
-  await expect(page.getByRole('heading', { name: 'Renseigner mon projet pas à pas' })).toBeVisible()
-  await page.getByRole('link', { name: 'Commencer' }).click()
+  await page.getByRole('link', { name: 'Commencer pas à pas' }).click()
 
   // L'ordre commence par le lieu ; l'avancement parle de saisie, pas de faisabilité.
   await expect(stepHeading(page)).toHaveText('Localisation du terrain')
@@ -46,8 +45,8 @@ test('débutant : pas à pas, report distinct de « Je ne sais pas », reprise s
 
   // Reprise : on repart de ce qui est enregistré, l'information remise à plus tard est sautée.
   await page.goto(`/d/${id}`)
-  await expect(page.getByText('3 informations ont une réponse enregistrée sur 11.')).toBeVisible()
-  await page.getByRole('link', { name: 'Continuer là où j’en étais' }).click()
+  await expect(page.getByRole('heading', { name: '8 informations à renseigner' })).toBeVisible()
+  await page.getByRole('link', { name: 'Continuer pas à pas' }).click()
   await expect(stepHeading(page)).toHaveText('Période envisagée')
 
   // Vue complète : reporté = non renseigné ; « Je ne sais pas » = réponse enregistrée.
@@ -74,7 +73,7 @@ test('producteur : accès direct, pas de pas-à-pas imposé', async ({ page }) =
   await register(page, 'Moussa')
   const id = await createProject(page, { situation: 'Je prépare ma prochaine campagne' })
   await page.goto(`/d/${id}`)
-  await expect(page.getByRole('heading', { name: 'Renseigner mon projet pas à pas' })).toHaveCount(0)
+  await expect(page.getByRole('link', { name: /pas à pas/ })).toHaveCount(0)
   await page.goto(`/d/${id}/projet`)
   await expect(page.getByRole('link', { name: /Renseigner pas à pas/ })).toHaveCount(0)
   await expect(page.getByRole('link', { name: /Compléter : Accès à l'eau/ })).toBeVisible()

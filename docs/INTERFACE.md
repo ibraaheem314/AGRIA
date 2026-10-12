@@ -9,6 +9,38 @@ Mise à jour : 12 octobre 2026 (parcours débutant). Ce guide décrit les conven
 - Sur téléphone, la navigation est en bas de l'écran (cibles de 48 px de haut) ; sur ordinateur, sous l'en-tête.
 - Les adresses portent l'identifiant du dossier : un lien envoyé au conseiller ouvre le bon dossier.
 
+## Accueil : une seule action principale
+
+Calculée à un seul endroit (`frontend/src/features/dossiers/priority.ts`) à partir du plan, des informations et des échanges déjà chargés. Une seule carte porte la priorité visuelle ; les autres actions utiles restent listées dessous (« Aussi possible »). Aucune dépendance agronomique n'est inventée : l'ordre est un choix de présentation qui n'interdit aucune action.
+
+Porteur, dans l'ordre d'évaluation :
+
+| Situation observée | Action principale | Actions secondaires | Justification |
+|---|---|---|---|
+| Données en chargement | Aucune (indicateur) | — | Ne rien affirmer avant d'avoir lu le dossier |
+| Plan ou échanges indisponibles | Aucune ; message d'erreur et « Réessayer » | Navigation habituelle | Jamais de faux « rien à faire » ni « aucun retour » |
+| Dossier archivé | « Relire la synthèse » (consultation) | Préparer une autre campagne | Plus aucune modification possible |
+| Projet différé | Rappel de la décision (auteur, date, motif), puis « Enregistrer une nouvelle décision » pour reprendre | La démarche ou la saisie qui reprendrait, présentée comme « si vous reprenez » | La décision est rappelée avant toute reprise |
+| Question du conseiller attendant la réponse du porteur | « Répondre au conseiller » | Démarche ou saisie en cours ; points bloquants toujours affichés | Une personne attend ; répondre la débloque |
+| Démarche en cours | « Continuer : [démarche] » | Informations à renseigner, autres démarches | Reprendre ce qui est commencé |
+| Information bloquante non renseignée | Renseigner : pas-à-pas (débutant) ou « Compléter : [information] » (producteur) | Démarche disponible, présentée comme pouvant avancer en parallèle | Les règles marquent cette information comme bloquante ; la démarche n'en dépend pas dans le plan |
+| Démarche disponible (à faire, préalables terminés) | « Ouvrir la démarche » | Informations encore à renseigner (débutant : pas-à-pas) | Avancer sur un point déjà signalé |
+| Seules des démarches bloquées restent | « Faire le point : [démarche bloquée] » | Informations à renseigner | Le blocage est l'élément à traiter |
+| Informations non bloquantes à renseigner, aucune démarche | Renseigner (pas-à-pas ou « Compléter ») | Budget, relecture | D'autres points peuvent apparaître |
+| Rien de ce qui précède | Aucune action imposée : « Aucune démarche ouverte » | Budget, relecture, synthèse | Ne pas inventer de tâche |
+
+Avis disponible ou à réexaminer, demande de relecture sans avis : affichés dans « Échanges et relecture », jamais comme action principale du porteur (l'avis est une information, pas une tâche).
+
+Conseiller (consultation) :
+
+| Situation observée | Action principale | Actions secondaires | Justification |
+|---|---|---|---|
+| Dossier archivé | « Relire la synthèse » | — | Consultation seulement |
+| Question du porteur attendant sa réponse | « Répondre » (vers l'échange) | Examiner le dossier, rédiger un avis | Une personne attend |
+| Relecture demandée sans avis depuis | « Examiner le dossier et rédiger un avis » | Consulter les échanges | Demande explicite du porteur |
+| Dernier avis à réexaminer (dossier modifié depuis) | « Réexaminer et rédiger un avis » | Consulter les échanges | L'avis porte sur une version antérieure |
+| Rien de ce qui précède | Aucune action imposée : « Aucune intervention attendue » | Consulter le projet, le plan, les échanges | Ne pas inventer de tâche |
+
 ## États à toujours distinguer
 
 | État | Présentation |

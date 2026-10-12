@@ -41,8 +41,10 @@ function Layout() {
   useEffect(() => {
     if (lastPath.current === location.pathname) return
     lastPath.current = location.pathname
+    // Une adresse avec ancre place le focus sur sa cible (voir shared/hash.ts).
+    if (location.hash) return
     mainRef.current?.focus()
-  }, [location.pathname])
+  }, [location.pathname, location.hash])
   const logout = useLogout()
   const navigate = useNavigate()
   const match = useMatch('/d/:dossierId/*')
