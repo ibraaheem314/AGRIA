@@ -631,3 +631,11 @@ Le serveur reste la source de vérité. Le prototype (`frontend/prototype`) rest
 
 - **Idée du projet en une phrase : retirée du parcours intégré.** Aucune règle ni aucun écran n'en a besoin au-delà de l'affichage, et le nom du projet, déjà obligatoire, en tient lieu d'intitulé. Pas de nouveau champ ni de migration sans besoin démontré ; à réexaminer si l'essai en montre l'utilité.
 - **Informations reprises à reconfirmer : traitées en UX3-B** (reprise de campagne producteur). La boucle débutant n'en dépend pas. Aucune règle ne sera fondée sur le texte de la source : en UX3-B, un indicateur explicite posé par la création de campagne et retiré au prochain enregistrement de l'information, ou une lecture de l'historique des révisions, sera à choisir.
+
+### Contenu de préparation v2 : « Pluie seulement »
+
+Défaut confirmé : en v1, une eau « Pluie seulement » déclarée ou estimée déclenchait « Confirmer la disponibilité de l'eau », dont l'étape invite à interroger « le gestionnaire ou les utilisateurs actuels » ; vérifiée, elle ne signalait plus rien. Correction par une **nouvelle version du contenu** (`preparation-generique.v2.json`, toujours **non relue**) : une règle ajoutée pour la source « pluie » (point « Eau de pluie seulement : disponibilité à examiner localement », quel que soit l'état de l'information, même vérifiée) et une démarche ajoutée, « Faire examiner localement une campagne qui dépend de la pluie », qui renvoie à un avis local sans calendrier des pluies, quantité d'eau ni prescription. Les autres règles et démarches sont identiques à la v1 ; une source inconnue reste une inconnue, une source gérée (forage, puits, réseau, bassin, cours d'eau) garde la démarche de confirmation.
+
+- **Nouveaux dossiers :** rattachés à la v2 dès que `load_content` l'a chargée (dernière version active).
+- **Dossiers existants :** restent rattachés à la version de leur création (v1) ; leurs règles, démarches, résultats et historiques ne sont pas réécrits, et la correction ne s'y applique pas. Pour en bénéficier, préparer une nouvelle campagne du projet (rattachée à la v2). Aucun outil de migration de contenu n'est créé.
+- **Base de travail :** `manage.py load_content` charge la v2 (sans effet sur les dossiers existants) ; opération laissée au fondateur.

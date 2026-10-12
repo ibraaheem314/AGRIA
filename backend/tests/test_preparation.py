@@ -17,6 +17,7 @@ from tests.conftest import new_project
 pytestmark = pytest.mark.django_db
 
 SOURCE = content_store.CONTENT_DIR / "preparation-generique.v1.json"
+PUBLISHED = len(list(content_store.CONTENT_DIR.glob("*.json")))
 
 
 @pytest.fixture(autouse=True)
@@ -97,12 +98,12 @@ def test_version_publiee_non_modifiable(tmp_path):
     # Recharger le fichier publié tel quel est sans effet.
     _, created = content_store.load_file(SOURCE)
     assert created is False
-    assert PreparationTemplate.objects.count() == 1
+    assert PreparationTemplate.objects.count() == PUBLISHED
 
 
 def test_commande_load_content_idempotente():
     call_command("load_content")
-    assert PreparationTemplate.objects.count() == 1
+    assert PreparationTemplate.objects.count() == PUBLISHED
 
 
 # --- Points à vérifier ---------------------------------------------------------------------
@@ -292,16 +293,20 @@ def test_demarche_personnelle_sans_doublon(porteur, dossier):
     assert [a["title"] for a in data["actions"] if a["custom"]] == ["Demander un devis de clôture"]
 
 
+def next_version() -> int:
+    return PreparationTemplate.objects.order_by("-version").first().version + 1
+
+
 def test_modele_fige_pour_un_dossier_existant(porteur, dossier):
-    prep(porteur, dossier)
+    initial = prep(porteur, dossier)["template"]["version"]
     content = copy.deepcopy(base_content())
-    content["version"] = 2
+    content["version"] = version = next_version()
     PreparationTemplate.objects.create(
-        code=content["code"], version=2, title=content["title"], review_status="non_relu",
+        code=content["code"], version=version, title=content["title"], review_status="non_relu",
         content=content, content_sha256=content_store.digest(content),
     )  # fmt: skip
-    assert prep(porteur, dossier)["template"]["version"] == 1
-    assert prep(porteur, new_project(porteur))["template"]["version"] == 2
+    assert prep(porteur, dossier)["template"]["version"] == initial
+    assert prep(porteur, new_project(porteur))["template"]["version"] == version
 
 
 # --- Permissions ---------------------------------------------------------------------------
@@ -376,10 +381,11 @@ def test_publication_d_une_version_relue_sans_migration_silencieuse(porteur, dos
     """Lot 5 : une v2 relue ne s'applique qu'aux nouveaux dossiers ; l'existant reste en v1."""
     put_info(porteur, dossier, "eau", "inconnu")
     before = prep(porteur, dossier)
+    initial = before["template"]["version"]
     eau_v1 = next(c for c in before["checks"] if c["fact_key"] == "eau")
 
     content = base_content()
-    content["version"] = 2
+    content["version"] = version = next_version()
     content["review"] = {
         "status": "relu",
         "reviewer": "Relecteur (exemple de test)",
@@ -389,13 +395,13 @@ def test_publication_d_une_version_relue_sans_migration_silencieuse(porteur, dos
     for check in content["checks"]:
         if check["key"] == "eau":
             check["rules"][1]["message"] = "Message reformulé en v2"
-    path = tmp_path / "preparation-generique.v2.json"
+    path = tmp_path / f"preparation-generique.v{version}.json"
     path.write_text(json.dumps(content), encoding="utf-8")
     template, created = content_store.load_file(path)
     assert created and template.review_status == "relu"
 
     after = prep(porteur, dossier)
-    assert after["template"]["version"] == 1
+    assert after["template"]["version"] == initial
     assert after["template"]["review_status"] == "non_relu"  # pas présenté comme relu
     eau_after = next(c for c in after["checks"] if c["fact_key"] == "eau")
     assert eau_after["message"] == eau_v1["message"]  # règles v1 conservées
@@ -405,7 +411,7 @@ def test_publication_d_une_version_relue_sans_migration_silencieuse(porteur, dos
     fresh = new_project(porteur, name="Dossier créé après publication")
     put_info(porteur, fresh, "eau", "inconnu")
     data = prep(porteur, fresh)
-    assert data["template"]["version"] == 2
+    assert data["template"]["version"] == version
     assert data["template"]["reviewer"] == "Relecteur (exemple de test)"
     assert next(c for c in data["checks"] if c["fact_key"] == "eau")["message"] == (
         "Message reformulé en v2"
@@ -488,3 +494,57 @@ def test_demarche_personnelle_sans_information_liee(porteur, dossier):
                  {"title": "Demander un devis", "request_id": str(uuid.uuid4())})  # fmt: skip
     custom = next(a for a in prep(porteur, dossier)["actions"] if a["custom"])
     assert custom["related_fact"] is None and custom["linked_check"] is None
+
+
+# --- UX3-A : pertinence des démarches sur l'eau (contenu v2) -----------------------------------
+
+
+def eau_check(data):
+    return next(c for c in data["checks"] if c["fact_key"] == "eau")
+
+
+def test_pluie_seulement_n_appelle_pas_un_gestionnaire_de_source(porteur, dossier):
+    assert prep(porteur, dossier)["template"]["version"] == 2
+    put_info(porteur, dossier, "eau", "declare", {"source": "pluie"})
+    data = prep(porteur, dossier)
+    check = eau_check(data)
+    assert check["message"] == "Eau de pluie seulement : disponibilité à examiner localement"
+    assert check["level"] == "a_clarifier"
+    keys = {a["definition_key"] for a in data["actions"]}
+    assert "examiner-eau-pluie" in keys
+    assert "confirmer-eau" not in keys
+    steps = " ".join(action(data, "examiner-eau-pluie")["steps"]).lower()
+    assert "gestionnaire" not in steps
+    # « Vérifié » ne règle pas la question : le point reste ouvert.
+    put_info(porteur, dossier, "eau", "verifie", {"source": "pluie"}, source="Saison passée")
+    assert eau_check(prep(porteur, dossier))["message"].startswith("Eau de pluie seulement")
+
+
+def test_source_geree_et_source_inconnue_inchangees(porteur, dossier):
+    put_info(porteur, dossier, "eau", "inconnu")
+    data = prep(porteur, dossier)
+    assert eau_check(data)["message"] == "Source d'eau inconnue"
+    assert action(data, "identifier-eau")
+    put_info(porteur, dossier, "eau", "declare", {"source": "forage"})
+    data = prep(porteur, dossier)
+    assert eau_check(data)["message"] == "Disponibilité de l'eau déclarée mais non vérifiée"
+    assert action(data, "confirmer-eau")
+
+
+def test_dossier_rattache_a_la_v1_garde_ses_regles_et_ses_demarches(porteur, dossier):
+    """Un dossier créé avant la v2 reste sur la v1 : rien n'est réécrit ni appliqué en silence."""
+    from preparation.models import CampaignPlan
+
+    prep(porteur, dossier)
+    v1 = PreparationTemplate.objects.get(code="preparation-generique", version=1)
+    CampaignPlan.objects.filter(campaign_id=dossier["id"]).update(template=v1)
+    put_info(porteur, dossier, "eau", "declare", {"source": "pluie"})
+    data = prep(porteur, dossier)
+    assert data["template"]["version"] == 1
+    assert eau_check(data)["message"] == "Disponibilité de l'eau déclarée mais non vérifiée"
+    assert {a["definition_key"] for a in data["actions"]} >= {"confirmer-eau"}
+    assert "examiner-eau-pluie" not in {a["definition_key"] for a in data["actions"]}
+    # Un nouveau dossier du même porteur bénéficie de la v2.
+    fresh = new_project(porteur, name="Nouveau dossier")
+    put_info(porteur, fresh, "eau", "declare", {"source": "pluie"})
+    assert eau_check(prep(porteur, fresh))["message"].startswith("Eau de pluie seulement")
