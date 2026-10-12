@@ -5,7 +5,7 @@ Version du 11 octobre 2026, après clarification de la cible par le fondateur.
 **Clôture du 12/10/2026 : version locale finalisée et démontrable** (écarts de navigation, de saisie, d'archivage et de présentation par profil corrigés ; voir « Clôture de la version locale » dans AVANCEMENT). Cela ne valide ni le contenu agronomique, ni l'utilité terrain, ni une mise en service.
 Le maraîchage est une filière candidate. Culture, zone pilote, canal d'accès et payeur restent à valider.
 
-**Orientation du 12/10/2026 (D-051) :** le socle F1–F6 est conservé, mais le frontend actuel n'est pas le parcours cible validé. La prochaine étape est un prototype navigable isolé (UX1 dans [ROADMAP.md](../ROADMAP.md)), centré sur une première synthèse utile puis une préparation progressive. La navigation et les écrans décrits ci-dessous sont la référence existante, à réexaminer dans le prototype ; aucune nouvelle navigation n'est encore approuvée ni intégrée. Le périmètre de préparation accompagnée reste inchangé.
+**Orientation du 12/10/2026 (D-051) :** le socle F1–F6 est conservé, mais le frontend actuel n'est pas le parcours cible validé. La prochaine étape est un prototype navigable isolé (UX1 dans [ROADMAP.md](../ROADMAP.md)), centré sur une première synthèse utile puis une préparation progressive. La navigation et les écrans décrits ci-dessous sont la référence existante, à réexaminer dans le prototype ; aucune nouvelle navigation n'est encore approuvée ni intégrée. Le prototype UX1 est livré (`frontend/prototype`) ; sa proposition (lecture par sujet, première synthèse après trois questions, file de travail du conseiller) reste à évaluer en UX2. Le périmètre de préparation accompagnée reste inchangé.
 
 ## 1. Promesse
 

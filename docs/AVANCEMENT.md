@@ -527,3 +527,55 @@ Finition ciblée à partir des captures du fondateur. Essais sur `agria_e2e` (po
 - Le bandeau du conseiller occupe une part notable du premier écran à 390 px.
 - Sans suivi de lecture, une réponse reçue n'est jamais présentée comme « nouvelle ».
 - Les compteurs de « Mes dossiers » sont calculés à chaque affichage de la liste (peu de dossiers aujourd'hui ; à surveiller si le nombre augmente).
+
+# UX1 — prototype du parcours cible (12/10/2026)
+
+Proposition à essayer, **non intégrée** à l'application : `frontend/prototype`, lancé par `npm run prototype` (port 5176), sans appel aux API, sans base de données, données fictives gardées dans le navigateur (D-051). L'application livrée, ses routes et ses données sont inchangées. Lancement et scénario d'essai : [DEMARRAGE.md](DEMARRAGE.md), « Prototype UX1 ».
+
+### Diagnostic de l'existant
+
+Constats tirés de l'inspection des écrans actuels, sans retour utilisateur :
+
+| Constat | Choix dans le prototype | Bénéfice attendu (hypothèse à vérifier en UX2) |
+|---|---|---|
+| Un même sujet est éclaté en trois listes : l'information (Mon projet), le point à vérifier et la démarche (Mon plan) ; s'y ajoutent les questions (Relecture) | Lecture **par sujet** (lieu et terrain, eau, culture et période, vente, moyens, expérience) : ce qui est su, ce qui reste à éclaircir, les démarches et les questions au même endroit | Comprendre un sujet sans passer d'un écran à l'autre |
+| Onze informations proposées d'emblée ; la valeur n'apparaît qu'en remplissant le dossier ou dans la synthèse imprimable | Démarrage en deux étapes (idée concrète, puis terrain, eau, vente), suivi d'une **première synthèse** : connu, à éclaircir, démarches proposées | Un bénéfice visible en quelques minutes, sans dossier complet |
+| Le formulaire demande « Déclaré / Estimé / Vérifié » avant la valeur ; ces termes demandent une explication | La valeur d'abord, puis « Comment le savez-vous ? » (je l'affirme, estimation, j'ai de quoi le confirmer) ; mêmes états enregistrés | Moins de vocabulaire, même rigueur |
+| Accueil, projet, plan, relecture et synthèse se recouvrent | Quatre espaces : Projet (synthèse vivante et sujets), Démarches, Budget, Conseiller (échanges, avis, décision) | Une fonction par écran |
+| Le conseiller retrouve l'accueil du porteur | File de travail par raison (question en attente, relecture demandée, avis à réexaminer), contexte en bref, « Votre intervention » | Savoir quel dossier traiter et pourquoi |
+| Le producteur voit un nouveau dossier sans écran dédié à la reprise | Écran « Reprise » : ce qui est repris (à reconfirmer), ce qui change, ce qui reste dans l'historique | Préparer la saison suivante sans prendre les résultats passés pour des prévisions |
+
+Termes conservés parce qu'ils portent une règle : « à chiffrer », « non relu par un spécialiste », « à réexaminer », « exemple fictif ». Les messages de prudence sont placés là où ils aident à lire une information (synthèse, sujet, budget, avis), pas en tête de chaque écran.
+
+### Correspondance avec l'existant et écarts
+
+| Écran ou interaction du prototype | Fonction | Données et API existantes | Présentation seule | Besoin technique pour UX3 |
+|---|---|---|---|---|
+| Démarrage (idée, trois points) | F1 | `POST /projects`, `PUT …/informations/<clé>` ; report local (D-049) | Ordre et regroupement des questions | **L'idée en une phrase n'existe pas** dans le modèle (seul le nom du projet) : champ à créer ou à abandonner |
+| Première synthèse, synthèse vivante, sujets | F1, F2, F6 | `GET /dossiers/<id>`, `…/preparation` (points calculés, démarches), `…/relecture` (questions par cible) | Regroupement par sujet ; états « pas encore abordé / inconnu / point à éclaircir / rien de signalé » | Aucun : les sujets regroupent des informations existantes |
+| Information : valeur puis « Comment le savez-vous ? » | F1 | `PUT …/informations/<clé>` (mêmes états, source obligatoire pour « vérifié »), historique | Ordre des champs et libellés | Aucun |
+| Démarche, résultat, « Et maintenant », actualisation | F3 | Mise à jour de la démarche (issue obligatoire, D-048), paramètre `?depuis=` existant | Mise en page | Aucun |
+| Budget (résumé, postes, postes à examiner) | F4 | `…/budget`, `…/budget/a-examiner/<clé>` ; calculs serveur | Tuiles de résumé | Aucun |
+| Échanges, avis, décision (porteur) ; absence de conseiller | F5 | `…/messages`, état des questions par personne, demandes de relecture, décisions | Regroupement sur un écran | Aucun |
+| File et vue de travail du conseiller, rédaction d'avis | F5 | `GET /dossiers` (compteurs par rôle : `to_answer`, `review_requested`, `review_stale`), avis versionnés | Classement par raison, contexte en bref | Aucun |
+| Campagnes et reprise du producteur | F1 | `POST /projects/<id>/campaigns` avec reprise du lieu « à revérifier » ; reconfirmer = enregistrer l'information | Écran dédié | **Repérer les informations reprises non reconfirmées** : aujourd'hui déductible seulement du texte de la source ou de l'historique ; un indicateur explicite serait plus sûr |
+| Choix du rôle, attribution, chargement et erreur simulés, réinitialisation | — | — | Outils de démonstration, absents du produit | — |
+
+Exigences existantes conservées dans la proposition : droits (lecture seule du conseiller, archivage), historique, versions des avis, protection des saisies (même mécanisme que l'application), budget incomplet, incertitudes, contenu non relu.
+
+### Vérifications
+
+| Commande | Résultat |
+|---|---|
+| `npm run test:prototype` (Playwright, 1280 px et 390 px) | 7 réussis, 1 ignoré (clavier physique sur téléphone) : boucle débutant → conseillère → débutant, producteur, chargement et erreur simulés, saisie abandonnée, réinitialisation, clavier ; aucun défilement horizontal sur les écrans capturés |
+| `npm run build:prototype`, eslint, TypeScript | OK |
+| `backend\.venv\Scripts\python scripts\dev.py check` (configurations partagées modifiées) | ruff, migrations à jour, 169 pytest, eslint, TypeScript, build de l'application : OK. Parcours Playwright de l'application non relancés : aucun de ses composants n'a changé |
+
+Défauts du prototype trouvés en inspectant les captures, et corrigés : panneau des outils de démonstration hors écran puis superposé à son bouton sur téléphone ; bouton blanc sur fond blanc dans les cartes mises en avant ; focus déplacé lors d'une redirection (le lien d'évitement n'était plus le premier arrêt).
+
+### Limites
+
+- Aucune observation d'utilisateur : la proposition est une hypothèse de conception, à juger en UX2.
+- Le prototype ne démontre ni l'utilité terrain, ni le besoin commercial, ni la pertinence agronomique (G1, G2).
+- Le calcul des points est une copie locale du moteur, et le registre des informations une copie de `dossiers/facts.py` : une évolution de l'application ne s'y reporte pas.
+- L'état vit dans un seul navigateur : deux personnes ne partagent pas la démonstration.

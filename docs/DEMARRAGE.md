@@ -153,6 +153,33 @@ Facultatif : pour voir le pas-à-pas depuis le début, créer un compte (« Cré
 4. Après la démarche terminée avec un résultat « incertain », qu'est-ce qui a changé dans le dossier et qu'est-ce qui n'a pas changé ?
 5. Que vous apprend le budget affiché sur le coût du projet, et que ne vous apprend-il pas ?
 
+## Prototype UX1 (proposition, données fictives)
+
+Application séparée de l'application livrée : aucune API, aucune base, aucun compte. Elle peut tourner en même temps que le développement (8000/5173) et la démonstration (8002/5175).
+
+```powershell
+cd frontend
+npm run prototype          # http://127.0.0.1:5176
+npm run test:prototype     # vérification Playwright (1280 et 390 px)
+```
+
+- **Rôle :** liste « Voir comme » du bandeau noir (Awa débutante, Modou producteur, Mme Ndiaye conseillère). C'est un outil de démonstration, pas une fonction du produit.
+- **Persistance :** les changements restent dans le stockage de ce navigateur, rien n'est envoyé. « Outils de démonstration » → « Réinitialiser la démonstration » revient au jeu de départ.
+- **Arrêter :** `Ctrl+C`. Relancer reprend l'état laissé dans le navigateur.
+
+### Scénario d'essai de dix minutes
+
+| Temps | Rôle | Faire | Observer |
+|---|---|---|---|
+| 0–4 min | Awa | « Décrire mon projet » → une phrase, une culture, une région ; période : « Je ne sais pas encore » → terrain « En discussion », eau « Je ne sais pas encore », vente « Plus tard » | « Votre point de départ » : connu, à éclaircir, démarches proposées ; une seule action « À faire maintenant » ; la vente reste « pas encore abordée » |
+| | | Ouvrir le sujet « L'eau », puis la démarche mise en avant : « Commencer », « Noter le résultat » (résultat **Incertain**) → « Mettre à jour : Accès au terrain » → préciser, « Je l'affirme », Enregistrer | Rien ne change automatiquement ; le résultat est rappelé pendant la mise à jour ; message « Point encore à éclaircir » |
+| | | Budget : ajouter « Semences ou plants » (postes à examiner), puis un poste avec un prix estimé | Montant chiffré, « 1 poste à chiffrer : le coût total n'est pas connu » |
+| | | Conseiller : lire « Aucun conseiller n'est attribué », envoyer une question, demander une relecture | Rien n'est promis |
+| 4–7 min | Outils | « Attribuer Mme Ndiaye au dossier d'Awa », puis « Voir comme » Mme Ndiaye | File « À traiter » avec les raisons ; « Votre intervention » ; aucun lien de modification |
+| | Mme Ndiaye | Répondre ; sujet « L'eau » → « Poser une question au porteur » ; « Rédiger un avis » avec réserves | Avis enregistré sur la version actuelle |
+| 7–9 min | Awa | « À faire maintenant » : répondre à la conseillère ; modifier « Accès à l'eau » ; onglet Conseiller : avis « À réexaminer » ; décision « Modifier le projet » | La décision est celle du porteur, distincte de l'avis |
+| 9–10 min | Modou | « Créer et voir ce qui est repris » → « Toujours vrai cette saison » sur deux informations, « A changé » sur l'eau, noter un changement → Projet ; puis Campagnes → campagne 2026 | Pas de parcours d'initiation ; résultats 2026 présentés comme historique ; aucun conseiller attribué à la nouvelle campagne |
+
 ## Contrôles
 
 ```powershell
