@@ -99,7 +99,7 @@ export function ownerHome(dossier: Dossier, prep: Preparation, questionsToAnswer
     fill && blockingEmpty.length > 0
       ? {
           ...fill,
-          why: `Signalée comme bloquante par les règles : ${blockingEmpty.map((c) => c.fact_label).join(', ')}. ${debutant ? fill.why ?? '' : ''}`.trim(),
+          why: `${blockingEmpty.length > 1 ? 'Signalées comme bloquantes' : 'Signalée comme bloquante'} par les règles : ${blockingEmpty.map((c) => c.fact_label).join(', ')}. ${debutant ? fill.why ?? '' : ''}`.trim(),
         }
       : null
   if (blockingFill) candidates.push(blockingFill)
@@ -115,7 +115,8 @@ export function ownerHome(dossier: Dossier, prep: Preparation, questionsToAnswer
       label: 'Ouvrir la démarche',
     })
   }
-  if (blocked && !inProgress && !ready) {
+  // Déjà listée dans « Points bloquants » : proposée seulement si c'est la seule chose à faire.
+  if (blocked && !inProgress && !ready && candidates.length === 0) {
     candidates.push({
       key: 'bloquee',
       heading: 'Démarche bloquée',

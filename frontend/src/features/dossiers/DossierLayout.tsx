@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Link, Outlet, useLocation, useOutletContext, useParams } from 'react-router'
+import { Link, Outlet, useLocation, useMatch, useOutletContext, useParams } from 'react-router'
 import { ApiError } from '../../shared/api'
 import { formatDate } from '../../shared/format'
 import { Alert, Loading, PageTitle } from '../../shared/ui'
@@ -13,6 +13,8 @@ export function DossierLayout() {
   const dossier = useDossier(id)
   const location = useLocation()
   const flash = (location.state as { flash?: string } | null)?.flash
+  // L'accueil a sa propre carte d'archivage : pas de bandeau en double.
+  const onHome = useMatch('/d/:dossierId') !== null
 
   useEffect(() => {
     if (dossier.data) rememberDossier(dossier.data.id)
@@ -46,7 +48,7 @@ export function DossierLayout() {
           Vous consultez le dossier de <strong>{d.project.owner.display_name}</strong> (« {d.project.name} », campagne « {d.label} ») en tant que conseiller : les informations du porteur sont en lecture seule.{!d.archived && ' Vous pouvez poser des questions, répondre et donner un avis.'}
         </Alert>
       )}
-      {d.archived && (
+      {d.archived && !onHome && (
         <Alert tone="neutral">
           Dossier archivé{d.archived_at ? ` le ${formatDate(d.archived_at)}` : ''} : consultation seulement, plus aucune modification possible.
         </Alert>

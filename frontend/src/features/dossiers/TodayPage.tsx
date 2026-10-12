@@ -53,11 +53,13 @@ export function TodayPage() {
 
       {dossier.archived && <ArchivedCard />}
 
-      {!dossier.archived && <DecisionCard />}
+      {!dossier.archived && dossier.status.code === 'differe' && <DecisionCard />}
 
       {!dossier.archived && home && (owner || !relecture.isError) && <HomeActions plan={home} dossierId={dossier.id} advisor={!owner} />}
 
       <ExchangesCard toAnswer={toAnswer} />
+
+      {!dossier.archived && dossier.status.code !== 'differe' && <DecisionCard />}
 
       {prep.isSuccess && (
         <Card>

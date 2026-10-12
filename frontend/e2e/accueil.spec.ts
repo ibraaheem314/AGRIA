@@ -99,3 +99,28 @@ test('dernière décision rappelée, attribuée, distincte de l’avis ; invitat
   await page.goto(`/d/${id}`)
   await expect(decision).toContainText('Le dossier a été modifié depuis cette décision.')
 })
+
+test('démarche en cours puis bloquée : l’action principale suit l’état de la démarche', async ({ page }) => {
+  await register(page, 'Suivi')
+  const id = await createProject(page, { situation: 'Je prépare ma prochaine campagne' })
+  await save(page, id, "Accès à l'eau", (p) => p.getByLabel('Je ne sais pas').check())
+  await page.goto(`/d/${id}/plan`)
+  await page.getByRole('link', { name: "Identifier une source d'eau utilisable" }).first().click()
+  await page.getByRole('button', { name: 'Commencer' }).click()
+  await expect(page.getByText('Démarche commencée.')).toBeVisible()
+  await page.goto(`/d/${id}`)
+  await expect(primary(page)).toHaveText('À faire maintenant · Démarche en cours')
+  await expect(page.getByRole('link', { name: 'Continuer la démarche' })).toBeVisible()
+
+  await page.getByRole('link', { name: 'Continuer la démarche' }).click()
+  await page.getByRole('button', { name: 'Signaler un blocage' }).click()
+  await page.getByLabel(/^Qu'est-ce qui bloque/).fill('Le gestionnaire du forage est absent.')
+  await page.getByRole('button', { name: 'Enregistrer' }).click()
+  await expect(page.getByText('Blocage enregistré.')).toBeVisible()
+  await page.goto(`/d/${id}`)
+  // L'information bloquante non renseignée passe en principal.
+  await expect(primary(page)).toHaveText('À faire maintenant · Renseigner le dossier')
+  // La démarche bloquée n'est listée qu'une fois, dans les points bloquants, avec son motif.
+  await expect(page.getByRole('link', { name: "Identifier une source d'eau utilisable" })).toHaveCount(1)
+  await expect(page.getByText('Le gestionnaire du forage est absent.')).toHaveCount(1)
+})
