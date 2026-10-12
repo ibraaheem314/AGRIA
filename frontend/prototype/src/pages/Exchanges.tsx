@@ -72,6 +72,8 @@ function Thread({ m, writable }: { m: Message; writable: boolean }) {
   const [body, setBody] = useState('')
   const { allowNextNavigation } = useUnsavedChanges(body.trim() !== '')
   const st = questionState(d, m, role)
+  // Sans conseiller, personne ne peut répondre : pas de formulaire de réponse sous sa propre question.
+  const alone = role === 'porteur' && d.advisors.length === 0
   return (
     <li className="rounded-xl bg-surface p-4 ring-1 ring-line">
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -87,7 +89,7 @@ function Thread({ m, writable }: { m: Message; writable: boolean }) {
           {m.replies.map((r) => <li key={r.id}><p className="text-sm text-muted">{PEOPLE[r.author].name} · {formatDay(r.at)}</p><p className="whitespace-pre-line">{r.body}</p></li>)}
         </ul>
       )}
-      {writable && !m.resolvedAt && (
+      {writable && !m.resolvedAt && !alone && (
         <form className="mt-3 space-y-2" onSubmit={(e) => { e.preventDefault(); if (!body.trim()) return; ops.post(d.id, { author: viewer, kind: 'reponse', target: m.target, body: body.trim(), parentId: m.id }); allowNextNavigation(); setBody('') }}>
           <Field label="Répondre">{(p) => <textarea {...p} rows={2} className={input} value={body} onChange={(e) => setBody(e.target.value)} />}</Field>
           <div className="flex flex-wrap gap-2">
@@ -127,7 +129,6 @@ function NewMessage() {
     <section aria-labelledby="nouveau" className="rounded-xl bg-surface p-4 ring-1 ring-line">
       <h2 id="nouveau" className="text-lg font-semibold">{shared ? 'Nouveau message dans le dossier' : 'Préparer une question'}</h2>
       <p className="mt-1 text-sm">À propos de : <strong>{target.label}</strong></p>
-      {!shared && <p className="mt-1 text-sm text-muted">Aucun conseiller n'est attribué : votre question est enregistrée dans votre dossier, personne ne la reçoit pour l'instant.</p>}
       {sent && <p role="status" className="mt-2 font-medium text-ok-700">{sent}</p>}
       <form className="mt-3 space-y-3" onSubmit={(e) => {
         e.preventDefault()
@@ -135,9 +136,10 @@ function NewMessage() {
         ops.post(d.id, { author: viewer, kind, target, body: body.trim() })
         allowNextNavigation()
         setBody('')
+        const q = noun === 'question'
         setSent(shared
-          ? `${noun === 'question' ? 'Question partagée' : 'Commentaire partagé'} dans le dossier : ${other} le verra en ouvrant le dossier. Aucun email ni SMS n'est envoyé.`
-          : `${noun === 'question' ? 'Question enregistrée' : 'Commentaire enregistré'} dans votre dossier (onglet Conseiller). Aucun conseiller ne le reçoit pour l'instant ; il sera consultable par un conseiller s'il en est attribué un.`)
+          ? `${q ? 'Question partagée' : 'Commentaire partagé'} dans le dossier : ${other} ${q ? 'la' : 'le'} verra en ouvrant le dossier. Aucun email ni SMS n'est envoyé.`
+          : `${q ? 'Question enregistrée' : 'Commentaire enregistré'} dans votre dossier (onglet Conseiller). Aucun conseiller ne ${q ? 'la' : 'le'} reçoit pour l'instant ; ${q ? 'elle' : 'il'} sera consultable par un conseiller s'il en est attribué un.`)
       }}>
         <fieldset className="flex flex-wrap gap-4"><legend className="sr-only">Type de message</legend>
           <label className="flex min-h-11 items-center gap-2"><input type="radio" name="kind" className="size-5 accent-brand-700" checked={kind === 'question'} onChange={() => setKind('question')} />Question</label>
@@ -222,7 +224,7 @@ function DecisionBlock({ canDecide }: { canDecide: boolean }) {
             { value: 'poursuivre', label: 'Poursuivre' },
             { value: 'modifier', label: 'Modifier le projet' },
             { value: 'differer', label: 'Différer', help: 'Différer un projet mal préparé peut être une bonne décision.' },
-          ]} />
+          ]} single />
           <Field label="Pourquoi ?" required>{(p) => <textarea {...p} rows={2} className={input} value={reason} onChange={(e) => setReason(e.target.value)} />}</Field>
           <Button type="submit" variant="secondary" disabled={!choice || !reason.trim()}>Enregistrer la décision</Button>
         </form>

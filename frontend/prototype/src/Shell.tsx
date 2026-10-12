@@ -26,7 +26,7 @@ function DemoBar() {
         <label className="flex items-center gap-1.5">
           <span className="text-white/80">Voir comme</span>
           <select
-            className="min-h-9 max-w-[11rem] rounded-md border border-white/30 bg-ink px-1.5 py-1 text-white sm:max-w-none"
+            className="min-h-9 rounded-md border border-white/30 bg-ink px-1.5 py-1 text-white"
             value={viewer}
             onChange={(e) => {
               const v = e.target.value as Viewer

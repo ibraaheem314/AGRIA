@@ -18,6 +18,12 @@ export function Button({ variant = 'primary', className = '', ...p }: ButtonHTML
 export function ButtonLink({ variant = 'primary', className = '', ...p }: LinkProps & { variant?: Variant }) {
   return <Link {...p} className={`${BASE} ${VARIANT[variant]} ${className}`} />
 }
+const NBSP = String.fromCharCode(160)
+/** Typographie française : pas de « ? », « : », « ; » ou « ! » seul en début de ligne. */
+export function fr(text: string): string {
+  return text.replace(/ ([?:;!»])/g, `${NBSP}$1`).replace(/« /g, `«${NBSP}`)
+}
+
 export function TextLink(p: LinkProps) {
   return <Link {...p} className={`font-medium text-brand-800 underline underline-offset-2 hover:text-brand-700 ${p.className ?? ''}`} />
 }
@@ -111,19 +117,21 @@ export function Field({ label, help, error, required, children }: {
 export const input = 'block w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-base text-ink shadow-inner focus:border-brand-700'
 
 /** Choix exclusif présenté en options larges (cibles tactiles confortables). */
-export function Choice<T extends string>({ legend, help, name, options, value, onChange }: {
+export function Choice<T extends string>({ legend, help, name, options, value, onChange, single = false }: {
   legend: string
   help?: string
   name: string
   options: { value: T; label: string; help?: string }[]
   value: T | ''
   onChange: (v: T) => void
+  /** Une seule colonne (panneau étroit). */
+  single?: boolean
 }) {
   return (
     <fieldset className="space-y-2">
       <legend className="font-medium">{legend}</legend>
       {help && <p className="text-sm text-muted">{help}</p>}
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className={`grid gap-2 ${single ? '' : 'sm:grid-cols-2'}`}>
         {options.map((o) => (
           <label key={o.value} className="flex cursor-pointer items-start gap-3 rounded-lg border border-line bg-surface p-3 has-[:checked]:border-brand-700 has-[:checked]:bg-brand-50">
             <input type="radio" name={name} value={o.value} checked={value === o.value} onChange={() => onChange(o.value)} className="mt-1 size-5 shrink-0 accent-brand-700" />

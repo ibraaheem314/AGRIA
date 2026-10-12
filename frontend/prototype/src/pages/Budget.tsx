@@ -5,7 +5,7 @@ import { budgetTotals, EMPTY, formatFcfa, lineAmount, type Line, type PriceStatu
 import { SUGGESTIONS } from '../data/seed'
 import { useStore } from '../data/store'
 import { useDossierCtx } from '../dossier'
-import { Button, ButtonLink, Chip, Choice, Eyebrow, Field, input, Note, PageHeader, Panel, SectionTitle, TextLink, type Tone } from '../ui'
+import { Button, ButtonLink, Chip, Choice, Eyebrow, Field, fr, input, Note, PageHeader, Panel, SectionTitle, TextLink, type Tone } from '../ui'
 
 const UNITS = ['unité', 'kg', 'sac', 'litre', 'mètre', 'm²', 'jour', 'mois', 'forfait']
 
@@ -132,7 +132,7 @@ function Suggestions({ items, onAside, open, unfolded = false }: { items: typeof
         {items.map((s) => (
           <li key={s.key} className="rounded-lg border border-line bg-surface p-3">
             <p className="font-medium">{s.label}</p>
-            <p className="text-sm text-muted">{s.help}</p>
+            <p className="text-sm text-muted">{fr(s.help)}</p>
             <div className="mt-2 flex flex-wrap gap-2">
               <Button variant="secondary" onClick={() => ops.saveLine(d.id, { label: s.label, category: s.category, quantity: null, unit: 'forfait', unitPrice: null, priceStatus: 'manquant', source: '', owned: false, suggestion: s.key })}>
                 Ajouter<span className="sr-only"> : {s.label}</span>

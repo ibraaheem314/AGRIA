@@ -7,7 +7,7 @@ import {
   staleSections, SUBJECT_STATE_LABEL, subjectsFor, subjectState, VERDICT_LABEL, type SubjectState,
 } from '../data/model'
 import { useDossierCtx } from '../dossier'
-import { ButtonLink, Chip, Eyebrow, Highlight, Note, PageHeader, Panel, SectionTitle, TextLink, type Tone } from '../ui'
+import { ButtonLink, Chip, Eyebrow, fr, Highlight, Note, PageHeader, Panel, SectionTitle, TextLink, type Tone } from '../ui'
 
 export const SUBJECT_TONE: Record<SubjectState, Tone> = { non_aborde: 'muted', inconnu: 'warn', ouvert: 'info', rien_signale: 'neutral' }
 
@@ -39,7 +39,7 @@ function Synthesis() {
         <ul className="flex flex-wrap gap-x-5 gap-y-1.5">
           {summaryKeys.map((k) => {
             const f = d.facts[k] ?? EMPTY
-            const text = d.deferred.includes(k) && f.status === 'non_renseigne' ? 'à répondre plus tard' : f.status === 'non_renseigne' ? 'pas encore abordé' : f.status === 'inconnu' ? 'inconnu pour l’instant' : describe(k, f)
+            const text = d.deferred.includes(k) && f.status === 'non_renseigne' ? 'à répondre plus tard' : f.status === 'non_renseigne' ? 'pas encore abordé' : f.status === 'inconnu' ? 'vous ne savez pas encore' : describe(k, f)
             return (
               <li key={k} className="text-sm">
                 <span className="text-muted">{factLabel(k, d.profile)} : </span>
@@ -91,7 +91,7 @@ function Synthesis() {
                 )
               })}
             </ul>
-            <p className="mt-2 text-sm text-muted">Le détail, les démarches et l'historique de chaque sujet s'ouvrent en le sélectionnant. « Rien de signalé » n'est pas une validation.</p>
+            <p className="mt-2 text-sm text-muted">{fr("Le détail, les démarches et l'historique de chaque sujet s'ouvrent en le sélectionnant. « Rien de signalé » n'est pas une validation.")}</p>
           </section>
         </div>
         <StatePanel />
@@ -149,7 +149,7 @@ function AdvisorOverview() {
   return (
     <div className="space-y-6">
       <PageHeader eyebrow={`Dossier de ${PEOPLE[d.owner].name} · ${d.profile === 'producteur' ? 'producteur' : 'débutant'} · ${d.campaign}`} title={d.projectName}>
-        <p>« {d.idea} »</p>
+        {d.idea && <p>« {d.idea} »</p>}
         {since && <p className="text-sm">Vous êtes attribuée à ce dossier depuis le {formatDay(since)}. Les informations du porteur sont en lecture seule.</p>}
       </PageHeader>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_21rem]">
@@ -163,7 +163,7 @@ function AdvisorOverview() {
                 {toAnswer > 0 && (
                   <li>
                     <p className="font-medium">{toAnswer === 1 ? 'Une question du porteur attend votre réponse :' : `${toAnswer} questions du porteur attendent votre réponse, dont :`}</p>
-                    {(() => { const q = d.threads.find((m) => questionState(d, m, 'conseiller') === 'a_repondre')!; return <p className="mt-1 text-sm">« {q.replies.length ? q.replies[q.replies.length - 1]!.body : q.body} » <span className="text-muted">— à propos de « {q.target.label} »</span></p> })()}
+                    {(() => { const q = d.threads.find((m) => questionState(d, m, 'conseiller') === 'a_repondre')!; return <p className="mt-1 text-sm">« {q.replies.length ? q.replies[q.replies.length - 1]!.body : q.body} » <span className="text-muted">— {q.target.type === 'dossier' ? 'question générale sur le dossier' : `à propos de « ${q.target.label} »`}</span></p> })()}
                     <ButtonLink to={`${base}/echanges`} className="mt-2">Répondre</ButtonLink>
                   </li>
                 )}
