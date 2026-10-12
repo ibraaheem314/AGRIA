@@ -607,3 +607,27 @@ Itération ciblée sur trois moments (commencer, comprendre la synthèse et choi
 | `npm run build:prototype`, eslint, TypeScript | OK |
 
 Tests backend et recette de restauration non relancés : ni le backend, ni les API, ni les données de l'application n'ont changé. Captures avant/après du même scénario conservées hors dépôt.
+
+
+# UX3-A — intégration du parcours débutant aux API réelles (en cours)
+
+Direction retenue par le fondateur à l'issue de UX2 pour l'intégration : préparation progressive, synthèse courte, lecture du dossier par sujet, action principale explicite, espaces Projet · Démarches · Budget · Conseiller, parcours adaptés au rôle. Ce choix autorise l'intégration ; il ne vaut ni validation terrain, ni validation agronomique, ni autorisation de déploiement. L'essai du fondateur n'est pas une étude utilisateur.
+
+Le serveur reste la source de vérité. Le prototype (`frontend/prototype`) reste isolé, pour comparaison : rien de son état fictif, de ses comptes, de son sélecteur de rôle, de sa copie du moteur ni de ses calculs n'est importé dans l'application.
+
+### Contrat d'intégration
+
+| Écran ou interaction | Données | API existante | Adaptation | Permissions | Preuve attendue |
+|---|---|---|---|---|---|
+| Création du projet | Profil, nom du projet, campagne | `POST /api/projects` (identifiant de requête : pas de doublon) | Aucune côté serveur ; le débutant est conduit aux premières questions | Personne connectée | Création, nouvelle tentative sans doublon |
+| Premières questions (quatre courtes étapes, récapitulatif) | Culture, période, localisation, accès au terrain, eau, débouchés | `GET /api/dossiers/<id>`, `PUT …/informations/<clé>` (version attendue ; un renvoi identique n'est pas un conflit) | Aucune côté serveur : chaque étape est enregistrée en la quittant ; « Répondre plus tard » reste le repère local existant (D-049), rien n'est enregistré | Porteur d'un dossier non archivé (contrôle serveur) | Enregistrement par étape, reprise après interruption et reconnexion, inconnue distincte d'une réponse différée |
+| Synthèse (accueil du porteur) | Informations, points ouverts, démarches, prochaine démarche, échanges, avis, décisions, budget | `GET` dossier, `…/preparation`, `…/relecture`, `…/budget` | Présentation seule : regroupement par sujet ; action principale calculée par la règle d'affichage existante (`priority.ts`) à partir des réponses du serveur | Porteur ; le conseiller garde son accueil existant | Résumé, une action principale, sujets, états chargement / erreur / différé / archivé / sans conseiller |
+| Sujet | Informations du sujet, points ouverts, démarches liées, questions ciblées | Mêmes | Présentation seule ; les écritures passent par les écrans existants | Lecture : porteur et conseiller attribué | Sujet cohérent avec les points calculés par le serveur |
+| Information et actualisation | État, valeur, source, historique, résultat de la démarche d'origine | `PUT …/informations/<clé>`, historique, `…/preparation` | Aucune (écran existant, `?depuis=` et message de recalcul) | Porteur, dossier non archivé ; conseiller en lecture seule | Résultat rappelé sans écraser, recalcul serveur affiché |
+| Démarche | Statut, prérequis, échéance, blocage motivé, résultat et issue, historique, version | `PATCH …/actions/<id>`, historique | Aucune (écran existant) | Porteur, dossier non archivé | Conflit de modification, résultat incertain conservé |
+| Démarches (liste), Budget, Conseiller (relecture et échanges), toutes les informations | Inchangées | Inchangées | Écrans existants conservés, atteints par la nouvelle navigation ; refonte en UX3-B | Inchangées | Parcours existants toujours verts |
+
+### Arbitrages
+
+- **Idée du projet en une phrase : retirée du parcours intégré.** Aucune règle ni aucun écran n'en a besoin au-delà de l'affichage, et le nom du projet, déjà obligatoire, en tient lieu d'intitulé. Pas de nouveau champ ni de migration sans besoin démontré ; à réexaminer si l'essai en montre l'utilité.
+- **Informations reprises à reconfirmer : traitées en UX3-B** (reprise de campagne producteur). La boucle débutant n'en dépend pas. Aucune règle ne sera fondée sur le texte de la source : en UX3-B, un indicateur explicite posé par la création de campagne et retiré au prochain enregistrement de l'information, ou une lecture de l'historique des révisions, sera à choisir.
