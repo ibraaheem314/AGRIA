@@ -7,6 +7,7 @@ import { DossiersPage, HomeRedirect } from '../features/dossiers/DossiersPage'
 import { FactEditPage } from '../features/dossiers/FactEditPage'
 import { NewProjectPage } from '../features/dossiers/NewProjectPage'
 import { ProjectPage } from '../features/dossiers/ProjectPage'
+import { StepByStepPage } from '../features/dossiers/StepByStepPage'
 import { TodayPage } from '../features/dossiers/TodayPage'
 import { HelpPage } from '../features/help/HelpPage'
 import { RelecturePage } from '../features/reviews/RelecturePage'
@@ -32,6 +33,7 @@ const router = createBrowserRouter(
         <Route path="/d/:dossierId" element={<DossierLayout />}>
           <Route index element={<TodayPage />} />
           <Route path="projet" element={<ProjectPage />} />
+          <Route path="projet/pas-a-pas" element={<StepByStepPage />} />
           <Route path="projet/:factKey" element={<FactEditPage />} />
           <Route path="projet/budget" element={<BudgetPage />} />
           <Route path="plan" element={<PlanPage />} />

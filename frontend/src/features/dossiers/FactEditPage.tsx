@@ -89,11 +89,12 @@ export function FactEditPage() {
           dossierId={dossier.id}
           statuses={dossier.statuses}
           cancelTo={fromAction ? `/d/${dossier.id}/plan/${fromAction}` : `/d/${dossier.id}/projet`}
-          onSaved={(message) =>
+          onSaved={(message, allowNextNavigation) => {
+            allowNextNavigation()
             navigate(fromAction ? `/d/${dossier.id}/plan/${fromAction}` : `/d/${dossier.id}/projet`, {
               state: { flash: message },
             })
-          }
+          }}
         />
       ) : (
         <Card>
@@ -128,8 +129,9 @@ export function FactForm({
   dossierId: number
   statuses: { value: EditableStatus; label: string; help: string }[]
   cancelTo: string | null
-  /** Appelé une fois l'écriture confirmée et le recalcul relu ; la navigation qui suit est autorisée. */
-  onSaved: (message: string) => void
+  /** Appelé une fois l'écriture confirmée, le dossier et les vérifications relus. Appeler
+   * `allowNextNavigation` seulement si l'on quitte la page juste après. */
+  onSaved: (message: string, allowNextNavigation: () => void) => void
   submitLabel?: string
   extraActions?: ReactNode
 }) {
@@ -166,11 +168,14 @@ export function FactForm({
       { status: draft.status, value: valueFrom(fact, draft), source: draft.source, expected_version: expectedVersion },
       {
         onSuccess: async (result) => {
+          setBaseline(draft)
           setFinishing(true)
-          const message = await savedSummary(queryClient, dossierId, fact, result.changed)
+          const [message] = await Promise.all([
+            savedSummary(queryClient, dossierId, fact, result.changed),
+            queryClient.refetchQueries({ queryKey: dossierKey(dossierId) }, { cancelRefetch: false }),
+          ])
           setFinishing(false)
-          allowNextNavigation()
-          onSaved(message)
+          onSaved(message, allowNextNavigation)
         },
       },
     )

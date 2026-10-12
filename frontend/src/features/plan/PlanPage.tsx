@@ -115,7 +115,13 @@ export function PlanPage() {
 
       <section aria-labelledby="points" className="space-y-3">
         <h2 id="points" className="text-lg font-semibold">Points à vérifier ({toClarify.length})</h2>
-        <ChecksState dossierId={dossier.id} toClarify={toClarify.length} toComplete={toComplete} owner={owner} />
+        <ChecksState
+          dossierId={dossier.id}
+          toClarify={toClarify.length}
+          toComplete={toComplete}
+          owner={owner}
+          stepByStep={dossier.project.profile === 'debutant'}
+        />
         <ul className="space-y-3">
           {[...toClarify].sort((a, b) => Number(b.blocking) - Number(a.blocking)).map((c) => (
             <CheckItem key={c.key} check={c} dossierId={dossier.id} detailed={isDetailed(dossier)} />
@@ -221,11 +227,13 @@ function ChecksState({
   toClarify,
   toComplete,
   owner,
+  stepByStep,
 }: {
   dossierId: number
   toClarify: number
   toComplete: Check[]
   owner: boolean
+  stepByStep: boolean
 }) {
   const first = toComplete[0]
   if (toComplete.length > 0) {
@@ -238,9 +246,15 @@ function ChecksState({
         </p>
         {owner && first && (
           <p className="mt-2">
-            <Link to={`/d/${dossierId}/projet/${first.fact_key}`} className="font-medium underline">
-              Commencer par : {first.fact_label}
-            </Link>
+            {stepByStep ? (
+              <Link to={`/d/${dossierId}/projet/pas-a-pas`} className="font-medium underline">
+                Renseigner pas à pas
+              </Link>
+            ) : (
+              <Link to={`/d/${dossierId}/projet/${first.fact_key}`} className="font-medium underline">
+                Commencer par : {first.fact_label}
+              </Link>
+            )}
             <span className="block text-sm">« Je ne sais pas » est une réponse acceptée : elle permet d'avancer et devient un point à vérifier.</span>
           </p>
         )}

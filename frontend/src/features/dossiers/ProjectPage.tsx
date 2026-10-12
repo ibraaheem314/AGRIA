@@ -39,6 +39,11 @@ export function ProjectPage() {
         <p className="mt-2 text-sm text-muted">
           Un dossier complet n'est pas une garantie de faisabilité : il rend visibles ce qui est connu et ce qui reste à vérifier.
         </p>
+        {owner && !dossier.archived && dossier.project.profile === 'debutant' && counts.non_renseigne > 0 && (
+          <Link to={`/d/${dossier.id}/projet/pas-a-pas`} className="mt-2 inline-block font-medium text-brand-700 underline">
+            Renseigner pas à pas ({counts.non_renseigne} restante{counts.non_renseigne > 1 ? 's' : ''})
+          </Link>
+        )}
       </Card>
 
       <BudgetCard dossierId={dossier.id} />

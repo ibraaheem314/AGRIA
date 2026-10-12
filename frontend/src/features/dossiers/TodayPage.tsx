@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 import { formatDate, formatDateTime, plural } from '../../shared/format'
-import { Alert, Badge, Card, Loading, PageTitle } from '../../shared/ui'
+import { Alert, Badge, ButtonLink, Card, Loading, PageTitle } from '../../shared/ui'
 import { usePreparation, type Check } from '../plan/api'
 import { useRelecture } from '../reviews/api'
 import { useCurrentDossier } from './DossierLayout'
@@ -23,6 +23,8 @@ export function TodayPage() {
   const nextFact = dossier.facts.find((f) => f.state.status === 'non_renseigne')
   const deferral = dossier.status.code === 'differe' ? relecture.data?.decisions.find((d) => d.choice === 'differer') : undefined
   const starting = ['brouillon', 'a_completer'].includes(dossier.status.code)
+  // Débutant : la saisie pas à pas est l'action principale tant qu'il reste des informations vides.
+  const stepByStep = active && dossier.project.profile === 'debutant' && counts.non_renseigne > 0
 
   return (
     <div className="space-y-4">
@@ -57,6 +59,23 @@ export function TodayPage() {
 
       {!owner && <AdvisorPending dossierId={dossier.id} />}
 
+      {stepByStep && (
+        <Card className="border-brand-700">
+          <h2 className="font-semibold">Renseigner mon projet pas à pas</h2>
+          <p className="mt-1">
+            Une information à la fois, en commençant par le lieu, l'accès au terrain et l'eau. « Je ne sais pas » est une
+            réponse acceptée ; vous pouvez aussi remettre une question à plus tard.
+          </p>
+          <p className="mt-1 text-sm text-muted">
+            {plural(counts.total - counts.non_renseigne, 'information a', 'informations ont')} une réponse enregistrée
+            sur {counts.total}.
+          </p>
+          <ButtonLink to={`/d/${dossier.id}/projet/pas-a-pas`} className="mt-3">
+            {counts.non_renseigne === counts.total ? 'Commencer' : 'Continuer là où j’en étais'}
+          </ButtonLink>
+        </Card>
+      )}
+
       {active && detailed && starting && (
         <Card>
           <h2 className="font-semibold">Comment avancer</h2>
@@ -70,7 +89,7 @@ export function TodayPage() {
         </Card>
       )}
 
-      {active && (
+      {active && !(stepByStep && !nextAction) && (
         <Card>
           <h2 className="font-semibold">{dossier.status.code === 'differe' ? 'Si vous reprenez la préparation' : 'Ma prochaine action'}</h2>
           {nextAction ? (

@@ -63,6 +63,7 @@ test('accessibilité et largeur 360 px sur tous les écrans principaux', async (
     `/d/${id}`,
     `/d/${id}/projet`,
     `/d/${id}/projet/eau`,
+    `/d/${id}/projet/pas-a-pas`,
     `/d/${id}/projet/budget`,
     `/d/${id}/plan`,
     `/d/${id}/plan/${actionId}`,
