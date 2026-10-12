@@ -22,7 +22,7 @@ Mise à jour : 12 octobre 2026 (conception du parcours cible avant intégration)
 
 ## Prochaines étapes
 
-**Recette technique de la version locale fermée le 12/10/2026** ([AVANCEMENT.md](docs/AVANCEMENT.md), « Clôture de la version locale ») : version démontrable pour un usage accompagné. Cette clôture ne signifie pas que l'expérience cible est conçue ou validée. **Prochaine tâche produit : UX1**, un prototype navigable isolé, avant toute intégration générale au frontend. Les corrections livrées et le backend sont conservés comme socle.
+**Recette technique de la version locale fermée le 12/10/2026** ([AVANCEMENT.md](docs/AVANCEMENT.md), « Clôture de la version locale ») : version démontrable pour un usage accompagné. Cette clôture ne signifie pas que l'expérience cible est validée. **Étape produit actuelle : UX2**, essai et évaluation du prototype UX1 livré, avant toute intégration générale au frontend. Les corrections livrées et le backend sont conservés comme socle.
 
 ### Conception de l'expérience (priorité produit actuelle)
 
