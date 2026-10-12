@@ -51,7 +51,16 @@ export const QUESTION_STATE: Record<QuestionState, { label: string; tone: 'warn'
   close: { label: 'Résolue', tone: 'ok' },
 }
 
-export type Decision = { id: number; choice: string; choice_label: string; reason: string; author: Person; created_at: string }
+export type Decision = {
+  id: number
+  choice: string
+  choice_label: string
+  reason: string
+  author: Person
+  created_at: string
+  /** Versions du dossier au moment de la décision. */
+  versions: Versions
+}
 
 export type Relecture = {
   role: 'porteur' | 'conseiller'

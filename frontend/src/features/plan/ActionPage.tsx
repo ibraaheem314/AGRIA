@@ -60,7 +60,6 @@ export function ActionPage() {
       <Card>
         <h2 className="font-semibold">Pourquoi ?</h2>
         <p className="mt-1">{action.explanation || 'Démarche ajoutée par le porteur du projet.'}</p>
-        <p className="mt-2 text-sm text-muted">Origine : {action.origin}</p>
         {action.definition_key && (
           <p className="mt-1 text-sm text-muted">
             {action.linked_check

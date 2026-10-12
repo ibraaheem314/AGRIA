@@ -141,6 +141,7 @@ test.describe('T-02 : dossiers archivés et différés', () => {
     await expect(page.getByText('Décision enregistrée.')).toBeVisible()
     await page.goto(`/d/${id}`)
     await expect(page.getByRole('heading', { name: 'Projet différé' })).toBeVisible()
+    await expect(page.getByText(/^— décision de Differe, /)).toBeVisible()
     await expect(page.getByText('Eau non garantie en saison sèche.')).toBeVisible()
     // La décision est rappelée avant la reprise ; une seule action principale.
     await expect(page.getByRole('heading', { name: 'Reprendre la préparation' })).toBeVisible()
@@ -154,7 +155,7 @@ test.describe('T-03 : accompagnement selon le profil, même moteur', () => {
     const id = await createProject(page)
     await setUnknownWater(page, id)
     await page.goto(`/d/${id}`)
-    await expect(page.getByRole('heading', { name: 'Comment avancer' })).toBeVisible()
+    await expect(page.getByText('Comment avancer', { exact: true })).toBeVisible()
     await expect(page.getByText(/Sans eau identifiée.*Elle peut avancer en parallèle de la saisie\./)).toBeVisible()
 
     const ctx = await browser.newContext()
@@ -163,7 +164,7 @@ test.describe('T-03 : accompagnement selon le profil, même moteur', () => {
     const pid = await createProject(prod, { situation: 'Je prépare ma prochaine campagne' })
     await setUnknownWater(prod, pid)
     await prod.goto(`/d/${pid}`)
-    await expect(prod.getByRole('heading', { name: 'Comment avancer' })).toHaveCount(0)
+    await expect(prod.getByText('Comment avancer', { exact: true })).toHaveCount(0)
     // Vue directe : l'information bloquante d'abord, la démarche reste accessible, sans justification.
     await expect(prod.getByRole('link', { name: 'Compléter cette information' })).toBeVisible()
     await expect(prod.getByRole('link', { name: "Identifier une source d'eau utilisable" })).toBeVisible()

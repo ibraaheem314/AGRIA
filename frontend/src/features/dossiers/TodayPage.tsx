@@ -6,7 +6,9 @@ import { usePreparation, type Check } from '../plan/api'
 import { useRelecture, type Message } from '../reviews/api'
 import { useCurrentDossier } from './DossierLayout'
 import { isDetailed } from './guidance'
-import { BudgetCard, factCounts } from './ProjectPage'
+import { factCounts } from './ProjectPage'
+import { useBudget } from '../budget/api'
+import { budgetSentence } from '../budget/BudgetPage'
 import { advisorHome, ownerHome, type HomePlan } from './priority'
 
 /** Accueil : prochaine démarche, points bloquants, état du dossier, retours disponibles. */
@@ -23,7 +25,6 @@ export function TodayPage() {
   const blockingChecks = prep.data?.checks.filter((c) => c.blocking && c.level !== 'a_completer') ?? []
   const blockingEmpty = prep.data?.checks.filter((c) => c.blocking && c.level === 'a_completer') ?? []
   const blockedActions = prep.data?.actions.filter((a) => a.status === 'bloquee') ?? []
-  const deferral = dossier.status.code === 'differe' ? relecture.data?.decisions.find((d) => d.choice === 'differer') : undefined
   const starting = ['brouillon', 'a_completer'].includes(dossier.status.code)
   // Qui doit agir dans les échanges : état calculé par le serveur pour la personne connectée.
   const toAnswer = relecture.data?.threads.filter((m) => m.state === 'a_repondre') ?? []
@@ -52,40 +53,11 @@ export function TodayPage() {
 
       {dossier.archived && <ArchivedCard />}
 
-      {!dossier.archived && dossier.status.code === 'differe' && (
-        <Card className="border-warn-700/40">
-          <h2 className="font-semibold">Projet différé</h2>
-          {deferral ? (
-            <p className="mt-1">
-              Décision du {formatDateTime(deferral.created_at)} : <span className="whitespace-pre-line">{deferral.reason}</span>
-            </p>
-          ) : (
-            <p className="mt-1">Une décision de différer ce projet est enregistrée.</p>
-          )}
-          <p className="mt-2 text-sm text-muted">Le dossier reste modifiable.</p>
-        </Card>
-      )}
+      {!dossier.archived && <DecisionCard />}
 
       {!dossier.archived && home && (owner || !relecture.isError) && <HomeActions plan={home} dossierId={dossier.id} advisor={!owner} />}
 
       <ExchangesCard toAnswer={toAnswer} />
-
-      {active && detailed && starting && (
-        <Card>
-          <h2 className="font-semibold">Comment avancer</h2>
-          <ol className="mt-2 list-decimal space-y-1 pl-5">
-            <li>
-              {stepByStep
-                ? <>Renseignez votre projet, pas à pas ou dans <strong>Mon projet</strong>.</>
-                : <>Dans <strong>Mon projet</strong>, indiquez ce que vous savez. « Je ne sais pas » est une réponse acceptée : elle devient un point à vérifier.</>}
-            </li>
-            <li>Dans <strong>Mon plan</strong>, suivez les démarches proposées et notez leur résultat réel.</li>
-            <li>Chiffrez le <strong>budget provisoire</strong>, même incomplet.</li>
-            <li>Posez vos questions et demandez une relecture à votre conseiller, s'il vous a été attribué.</li>
-          </ol>
-          <p className="mt-2 text-sm text-muted">Ces étapes organisent la préparation ; elles ne remplacent pas l'avis d'un conseiller sur votre projet.</p>
-        </Card>
-      )}
 
       {prep.isSuccess && (
         <Card>
@@ -93,15 +65,7 @@ export function TodayPage() {
           {blockingEmpty.length > 0 && (
             <p className="mt-1">
               {blockingEmpty.length === 1 ? 'Information bloquante non renseignée' : 'Informations bloquantes non renseignées'} :{' '}
-              {blockingEmpty.map((c) => c.fact_label).join(', ')}.{' '}
-              {active && (
-                <Link
-                  to={stepByStep ? `/d/${dossier.id}/projet/pas-a-pas` : `/d/${dossier.id}/projet/${blockingEmpty[0]!.fact_key}`}
-                  className="text-brand-700 underline"
-                >
-                  {stepByStep ? 'Renseigner pas à pas' : 'Compléter'}
-                </Link>
-              )}
+              {blockingEmpty.map((c) => c.fact_label).join(', ')}.
             </p>
           )}
           {blockingChecks.length === 0 && blockedActions.length === 0 && blockingEmpty.length === 0 ? (
@@ -132,28 +96,24 @@ export function TodayPage() {
         </Card>
       )}
 
-      <BudgetCard dossierId={dossier.id} />
+      <SummaryCard />
+      {active && detailed && starting && (
+        <details className="rounded-lg border border-line bg-surface p-4">
+          <summary className="cursor-pointer font-semibold">Comment avancer</summary>
+          <ol className="mt-2 list-decimal space-y-1 pl-5">
+            <li>
+              {stepByStep
+                ? <>Renseignez votre projet, pas à pas ou dans <strong>Mon projet</strong>.</>
+                : <>Dans <strong>Mon projet</strong>, indiquez ce que vous savez. « Je ne sais pas » est une réponse acceptée : elle devient un point à vérifier.</>}
+            </li>
+            <li>Dans <strong>Mon plan</strong>, suivez les démarches proposées et notez leur résultat réel.</li>
+            <li>Chiffrez le <strong>budget provisoire</strong>, même incomplet.</li>
+            <li>Posez vos questions et demandez une relecture à votre conseiller, s'il vous a été attribué.</li>
+          </ol>
+          <p className="mt-2 text-sm text-muted">Ces étapes organisent la préparation ; elles ne remplacent pas l'avis d'un conseiller sur votre projet.</p>
+        </details>
+      )}
 
-      <Card>
-        <h2 className="font-semibold">État du dossier</h2>
-        <p className="mt-1"><Badge tone="info">{dossier.status.label}</Badge></p>
-        <p className="mt-2">
-          {plural(counts.total - counts.non_renseigne, 'information renseignée', 'informations renseignées')} sur {counts.total}, dont{' '}
-          {plural(counts.verifie, 'vérifiée', 'vérifiées')} et {counts.inconnu} « je ne sais pas ».
-        </p>
-        {prep.data && (
-          <p className="mt-1">
-            Démarches : {plural(prep.data.actions.filter((a) => a.status === 'terminee').length, 'terminée', 'terminées')} sur{' '}
-            {prep.data.actions.length}.
-          </p>
-        )}
-        <p className="mt-1 text-sm text-muted">Ces compteurs mesurent l'avancement de la préparation, pas les chances de réussite du projet.</p>
-        <p className="mt-2 flex flex-wrap gap-x-4">
-          <Link to={`/d/${dossier.id}/projet`} className="font-medium text-brand-700 underline">Éléments connus</Link>
-          <Link to={`/d/${dossier.id}/plan`} className="font-medium text-brand-700 underline">Points à vérifier</Link>
-          <Link to={`/d/${dossier.id}/synthese`} className="font-medium text-brand-700 underline">Synthèse</Link>
-        </p>
-      </Card>
     </div>
   )
 }
@@ -302,5 +262,84 @@ function ExchangesCard({ toAnswer }: { toAnswer: Message[] }) {
         </Link>
       )}
     </section>
+  )
+}
+
+/**
+ * Dernière décision du porteur (poursuivre, modifier, différer) : la sienne, pas un avis du
+ * conseiller ni une approbation d'AGRIA. Si le dossier a changé depuis, on le dit, sans statut
+ * de validité.
+ */
+function DecisionCard() {
+  const dossier = useCurrentDossier()
+  const relecture = useRelecture(dossier.id)
+  const differe = dossier.status.code === 'differe'
+  const decision = relecture.data?.decisions[0]
+  if (!decision) {
+    return differe ? (
+      <Card className="border-warn-700/40">
+        <h2 className="font-semibold">Projet différé</h2>
+        <p className="mt-1">Une décision de différer ce projet est enregistrée.</p>
+      </Card>
+    ) : null
+  }
+  const changed = relecture.data
+    ? Object.entries(relecture.data.versions).some(([k, v]) => decision.versions[k as keyof typeof decision.versions] !== v)
+    : false
+  return (
+    <Card className={differe ? 'border-warn-700/40' : ''}>
+      <h2 className="font-semibold">{differe ? 'Projet différé' : 'Dernière décision du porteur'}</h2>
+      <p className="mt-1">
+        <strong>{decision.choice_label}</strong>{' '}
+        <span className="text-sm text-muted">
+          — décision de {decision.author.display_name}, {formatDateTime(decision.created_at)}
+        </span>
+      </p>
+      <p className="mt-1 whitespace-pre-line">Motif : {decision.reason}</p>
+      <p className="mt-1 text-sm text-muted">
+        C'est une décision du porteur, distincte de l'avis du conseiller
+        {decision.choice === 'poursuivre' ? ' ; « Poursuivre » n’est pas une approbation d’AGRIA.' : '.'}
+        {changed && ' Le dossier a été modifié depuis cette décision.'}
+        {differe && ' Le dossier reste modifiable.'}
+      </p>
+    </Card>
+  )
+}
+
+/** Résumé : état, informations, démarches et budget, avec les liens vers le détail. */
+function SummaryCard() {
+  const dossier = useCurrentDossier()
+  const prep = usePreparation(dossier.id)
+  const budget = useBudget(dossier.id)
+  const counts = factCounts(dossier)
+  return (
+    <Card>
+      <h2 className="font-semibold">Résumé du dossier</h2>
+      <ul className="mt-1 space-y-1">
+        <li>
+          État : <Badge tone="info">{dossier.status.label}</Badge>
+        </li>
+        <li>
+          {plural(counts.total - counts.non_renseigne, 'information renseignée', 'informations renseignées')} sur {counts.total}, dont{' '}
+          {plural(counts.verifie, 'vérifiée', 'vérifiées')} et {counts.inconnu} « je ne sais pas ».
+        </li>
+        {prep.data && (
+          <li>
+            Démarches : {plural(prep.data.actions.filter((a) => a.status === 'terminee').length, 'terminée', 'terminées')} sur{' '}
+            {prep.data.actions.length}.
+          </li>
+        )}
+        <li className={budget.data?.totals.overall.status === 'incomplet' ? 'text-warn-700' : ''}>
+          Budget : {budget.isError ? 'indisponible.' : budget.data ? budgetSentence(budget.data.totals.overall) : '…'}
+        </li>
+      </ul>
+      <p className="mt-1 text-sm text-muted">Ces compteurs mesurent l'avancement de la préparation, pas les chances de réussite du projet.</p>
+      <p className="mt-2 flex flex-wrap gap-x-4">
+        <Link to={`/d/${dossier.id}/projet`} className="font-medium text-brand-700 underline">Éléments connus</Link>
+        <Link to={`/d/${dossier.id}/plan`} className="font-medium text-brand-700 underline">Points à vérifier</Link>
+        <Link to={`/d/${dossier.id}/projet/budget`} className="font-medium text-brand-700 underline">Budget provisoire</Link>
+        <Link to={`/d/${dossier.id}/synthese`} className="font-medium text-brand-700 underline">Synthèse</Link>
+      </p>
+    </Card>
   )
 }

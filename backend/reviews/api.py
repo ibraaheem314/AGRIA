@@ -100,6 +100,7 @@ def relecture_payload(campaign, user) -> dict:
                 "reason": d.reason,
                 "author": person(d.author),
                 "created_at": d.created_at,
+                "versions": d.versions,
             }
             for d in Decision.objects.filter(campaign=campaign).select_related("author")
         ],

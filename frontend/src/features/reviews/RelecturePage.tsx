@@ -145,8 +145,7 @@ function ReviewCard({ review, dossierId }: { review: Review; dossierId: number }
         {review.current ? <Badge tone="ok">À jour</Badge> : <Badge tone="warn">À réexaminer</Badge>}
       </div>
       <p className="mt-1 text-sm text-muted">
-        {review.advisor.display_name} · {formatDateTime(review.created_at)} · périmètre : {review.scope_labels.join(', ')} ·
-        version examinée : {versionsText(review.versions)}
+        Avis de {review.advisor.display_name} (conseiller) · {formatDateTime(review.created_at)} · périmètre : {review.scope_labels.join(', ')}
       </p>
       {!review.current && (
         <p className="mt-1 text-sm text-warn-700">
@@ -166,6 +165,7 @@ function ReviewCard({ review, dossierId }: { review: Review; dossierId: number }
       {open && detail.isPending && <Loading />}
       {open && detail.data && (
         <div className="mt-3 rounded-md border border-line p-3">
+          <p className="mb-2 text-sm text-muted">Version examinée : {versionsText(review.versions)}</p>
           <SectionsView snapshot={detail.data.snapshot} dossier={dossier} />
         </div>
       )}

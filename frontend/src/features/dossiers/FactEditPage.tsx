@@ -182,6 +182,13 @@ export function FactForm({
     )
   }
 
+  // Choix modifié alors que des précisions ou une source existent : inviter à les relire.
+  const hasNotes =
+    draft.source.trim() !== '' || fact.fields.some((f) => f.kind !== 'choice' && (draft.values[f.name] ?? '').trim() !== '')
+  const situationChanged =
+    baseline.status !== '' &&
+    hasNotes &&
+    (draft.status !== baseline.status || fact.fields.some((f) => f.kind === 'choice' && draft.values[f.name] !== baseline.values[f.name]))
   const error = save.error instanceof ApiError ? save.error : null
   const valueErrors = (error?.fields?.value ?? null) as Record<string, string> | string | null
   const fieldError = (name: string) =>
@@ -259,6 +266,13 @@ export function FactForm({
                 onChange={(e) => setDraft((d) => ({ ...d, source: e.target.value }))} />
             )}
           </Field>
+        )}
+
+        {situationChanged && (
+          <p role="note" className="rounded-md border border-line bg-surface p-2 text-sm">
+            La situation a changé : relisez les précisions et la source ci-dessus. Elles sont conservées telles
+            quelles ; rien n'est effacé automatiquement.
+          </p>
         )}
 
         <div className="flex flex-wrap gap-3">

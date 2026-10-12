@@ -66,3 +66,36 @@ test('erreur de chargement : aucun faux « rien à faire » ni « aucun retour �
   await expect(primary(page)).toHaveCount(0)
   await expect(page.getByText(/Aucune démarche ouverte|Aucun retour|Aucun point bloquant|Aucune intervention/)).toHaveCount(0)
 })
+
+test('dernière décision rappelée, attribuée, distincte de l’avis ; invitation à relire les précisions', async ({ page }) => {
+  await register(page, 'Decide')
+  const id = await createProject(page)
+  await save(page, id, 'Accès au terrain', async (p) => {
+    await p.getByLabel('Déclaré').check()
+    await p.getByLabel(/^Situation/).selectOption('en_discussion')
+    await p.getByLabel(/^Précisions/).fill('Accord oral du propriétaire.')
+  })
+  await page.goto(`/d/${id}/relecture`)
+  await page.getByRole('radio', { name: 'Poursuivre' }).check()
+  await page.getByRole('textbox', { name: /^Motifs/ }).fill('Terrain en bonne voie.')
+  await page.getByRole('button', { name: 'Enregistrer la décision' }).click()
+  await expect(page.getByText('Décision enregistrée.')).toBeVisible()
+
+  await page.goto(`/d/${id}`)
+  const decision = page.locator('section', { has: page.getByRole('heading', { name: 'Dernière décision du porteur' }) })
+  await expect(decision).toContainText('Poursuivre')
+  await expect(decision).toContainText('décision de Decide')
+  await expect(decision).toContainText('Motif : Terrain en bonne voie.')
+  await expect(decision).toContainText('« Poursuivre » n’est pas une approbation d’AGRIA')
+  await expect(decision).not.toContainText('modifié depuis')
+
+  // Changement de situation : invitation à relire, rien n'est effacé ; puis le fait est signalé.
+  await openFact(page, id, 'Accès au terrain')
+  await page.getByLabel(/^Situation/).selectOption('accord')
+  await expect(page.getByText(/La situation a changé : relisez les précisions et la source/)).toBeVisible()
+  await expect(page.getByLabel(/^Précisions/)).toHaveValue('Accord oral du propriétaire.')
+  await page.getByRole('button', { name: 'Enregistrer' }).click()
+  await expect(page.getByText(/« Accès au terrain » enregistré/)).toBeVisible()
+  await page.goto(`/d/${id}`)
+  await expect(decision).toContainText('Le dossier a été modifié depuis cette décision.')
+})
