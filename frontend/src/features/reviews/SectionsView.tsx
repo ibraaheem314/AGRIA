@@ -68,7 +68,11 @@ export function SectionsView({ snapshot, dossier, level = 3 }: { snapshot: Snaps
                 <li key={a.id}>
                   <strong>{a.title}</strong> — {a.status_label}
                   {a.status === 'bloquee' && <> : {a.blocked_reason}</>}
-                  {a.status === 'terminee' && <> ({a.result_date && formatDate(a.result_date)}) : {a.result_text}</>}
+                  {a.status === 'terminee' && (
+                    <>
+                      {' '}({[a.result_date && formatDate(a.result_date), a.result_outcome && `résultat ${a.result_outcome.toLowerCase()}`].filter(Boolean).join(', ')}) : {a.result_text}
+                    </>
+                  )}
                 </li>
               ))}
             </ul>

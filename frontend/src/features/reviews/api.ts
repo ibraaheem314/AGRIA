@@ -63,6 +63,8 @@ export type SnapshotAction = {
   blocked_reason: string
   result_text: string
   result_date: string | null
+  /** Libellé de l'issue (« Favorable », « Défavorable », « Incertain ») ; absent des anciens instantanés. */
+  result_outcome?: string | null
   due_date: string | null
 }
 export type SnapshotLine = {

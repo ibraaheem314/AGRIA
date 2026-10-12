@@ -140,6 +140,7 @@ def update_action(
         "blocked_reason": (data.get("blocked_reason") or "").strip() if status == "bloquee" else "",
         "result_text": (data.get("result_text") or "").strip() if status == "terminee" else "",
         "result_date": data.get("result_date") if status == "terminee" else None,
+        "result_outcome": (data.get("result_outcome") or "") if status == "terminee" else "",
         "due_date": data.get("due_date", action.due_date),
     }
     current = {k: getattr(action, k) for k in target}
@@ -163,6 +164,10 @@ def update_action(
             errors["result_date"] = "Indiquez la date de réalisation."
         elif target["result_date"] > timezone.localdate():
             errors["result_date"] = "La date de réalisation ne peut pas être dans le futur."
+        if not target["result_outcome"]:
+            errors["result_outcome"] = (
+                "Indiquez si le résultat est favorable, défavorable ou incertain."
+            )
     if errors:
         raise ValidationError(errors)
     if status == "terminee" and action.status != "terminee":
@@ -184,6 +189,7 @@ def update_action(
         blocked_reason=action.blocked_reason,
         result_text=action.result_text,
         result_date=action.result_date,
+        result_outcome=action.result_outcome,
         note="Échéance modifiée" if previous == status else "",
         author=author,
     )

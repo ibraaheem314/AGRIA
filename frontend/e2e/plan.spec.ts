@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { createProject, openFact, register } from './helpers'
 
-test('inconnue → point expliqué → démarche terminée avec résultat → contexte modifié sans perte', async ({ page }) => {
+test('inconnue → point expliqué → démarche terminée avec résultat incertain → mise à jour explicite → recalcul expliqué', async ({ page }) => {
   await register(page, 'Khady')
   const id = await createProject(page)
 
@@ -26,17 +26,35 @@ test('inconnue → point expliqué → démarche terminée avec résultat → co
   await page.getByRole('button', { name: 'Enregistrer' }).click()
   await expect(page.getByRole('alert')).toContainText('Non enregistré')
   await page.getByLabel('Résultat réel de la démarche').fill('Un puits partagé à 300 m, accès à négocier avec le chef de village.')
+  // L'issue est obligatoire : sans elle, rien n'est enregistré et la saisie reste.
+  await page.getByRole('button', { name: 'Enregistrer' }).click()
+  await expect(page.getByText('Indiquez si le résultat est favorable, défavorable ou incertain.')).toBeVisible()
+  await expect(page.getByLabel('Résultat réel de la démarche')).toHaveValue(/Un puits partagé/)
+  await page.getByRole('radio', { name: /Incertain/ }).check()
   await page.getByRole('button', { name: 'Enregistrer' }).click()
   await expect(page.getByText('Démarche terminée, résultat enregistré.')).toBeVisible()
   await expect(page.getByText('Un puits partagé à 300 m', { exact: false }).first()).toBeVisible()
 
-  // Le contexte change : la démarche terminée reste, une nouvelle démarche s'ajoute.
-  await openFact(page, id, "Accès à l'eau")
+  // Terminer ne règle rien : l'information n'a pas changé et le point reste ouvert.
+  const next = page.getByRole('heading', { name: 'Et maintenant : mettre le dossier à jour' })
+  await expect(next).toBeVisible()
+  await page.getByRole('link', { name: "Mettre à jour : Accès à l'eau" }).click()
+
+  // Le résultat est consultable pendant la mise à jour, sans rien préremplir.
+  const result = page.getByRole('region', { name: /Résultat de la démarche/ })
+  await expect(result).toContainText('résultat incertain')
+  await expect(result).toContainText('Un puits partagé à 300 m')
+  await expect(page.getByLabel('Je ne sais pas')).toBeChecked()
+
+  // Le contexte change explicitement : retour à la démarche, recalcul expliqué.
   await page.getByLabel('Déclaré').check()
   await page.getByLabel('Source principale').selectOption('puits')
   await page.getByRole('button', { name: 'Enregistrer' }).click()
-  await expect(page.getByText("« Accès à l'eau » enregistré.")).toBeVisible()
-  await page.getByRole('link', { name: 'Mon plan' }).click()
+  await expect(page.getByText(/« Accès à l'eau » enregistré\. Point encore ouvert : /)).toBeVisible()
+  await expect(page).toHaveURL(/\/plan\/\d+$/)
+
+  // La démarche terminée reste, une nouvelle démarche s'ajoute.
+  await page.getByRole('link', { name: 'Mon plan', exact: true }).click()
   const done = page.getByRole('region', { name: /Démarches terminées/ })
   await expect(done.getByText("Identifier une source d'eau utilisable")).toBeVisible()
   await expect(page.getByRole('link', { name: "Confirmer la disponibilité de l'eau pendant la période envisagée" }).first()).toBeVisible()

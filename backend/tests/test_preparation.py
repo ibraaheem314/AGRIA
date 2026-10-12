@@ -47,6 +47,8 @@ def action(data, key):
 
 
 def patch(sess, dossier, act, **changes):
+    if changes.get("status") == "terminee":
+        changes.setdefault("result_outcome", "favorable")
     return sess.patch(
         f"/api/dossiers/{dossier['id']}/actions/{act['id']}",
         {"expected_version": act["row_version"], **changes},
@@ -427,3 +429,59 @@ def test_dossier_vide_ne_signale_que_des_informations_a_completer(porteur, dossi
     checks = prep(porteur, dossier)["checks"]
     assert checks and all(c["level"] == "a_completer" for c in checks)
     assert checks[0]["fact_key"] == "localisation"  # ordre : le lieu d'abord
+
+
+# --- Lot 2 : issue du résultat et information liée ------------------------------------------
+
+
+def test_terminer_exige_l_issue_du_resultat(porteur, dossier):
+    put_info(porteur, dossier, "eau", "inconnu")
+    act = action(prep(porteur, dossier), "identifier-eau")
+    response = porteur.patch(
+        f"/api/dossiers/{dossier['id']}/actions/{act['id']}",
+        {"expected_version": act["row_version"], "status": "terminee", "result_text": "Puits vu",
+         "result_date": timezone.localdate().isoformat()},
+    )  # fmt: skip
+    assert response.status_code == 400
+    assert "result_outcome" in response.json()["error"]["fields"]
+
+
+@pytest.mark.parametrize("outcome", ["favorable", "defavorable", "incertain"])
+def test_demarche_terminee_ne_modifie_jamais_l_information(porteur, dossier, outcome):
+    put_info(porteur, dossier, "eau", "inconnu")
+    act = action(prep(porteur, dossier), "identifier-eau")
+    today = timezone.localdate().isoformat()
+    assert patch(porteur, dossier, act, status="terminee", result_text="Résultat noté",
+                 result_date=today, result_outcome=outcome).status_code == 200  # fmt: skip
+    data = prep(porteur, dossier)
+    done = action(data, "identifier-eau")
+    assert done["result_outcome"] == outcome
+    assert done["related_fact"] == {"key": "eau", "label": "Accès à l'eau"}
+    assert done["linked_check"]["fact_key"] == "eau"  # le point reste ouvert
+    fact = next(f for f in porteur.get(f"/api/dossiers/{dossier['id']}").json()["facts"]
+                if f["key"] == "eau")  # fmt: skip
+    assert fact["state"]["status"] == "inconnu"  # jamais transformée automatiquement
+
+
+def test_actualisation_explicite_recalcule_le_point(porteur, dossier):
+    put_info(porteur, dossier, "eau", "inconnu")
+    act = action(prep(porteur, dossier), "identifier-eau")
+    today = timezone.localdate().isoformat()
+    patch(porteur, dossier, act, status="terminee", result_text="Forage, accès à confirmer",
+          result_date=today, result_outcome="incertain")  # fmt: skip
+    # Le porteur actualise : source identifiée, simplement déclarée.
+    put_info(porteur, dossier, "eau", "declare", {"source": "forage"})
+    data = prep(porteur, dossier)
+    eau = next(c for c in data["checks"] if c["fact_key"] == "eau")
+    assert eau["message"] == "Disponibilité de l'eau déclarée mais non vérifiée"  # encore ouvert
+    assert action(data, "identifier-eau")["linked_check"] is None  # son point a disparu
+    # Une source vérifiée fait disparaître le point de l'eau.
+    put_info(porteur, dossier, "eau", "verifie", {"source": "forage"}, "Comité du forage")
+    assert all(c["fact_key"] != "eau" for c in prep(porteur, dossier)["checks"])
+
+
+def test_demarche_personnelle_sans_information_liee(porteur, dossier):
+    porteur.post(f"/api/dossiers/{dossier['id']}/actions",
+                 {"title": "Demander un devis", "request_id": str(uuid.uuid4())})  # fmt: skip
+    custom = next(a for a in prep(porteur, dossier)["actions"] if a["custom"])
+    assert custom["related_fact"] is None and custom["linked_check"] is None

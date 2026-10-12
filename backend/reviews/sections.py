@@ -12,7 +12,7 @@ from budget.calc import CATEGORIES, UNITS
 from dossiers import facts
 from dossiers.models import Campaign
 from preparation import services as preparation
-from preparation.models import ACTION_STATUSES, Action, CampaignPlan
+from preparation.models import ACTION_STATUSES, RESULT_OUTCOMES, Action, CampaignPlan
 from reviews.models import SECTIONS, VERDICTS, Decision, Review, ReviewRequest
 
 STATUS_LABELS = {
@@ -86,6 +86,7 @@ def section_content(campaign: Campaign, section: str) -> dict:
                     "blocked_reason": a.blocked_reason,
                     "result_text": a.result_text,
                     "result_date": a.result_date.isoformat() if a.result_date else None,
+                    "result_outcome": RESULT_OUTCOMES.get(a.result_outcome),
                     "due_date": a.due_date.isoformat() if a.due_date else None,
                 }
                 for a in actions

@@ -18,6 +18,14 @@ REVIEW_STATUSES = {
     "relu": "Relu",
 }
 
+# Issue du résultat d'une démarche, indiquée par le porteur. Elle ne modifie jamais une
+# information du dossier : c'est au porteur de la mettre à jour.
+RESULT_OUTCOMES = {
+    "favorable": "Favorable",
+    "defavorable": "Défavorable",
+    "incertain": "Incertain",
+}
+
 ACTION_STATUSES = {
     "a_faire": "À faire",
     "en_cours": "En cours",
@@ -80,6 +88,9 @@ class Action(models.Model):
     blocked_reason = models.TextField(blank=True)
     result_text = models.TextField("résultat", blank=True)
     result_date = models.DateField(null=True, blank=True)
+    result_outcome = models.CharField(
+        "issue du résultat", max_length=12, choices=list(RESULT_OUTCOMES.items()), blank=True
+    )
     due_date = models.DateField("échéance", null=True, blank=True)
     created_at_context_version = models.PositiveIntegerField(default=0)
     row_version = models.PositiveIntegerField(default=1)
@@ -127,6 +138,7 @@ class ActionEvent(models.Model):
     blocked_reason = models.TextField(blank=True)
     result_text = models.TextField(blank=True)
     result_date = models.DateField(null=True, blank=True)
+    result_outcome = models.CharField(max_length=12, blank=True)
     note = models.TextField(blank=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

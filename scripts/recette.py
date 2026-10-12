@@ -182,7 +182,7 @@ def main() -> int:
         })  # fmt: skip
         action = client.ok("GET", f"/dossiers/{did}/preparation")["actions"][0]
         client.ok("PATCH", f"/dossiers/{did}/actions/{action['id']}", {
-            "status": "terminee", "result_text": "Puits repéré",
+            "status": "terminee", "result_text": "Puits repéré", "result_outcome": "favorable",
             "result_date": time.strftime("%Y-%m-%d"), "expected_version": action["row_version"],
         })  # fmt: skip
         client.ok("POST", f"/dossiers/{did}/budget", {

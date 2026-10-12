@@ -97,7 +97,7 @@ class Command(BaseCommand):
             action = Action.objects.get(campaign=campaign, definition_key="identifier-eau")
             preparation.update_action(
                 action=action,
-                data={"status": "terminee", "result_date": today,
+                data={"status": "terminee", "result_date": today, "result_outcome": "incertain",
                       "result_text": "Exemple fictif : un puits partagé repéré."},
                 expected_version=action.row_version, author=u,
             )  # fmt: skip

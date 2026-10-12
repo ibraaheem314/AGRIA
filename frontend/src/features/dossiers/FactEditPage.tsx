@@ -1,14 +1,15 @@
-import { useQueryClient } from '@tanstack/react-query'
-import { useState, type FormEvent } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { useQueryClient, type QueryClient } from '@tanstack/react-query'
+import { useState, type FormEvent, type ReactNode } from 'react'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
 import { ApiError } from '../../shared/api'
 import { useUnsavedChanges } from '../../shared/unsaved'
-import { formatDateTime } from '../../shared/format'
+import { formatDate, formatDateTime } from '../../shared/format'
 import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { dossierKey, useFactHistory, useSaveFact, type Dossier, type FactItem, type FactStatus, type FactValue, type FieldDef } from './api'
 import { describeValue, STATUS_LABEL, STATUS_TONE } from './factDisplay'
 import { SituationLine, useOpenPoints } from './ProjectPage'
 import { useCurrentDossier } from './DossierLayout'
+import { fetchPreparation, preparationKey, usePreparation } from '../plan/api'
 
 type EditableStatus = Exclude<FactStatus, 'non_renseigne'>
 type Draft = { status: EditableStatus | ''; values: Record<string, string>; source: string }
@@ -37,9 +38,33 @@ function valueFrom(fact: FactItem, draft: Draft): FactValue | null {
   return value
 }
 
+/**
+ * Après l'enregistrement, relit les vérifications (le serveur les recalcule) pour dire en clair
+ * si un point reste signalé sur cette information. Jamais une validation du projet.
+ */
+export async function savedSummary(queryClient: QueryClient, dossierId: number, fact: FactItem, changed: boolean) {
+  if (!changed) return 'Aucun changement à enregistrer.'
+  const saved = `« ${fact.label} » enregistré.`
+  try {
+    const prep = await queryClient.fetchQuery({
+      queryKey: preparationKey(dossierId),
+      queryFn: () => fetchPreparation(dossierId),
+      staleTime: 0,
+    })
+    const check = prep.checks.find((c) => c.fact_key === fact.key)
+    if (check) return `${saved} Point encore ouvert : ${check.message}.`
+    return `${saved} Plus aucun point n'est signalé sur cette information par les règles disponibles (ce n'est pas une validation du projet).`
+  } catch {
+    return `${saved} Les vérifications n'ont pas pu être relues : consultez Mon plan.`
+  }
+}
+
 export function FactEditPage() {
   const dossier = useCurrentDossier()
+  const navigate = useNavigate()
   const { factKey = '' } = useParams()
+  const [searchParams] = useSearchParams()
+  const fromAction = Number(searchParams.get('depuis')) || null
   const fact = dossier.facts.find((f) => f.key === factKey)
   if (!fact) {
     return (
@@ -56,8 +81,20 @@ export function FactEditPage() {
       </p>
       <PageTitle subtitle={fact.why}>{fact.label}</PageTitle>
       <FactSituation dossierId={dossier.id} factKey={fact.key} />
+      {fromAction && <ActionResult dossierId={dossier.id} actionId={fromAction} factKey={fact.key} />}
       {editable ? (
-        <FactForm key={fact.key} fact={fact} dossierId={dossier.id} statuses={dossier.statuses} />
+        <FactForm
+          key={fact.key}
+          fact={fact}
+          dossierId={dossier.id}
+          statuses={dossier.statuses}
+          cancelTo={fromAction ? `/d/${dossier.id}/plan/${fromAction}` : `/d/${dossier.id}/projet`}
+          onSaved={(message) =>
+            navigate(fromAction ? `/d/${dossier.id}/plan/${fromAction}` : `/d/${dossier.id}/projet`, {
+              state: { flash: message },
+            })
+          }
+        />
       ) : (
         <Card>
           <Badge tone={STATUS_TONE[fact.state.status]}>{STATUS_LABEL[fact.state.status]}</Badge>
@@ -77,18 +114,28 @@ export function FactEditPage() {
   )
 }
 
-function FactForm({
+/** Formulaire d'une information, partagé par la page de l'information et le pas-à-pas. */
+export function FactForm({
   fact,
   dossierId,
   statuses,
+  cancelTo,
+  onSaved,
+  submitLabel = 'Enregistrer',
+  extraActions,
 }: {
   fact: FactItem
   dossierId: number
   statuses: { value: EditableStatus; label: string; help: string }[]
+  cancelTo: string | null
+  /** Appelé une fois l'écriture confirmée et le recalcul relu ; la navigation qui suit est autorisée. */
+  onSaved: (message: string) => void
+  submitLabel?: string
+  extraActions?: ReactNode
 }) {
-  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const save = useSaveFact(dossierId, fact.key)
+  const [finishing, setFinishing] = useState(false)
   const [draft, setDraft] = useState<Draft>(() => draftFrom(fact))
   const [baseline, setBaseline] = useState<Draft>(() => draftFrom(fact))
   const { allowNextNavigation } = useUnsavedChanges(JSON.stringify(draft) !== JSON.stringify(baseline))
@@ -118,11 +165,12 @@ function FactForm({
     save.mutate(
       { status: draft.status, value: valueFrom(fact, draft), source: draft.source, expected_version: expectedVersion },
       {
-        onSuccess: (result) => {
+        onSuccess: async (result) => {
+          setFinishing(true)
+          const message = await savedSummary(queryClient, dossierId, fact, result.changed)
+          setFinishing(false)
           allowNextNavigation()
-          navigate(`/d/${dossierId}/projet`, {
-            state: { flash: result.changed ? `« ${fact.label} » enregistré.` : 'Aucun changement à enregistrer.' },
-          })
+          onSaved(message)
         },
       },
     )
@@ -208,12 +256,15 @@ function FactForm({
         )}
 
         <div className="flex flex-wrap gap-3">
-          <Button type="submit" busy={save.isPending}>
-            {error?.network ? 'Réessayer l’enregistrement' : 'Enregistrer'}
+          <Button type="submit" busy={save.isPending || finishing}>
+            {error?.network ? 'Réessayer l’enregistrement' : submitLabel}
           </Button>
-          <Link to={`/d/${dossierId}/projet`} className="inline-flex min-h-11 items-center px-2 text-brand-700 underline">
-            Annuler
-          </Link>
+          {extraActions}
+          {cancelTo && (
+            <Link to={cancelTo} className="inline-flex min-h-11 items-center px-2 text-brand-700 underline">
+              Annuler
+            </Link>
+          )}
         </div>
       </form>
     </Card>
@@ -292,4 +343,31 @@ function History({ dossierId, fact }: { dossierId: number; fact: FactItem }) {
 function FactSituation({ dossierId, factKey }: { dossierId: number; factKey: string }) {
   const open = useOpenPoints(dossierId).get(factKey)
   return open ? <SituationLine check={open} dossierId={dossierId} /> : null
+}
+
+/**
+ * Résultat de la démarche d'où l'on vient, à relire pendant la mise à jour. Il ne remplit
+ * rien : la valeur enregistrée reste celle du formulaire tant que le porteur ne la change pas.
+ */
+function ActionResult({ dossierId, actionId, factKey }: { dossierId: number; actionId: number; factKey: string }) {
+  const prep = usePreparation(dossierId)
+  const action = prep.data?.actions.find((a) => a.id === actionId)
+  if (!action || action.status !== 'terminee' || action.related_fact?.key !== factKey) return null
+  return (
+    <section aria-labelledby="resultat-demarche" className="rounded-md border border-line bg-surface p-4">
+      <h2 id="resultat-demarche" className="font-semibold">Résultat de la démarche « {action.title} »</h2>
+      <p className="mt-1 text-sm text-muted">
+        Terminée{action.result_date ? ` le ${formatDate(action.result_date)}` : ''}
+        {action.result_outcome_label ? ` · résultat ${action.result_outcome_label.toLowerCase()}` : ''}
+      </p>
+      {action.result_text && <p className="mt-2 whitespace-pre-line">{action.result_text}</p>}
+      <p className="mt-2 text-sm">
+        Ce résultat ne modifie pas l'information ci-dessous : c'est à vous de décider ce que vous enregistrez.
+        Choisissez « Vérifié » seulement si vous indiquez ce qui le confirme ; un résultat favorable ne suffit pas.
+      </p>
+      <Link to={`/d/${dossierId}/plan/${action.id}`} className="mt-2 inline-block text-sm text-brand-700 underline">
+        Revenir à la démarche
+      </Link>
+    </section>
+  )
 }
