@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { advisorReasons } from '../Shell'
 import { factLabel, HOW_KNOWN, SUBJECTS } from '../data/facts'
@@ -15,58 +16,40 @@ export function DossierHome() {
   return role === 'conseiller' ? <AdvisorOverview /> : <Synthesis />
 }
 
-/** Porteur : la synthèse vivante du dossier, lisible dès les premières réponses. */
+/** Porteur : un résumé bref, une étape mise en avant, puis les sujets ; le détail est dans chaque sujet. */
 function Synthesis() {
   const { dossier: d, checks, canEdit, base } = useDossierCtx()
   const [params] = useSearchParams()
   const first = params.get('premiere') === '1'
+  const archived = Boolean(d.archivedAt)
   const step = canEdit ? nextStep(d, checks) : null
   const subjects = subjectsFor(d)
-  const facts = subjects.flatMap((s) => s.facts)
-  const known = facts.filter((k) => ['declare', 'estime', 'verifie'].includes((d.facts[k] ?? EMPTY).status))
-  const unknown = facts.filter((k) => (d.facts[k] ?? EMPTY).status === 'inconnu')
-  const notYet = facts.filter((k) => (d.facts[k] ?? EMPTY).status === 'non_renseigne')
-  const open = checks.filter((c) => c.level !== 'a_completer')
-  const actionsOpen = d.actions.filter((a) => a.status !== 'terminee')
+  const summaryKeys = ['culture', 'periode', 'localisation', 'acces_terrain', 'eau', 'debouches'].filter((k) => subjects.some((s) => s.facts.includes(k)))
 
   return (
     <div className="space-y-6">
       <PageHeader eyebrow={`${d.campaign}${d.profile === 'producteur' ? ' · producteur' : ''}`} title={d.projectName}>
-        <p>« {d.idea} »</p>
+        {d.idea && <p>« {d.idea} »</p>}
       </PageHeader>
 
-      {first && (
-        <section aria-labelledby="depart" className="rounded-xl bg-surface p-5 ring-2 ring-brand-700/40">
-          <h2 id="depart" className="text-lg font-semibold">Votre point de départ</h2>
-          <p className="mt-1 text-sm text-muted">
-            Voici ce que votre dossier dit déjà. Ce n'est pas un avis sur la faisabilité : c'est ce qui est connu, ce qui ne l'est pas
-            encore, et des démarches pour avancer.
-          </p>
-          <div className="mt-4 grid gap-4 md:grid-cols-3">
-            <div>
-              <Eyebrow>Ce que vous savez ({known.length})</Eyebrow>
-              <ul className="mt-2 space-y-1 text-sm">
-                {known.map((k) => <li key={k}><span className="font-medium">{factLabel(k, d.profile)}</span> : {describe(k, d.facts[k]!)}</li>)}
-                {known.length === 0 && <li className="text-muted">Rien pour l'instant.</li>}
-              </ul>
-            </div>
-            <div>
-              <Eyebrow>À éclaircir ({open.length})</Eyebrow>
-              <ul className="mt-2 space-y-1 text-sm">
-                {open.map((c) => <li key={c.key}>{c.message}</li>)}
-                {notYet.length > 0 && <li className="text-muted">Pas encore abordé : {notYet.map((k) => factLabel(k, d.profile)).join(', ')}.</li>}
-              </ul>
-            </div>
-            <div>
-              <Eyebrow>Démarches proposées ({actionsOpen.length})</Eyebrow>
-              <ul className="mt-2 space-y-1 text-sm">
-                {actionsOpen.map((a) => <li key={a.id}><TextLink to={`${base}/demarches/${a.id}`}>{a.title}</TextLink></li>)}
-                {actionsOpen.length === 0 && <li className="text-muted">Aucune pour l'instant.</li>}
-              </ul>
-            </div>
-          </div>
-        </section>
-      )}
+      <section aria-labelledby="resume" className="space-y-2">
+        <h2 id="resume" className="text-sm font-semibold uppercase tracking-wider text-muted">
+          {first ? 'Votre point de départ' : archived ? 'Ce qui était indiqué' : 'Ce que vous avez indiqué'}
+        </h2>
+        <ul className="flex flex-wrap gap-x-5 gap-y-1.5">
+          {summaryKeys.map((k) => {
+            const f = d.facts[k] ?? EMPTY
+            const text = d.deferred.includes(k) && f.status === 'non_renseigne' ? 'à répondre plus tard' : f.status === 'non_renseigne' ? 'pas encore abordé' : f.status === 'inconnu' ? 'inconnu pour l’instant' : describe(k, f)
+            return (
+              <li key={k} className="text-sm">
+                <span className="text-muted">{factLabel(k, d.profile)} : </span>
+                <span className={f.status === 'declare' || f.status === 'estime' || f.status === 'verifie' ? 'font-medium' : 'italic text-muted'}>{text}</span>
+              </li>
+            )
+          })}
+        </ul>
+        {first && <p className="text-sm text-muted">Ce n'est pas un avis sur la faisabilité : c'est ce qui est connu, ce qui ne l'est pas encore, et une première étape.</p>}
+      </section>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
         <div className="space-y-6">
@@ -77,127 +60,82 @@ function Synthesis() {
           ) : (
             <Panel>
               <h2 className="font-semibold">Aucune démarche ouverte pour l'instant</h2>
-              <p className="mt-1 text-sm text-muted">Vous pouvez compléter un sujet, préparer le budget ou écrire à votre conseiller.</p>
+              <p className="mt-1 text-sm text-muted">Vous pouvez compléter un sujet, préparer le budget ou écrire au conseiller.</p>
             </Panel>
           ))}
+          {canEdit && (
+            <p className="text-sm text-muted">
+              Ou bien : <TextLink to={`${base}/demarches`}>choisir une autre démarche</TextLink> · <TextLink to={`${base}/budget`}>préparer le budget</TextLink> · compléter un sujet ci-dessous.
+            </p>
+          )}
 
           <section aria-labelledby="sujets">
-            <SectionTitle id="sujets" aside={<span className="text-sm text-muted">{known.length} connus · {unknown.length} inconnus · {notYet.length} pas encore abordés</span>}>
-              Où en est le projet
-            </SectionTitle>
+            <SectionTitle id="sujets">{archived ? 'Les sujets à l’archivage' : 'Les sujets du dossier'}</SectionTitle>
             <ul className="divide-y divide-line overflow-hidden rounded-xl bg-surface ring-1 ring-line">
               {subjects.map((s) => {
                 const state = subjectState(d, s, checks)
+                const open = checks.find((c) => s.facts.includes(c.factKey) && c.level !== 'a_completer')
                 const related = d.actions.filter((a) => a.factKey && s.facts.includes(a.factKey))
-                const deferred = s.facts.some((k) => d.deferred.includes(k))
+                const deferred = s.facts.some((k) => d.deferred.includes(k) && (d.facts[k] ?? EMPTY).status === 'non_renseigne')
+                const line = open ? open.message : state === 'non_aborde' ? (deferred ? 'Remis à plus tard' : 'Pas encore abordé') : state === 'rien_signale' ? 'Rien n’est signalé par les règles disponibles' : 'Certaines informations restent à donner'
                 return (
                   <li key={s.key}>
-                    <Link to={`${base}/sujet/${s.key}`} className="block px-4 py-4 hover:bg-canvas focus-visible:bg-canvas sm:px-5">
-                      <span className="flex flex-wrap items-center justify-between gap-2">
-                        <span className="font-semibold text-ink">{s.title}</span>
-                        <span className="flex flex-wrap gap-1.5">
-                          <Chip tone={SUBJECT_TONE[state]}>{SUBJECT_STATE_LABEL[state]}</Chip>
-                          {deferred && <Chip tone="muted">Remis à plus tard</Chip>}
-                        </span>
+                    <Link to={`${base}/sujet/${s.key}`} className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-4 py-3.5 hover:bg-canvas focus-visible:bg-canvas sm:px-5">
+                      <span className="min-w-0">
+                        <span className="block font-semibold text-ink">{s.title}</span>
+                        <span className="block text-sm text-muted">{line}{related.length ? ` · ${related.length} démarche${related.length > 1 ? 's' : ''}` : ''}</span>
                       </span>
-                      <span className="mt-1 block text-sm text-muted">
-                        {s.facts.map((k) => `${factLabel(k, d.profile)} : ${describe(k, d.facts[k] ?? EMPTY)}`).join(' · ')}
-                      </span>
-                      {related.length > 0 && (
-                        <span className="mt-1 block text-sm">
-                          {related.map((a) => `${a.title} (${a.status === 'terminee' ? `terminée${a.result ? `, résultat ${OUTCOME_LABEL[a.result.outcome].toLowerCase()}` : ''}` : a.status === 'en_cours' ? 'en cours' : a.status === 'bloquee' ? 'bloquée' : 'à faire'})`).join(' · ')}
-                        </span>
-                      )}
+                      <Chip tone={SUBJECT_TONE[state]}>{subjectStateLabel(state, archived)}</Chip>
                     </Link>
                   </li>
                 )
               })}
             </ul>
-            <p className="mt-2 text-sm text-muted">
-              « Rien de signalé » veut dire que les règles disponibles ne relèvent rien sur ce sujet : ce n'est pas une validation.
-            </p>
+            <p className="mt-2 text-sm text-muted">Le détail, les démarches et l'historique de chaque sujet s'ouvrent en le sélectionnant. « Rien de signalé » n'est pas une validation.</p>
           </section>
         </div>
-
-        <aside className="space-y-4" aria-label="Résumés">
-          <SideActions />
-          <SideBudget />
-          <SideAdvisor />
-          {d.decisions.length > 0 && <SideDecision />}
-        </aside>
+        <StatePanel />
       </div>
     </div>
   )
 }
 
-function SideActions() {
+/** Un seul panneau d'état : informations, démarches, budget, conseiller, décision. */
+function StatePanel() {
   const { dossier: d, base } = useDossierCtx()
+  const archived = Boolean(d.archivedAt)
+  const facts = subjectsFor(d).flatMap((s) => s.facts)
+  const count = (st: string[]) => facts.filter((k) => st.includes((d.facts[k] ?? EMPTY).status)).length
   const by = (s: string) => d.actions.filter((a) => a.status === s).length
-  return (
-    <Panel>
-      <Eyebrow>Démarches</Eyebrow>
-      <p className="mt-1">{by('a_faire')} à faire · {by('en_cours')} en cours · {by('terminee')} terminée{by('terminee') > 1 ? 's' : ''}{by('bloquee') ? ` · ${by('bloquee')} bloquée` : ''}</p>
-      <p className="mt-1 text-sm text-muted">Proposées à partir d'un contenu générique, non relu par un spécialiste.</p>
-      <TextLink to={`${base}/demarches`} className="mt-2 inline-block">Voir les démarches</TextLink>
-    </Panel>
-  )
-}
-
-function SideBudget() {
-  const { dossier: d, base } = useDossierCtx()
+  const open = by('a_faire') + by('en_cours') + by('bloquee')
   const t = budgetTotals(d.budget)
-  return (
-    <Panel>
-      <Eyebrow>Budget provisoire</Eyebrow>
-      {t.count === 0 ? (
-        <p className="mt-1">Aucun poste pour l'instant.</p>
-      ) : (
-        <p className="mt-1">
-          {t.priced > 0 ? <>Postes chiffrés : <strong>{formatFcfa(t.priced)}</strong></> : 'Aucun poste chiffré'}
-          {t.missing > 0 && <span className="block text-warn-700">{t.missing} poste{t.missing > 1 ? 's' : ''} à chiffrer : le coût total n'est pas connu.</span>}
-        </p>
-      )}
-      <TextLink to={`${base}/budget`} className="mt-2 inline-block">Ouvrir le budget</TextLink>
-    </Panel>
-  )
-}
-
-function SideAdvisor() {
-  const { dossier: d, base } = useDossierCtx()
   const waiting = d.threads.filter((m) => questionState(d, m, 'porteur') === 'a_repondre').length
-  const last = d.reviews[d.reviews.length - 1]
+  const review = d.reviews[d.reviews.length - 1]
+  const decision = d.decisions[d.decisions.length - 1]
+  const row = (label: string, body: ReactNode, to?: string, link?: string) => (
+    <div className="py-2.5">
+      <dt className="text-xs font-semibold uppercase tracking-wider text-muted">{label}</dt>
+      <dd className="mt-0.5 text-sm">{body}{to && <> <TextLink to={to}>{link}</TextLink></>}</dd>
+    </div>
+  )
   return (
-    <Panel>
-      <Eyebrow>Conseiller</Eyebrow>
-      {d.advisors.length === 0 ? (
-        <p className="mt-1 text-sm">Aucun conseiller attribué. Vous pouvez déjà noter vos questions ; aucune réponse ne peut être promise.</p>
-      ) : (
-        <p className="mt-1 text-sm">{PEOPLE[d.advisors[0]!.id].name}</p>
-      )}
-      {waiting > 0 && <p className="mt-1 font-medium text-warn-700">{waiting === 1 ? 'Une question attend votre réponse.' : `${waiting} questions attendent votre réponse.`}</p>}
-      {last && (
-        <p className="mt-1 text-sm">
-          Dernier avis : {VERDICT_LABEL[last.verdict]}{' '}
-          {staleSections(d, last).length ? <Chip tone="warn">À réexaminer</Chip> : <Chip tone="ok">À jour</Chip>}
-        </p>
-      )}
-      <TextLink to={`${base}/echanges`} className="mt-2 inline-block">{d.advisors.length ? 'Échanges et avis' : 'Préparer mes questions'}</TextLink>
-    </Panel>
+    <aside aria-label="État du dossier" className="self-start rounded-xl bg-surface px-4 py-2 ring-1 ring-line sm:px-5">
+      <h2 className="pt-2 font-semibold">État du dossier</h2>
+      <dl className="divide-y divide-line">
+        {row('Informations', `${count(['declare', 'estime', 'verifie'])} connues · ${count(['inconnu'])} inconnues · ${count(['non_renseigne'])} pas encore abordées`)}
+        {row('Démarches', archived ? `À l'archivage : ${open} restai${open > 1 ? 'ent' : 't'} à faire · ${by('terminee')} terminée${by('terminee') > 1 ? 's' : ''}.` : `${open} ouverte${open > 1 ? 's' : ''} · ${by('terminee')} terminée${by('terminee') > 1 ? 's' : ''}.`, `${base}/demarches`, 'Voir')}
+        {row('Budget', t.count === 0 ? 'Aucun poste pour l’instant.' : <>{t.priced > 0 ? `${formatFcfa(t.priced)} chiffrés` : 'Rien de chiffré'}{t.missing > 0 && <span className="text-warn-700"> · {t.missing} à chiffrer, total inconnu</span>}.</>, `${base}/budget`, 'Ouvrir')}
+        {row('Conseiller', <>{d.advisors.length === 0 ? 'Aucun conseiller attribué.' : PEOPLE[d.advisors[0]!.id].name}{waiting > 0 && <span className="font-medium text-warn-700"> Une réponse est attendue de vous.</span>}{review && <> Dernier avis : {VERDICT_LABEL[review.verdict].toLowerCase()}{staleSections(d, review).length ? ', à réexaminer' : ''}.</>}</>, `${base}/echanges`, d.advisors.length ? 'Échanges' : 'Préparer mes questions')}
+        {decision && row('Votre dernière décision', <>{DECISION_LABEL[decision.choice]} ({formatDay(decision.at)}). <span className="text-muted">Décision du porteur, pas un avis ni une approbation d'AGRIA.</span></>)}
+      </dl>
+      <p className="pb-3 pt-1 text-xs text-muted">Démarches proposées à partir d'un contenu générique, non relu par un spécialiste.</p>
+    </aside>
   )
 }
 
-function SideDecision() {
-  const { dossier: d, base } = useDossierCtx()
-  const last = d.decisions[d.decisions.length - 1]!
-  return (
-    <Panel>
-      <Eyebrow>Votre dernière décision</Eyebrow>
-      <p className="mt-1 font-semibold">{DECISION_LABEL[last.choice]}</p>
-      <p className="text-sm text-muted">{formatDay(last.at)} — {last.reason}</p>
-      <p className="mt-1 text-sm text-muted">C'est la décision du porteur, pas un avis du conseiller ni une approbation d'AGRIA.</p>
-      <TextLink to={`${base}/echanges#decision`} className="mt-2 inline-block">Revoir</TextLink>
-    </Panel>
-  )
+function subjectStateLabel(state: SubjectState, archived: boolean): string {
+  if (!archived) return SUBJECT_STATE_LABEL[state]
+  return { non_aborde: 'Non abordé', inconnu: 'Restait inconnu', ouvert: 'Restait à éclaircir', rien_signale: 'Rien de signalé' }[state]
 }
 
 /** Conseiller : comprendre le dossier en une minute, et voir ce qui l'attend. */

@@ -19,14 +19,14 @@ function DemoBar() {
   const awaDossier = state.dossiers.find((d) => d.owner === 'awa')
   return (
     <div className="no-print bg-ink text-white">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2 text-sm">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-3 gap-y-1 px-4 py-1.5 text-sm">
         <p className="font-semibold">
-          Prototype UX1 <span className="font-normal text-white/80">· données fictives<span className="hidden sm:inline"> gardées dans ce navigateur, rien n'est envoyé</span></span>
+          Prototype<span className="hidden sm:inline"> UX1</span> <span className="font-normal text-white/80">· fictif<span className="hidden md:inline"> : données gardées dans ce navigateur, rien n'est envoyé</span></span>
         </p>
-        <label className="flex items-center gap-2">
+        <label className="flex items-center gap-1.5">
           <span className="text-white/80">Voir comme</span>
           <select
-            className="rounded-md border border-white/30 bg-ink px-2 py-1.5 text-white"
+            className="min-h-9 max-w-[11rem] rounded-md border border-white/30 bg-ink px-1.5 py-1 text-white sm:max-w-none"
             value={viewer}
             onChange={(e) => {
               const v = e.target.value as Viewer
@@ -40,7 +40,7 @@ function DemoBar() {
           </select>
         </label>
         <details className="relative open:w-full sm:open:w-auto">
-          <summary className="cursor-pointer rounded-md px-2 py-1.5 underline underline-offset-2">Outils de démonstration</summary>
+          <summary className="flex min-h-9 cursor-pointer items-center rounded-md px-1 underline underline-offset-2">Outils<span className="hidden sm:inline">&nbsp;de démonstration</span></summary>
           <div className="mt-2 w-full space-y-4 rounded-xl bg-surface p-4 text-ink shadow-lg ring-1 ring-line sm:absolute sm:left-0 sm:top-full sm:z-30 sm:w-[22rem]">
             <div>
               <p className="font-semibold">Attribution d'un conseiller</p>
@@ -157,7 +157,7 @@ function Header() {
   const advisorView = viewer === 'ndiaye' && d && d.owner !== viewer
   return (
     <header className="border-b border-line bg-surface">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2 sm:py-3">
         <div className="min-w-0">
           <Link to="/" className="text-lg font-bold tracking-tight text-brand-700">AGRIA</Link>
           {d && (
@@ -167,7 +167,7 @@ function Header() {
             </p>
           )}
         </div>
-        <p className="shrink-0 text-right text-sm">
+        <p className="hidden shrink-0 text-right text-sm sm:block">
           <span className="block font-medium">{person.name}</span>
           <span className="text-muted">{person.role === 'conseiller' ? 'Conseillère' : person.profile === 'producteur' ? 'Producteur' : 'Débutante'}</span>
         </p>
@@ -206,7 +206,7 @@ function ShellInner() {
       </a>
       <DemoBar />
       <Header />
-      <div className="mx-auto flex max-w-6xl gap-8 px-4 py-6">
+      <div className="mx-auto flex max-w-6xl gap-8 px-4 py-4 sm:py-6">
         {nav.length > 0 && (
           <nav aria-label="Navigation principale" className="hidden w-52 shrink-0 lg:block">
             <div className="sticky top-4"><NavLinks items={nav} layout="side" /></div>
