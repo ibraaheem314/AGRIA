@@ -10,7 +10,7 @@ Mise à jour : 12 octobre 2026 (conception du parcours cible avant intégration)
 |---|---|---|
 | Fondations techniques (F1–F6) | **Livrées** sur `refonte/fondations` | [AVANCEMENT.md](docs/AVANCEMENT.md), briques 0 à 7 |
 | Parcours débutant (pas à pas, démarche reliée à l'information, budget guidé) | **Livré et vérifié techniquement** ; compréhension **à tester** en G1/G2 | [AVANCEMENT.md](docs/AVANCEMENT.md), « Parcours débutant » ; D-048 à D-050 |
-| Expérience cible et frontend | **UX1 livré** : prototype navigable isolé (`npm run prototype`), en attente de l'essai du fondateur (UX2) ; rien n'est intégré à l'application | UX1–UX3 ci-dessous ; D-051 ; [AVANCEMENT.md](docs/AVANCEMENT.md), « UX1 » |
+| Expérience cible et frontend | **UX1 livré** (prototype navigable isolé, `npm run prototype`). **UX2 en cours** : première itération du prototype faite à partir des captures du fondateur (démarrage, synthèse, budget, échanges) ; essai à poursuivre. **UX3 non commencé** : rien n'est intégré à l'application | UX1–UX3 ci-dessous ; D-051 ; [AVANCEMENT.md](docs/AVANCEMENT.md), « UX1 » |
 | Contrôles exécutés | **Locaux uniquement** ; runtime courant Python 3.14.8, résultats détaillés dans le rapport | [AVANCEMENT.md](docs/AVANCEMENT.md), lots et corrections après revue |
 | CI GitHub | Configurée, **jamais exécutée** (aucun envoi) | [RESUME_PR.md](docs/RESUME_PR.md) |
 | Préparation du terrain | **Kit G1 et protocole G2 prêts**, non exécutés | [VALIDATION_TERRAIN.md](docs/VALIDATION_TERRAIN.md) |
@@ -79,6 +79,6 @@ Capteurs ou plateforme IoT, chatbot généraliste, marketplace, paiement, crédi
 
 ## Revue hebdomadaire
 
-Noter l'étape en cours, les preuves nouvelles, le temps et les dépenses, les risques, la prochaine action avec son responsable et son échéance, et les décisions. Limiter le travail en parallèle à une étape de terrain et une tâche produit ou technique directement utile. Étape produit active : **UX2** (essai du prototype UX1 livré le 12/10/2026) ; UX3 n'est pas commencée.
+Noter l'étape en cours, les preuves nouvelles, le temps et les dépenses, les risques, la prochaine action avec son responsable et son échéance, et les décisions. Limiter le travail en parallèle à une étape de terrain et une tâche produit ou technique directement utile. Étape produit active : **UX2** (prototype UX1 livré le 12/10/2026, itéré le 13/10/2026 ; essai et observations à poursuivre, rien n'est validé) ; UX3 n'est pas commencée.
 
 Références : [produit](docs/PRODUIT.md), [stratégie](docs/STRATEGIE.md), [terrain](docs/VALIDATION_TERRAIN.md), [décisions](docs/DECISIONS.md), [avancement](docs/AVANCEMENT.md).

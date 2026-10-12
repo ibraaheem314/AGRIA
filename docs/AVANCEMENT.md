@@ -579,3 +579,31 @@ Défauts du prototype trouvés en inspectant les captures, et corrigés : pannea
 - Le prototype ne démontre ni l'utilité terrain, ni le besoin commercial, ni la pertinence agronomique (G1, G2).
 - Le calcul des points est une copie locale du moteur, et le registre des informations une copie de `dossiers/facts.py` : une évolution de l'application ne s'y reporte pas.
 - L'état vit dans un seul navigateur : deux personnes ne partagent pas la démonstration.
+
+
+# UX2 — première itération du prototype (13/10/2026)
+
+Itération ciblée sur trois moments (commencer, comprendre la synthèse et choisir une étape, obtenir de l'aide), à partir des captures du fondateur et d'une inspection du code. **Ce ne sont pas des observations d'utilisateurs représentatifs** ; les bénéfices ci-dessous restent à vérifier. Le prototype reste séparé de l'application ; rien n'est intégré (UX3 non commencé).
+
+| Difficulté observée | Changement | Bénéfice attendu, à vérifier |
+|---|---|---|
+| L'accueil promettait « Partez de votre idée, pas d'un formulaire », puis deux longues pages de formulaires ; chaque question répétait « Je réponds / Je ne sais pas encore / Plus tard » ; « Trois points décisifs » exagérait leur portée | Promesse « Préparez votre première campagne » ; quatre courtes étapes (une question, ou deux étroitement liées : culture et période, lieu et terrain), avancement affiché, retour sans perte ; réponse proposée directement, avec « Je ne sais pas encore » (enregistré) ou « Répondre plus tard » (rien d'enregistré) ; récapitulatif modifiable et phrase facultative ; « Quelques premières questions » | Un démarrage lisible sur téléphone, sans écran interminable ni micro-écrans |
+| La synthèse répétait les mêmes informations (connu, à éclaircir, démarches, sujets, compteurs) ; l'action principale arrivait loin sur téléphone | Résumé bref de ce qui a été indiqué, une étape mise en avant avec sa raison et les autres actions possibles, sujets sur une ligne chacun (sans répéter valeurs ni démarches), un seul panneau « État du dossier » ; bandeau de démonstration compacté | Une seule chose à faire visible sans défiler, sans perte d'information (tout reste dans les sujets) |
+| Budget vide : compteurs et sections vides avant l'aide utile | Deux présentations : budget vide guidé (« Préparer mes premières dépenses », postes à examiner tout de suite, poste libre) ; budget commencé (chiffré, à chiffrer, somme disponible si renseignée, lignes) | Savoir par où commencer sans connaître les rubriques |
+| Sans conseiller, « Envoyer » et « Message envoyé » laissaient croire à une réception ; le conseiller trouvait son intervention après de longs blocs ; il lisait « Vous l'affirmez » pour une déclaration du porteur ; l'archive parlait au présent | « Enregistrer ma question » et confirmation de conservation sans destinataire ; avec conseiller, « Partager… », sans email ni SMS ; états enregistrée / partagée en attente / réponse reçue / échange clôturé ; intervention du conseiller en tête ; « Déclaré par le porteur », « Connaissances agricoles du porteur », sujets « Les moyens », « L'expérience » ; archive : « Restait à faire à l'archivage », « Démarches terminées pendant cette campagne » | Savoir qui reçoit quoi et à qui appartient chaque information |
+
+### Compromis et limites
+
+- Les quatre étapes du démarrage regroupent des questions liées pour éviter une succession de micro-écrans ; une question sans réponse doit être explicitement différée ou déclarée inconnue (pas de « plus tard » implicite).
+- « Laisser de côté » un poste de budget reste local à la visite (inchangé).
+- Le même défaut d'attribution existe dans l'application livrée (libellés « Vos… » lus par le conseiller) : à traiter en UX3 si ce parcours est retenu.
+- Format des données du prototype inchangé (version 3) : l'état laissé dans un navigateur par la version UX1 reste utilisable, vérifié par un test à partir d'un état enregistré avec la version précédente.
+
+### Vérifications
+
+| Commande | Résultat |
+|---|---|
+| `npm run test:prototype` (serveur isolé sur 5177, contextes de navigateur neufs) | 9 réussis, 1 ignoré (clavier physique sur téléphone), en 1280 et 390 px, sans défilement horizontal |
+| `npm run build:prototype`, eslint, TypeScript | OK |
+
+Tests backend et recette de restauration non relancés : ni le backend, ni les API, ni les données de l'application n'ont changé. Captures avant/après du même scénario conservées hors dépôt.
