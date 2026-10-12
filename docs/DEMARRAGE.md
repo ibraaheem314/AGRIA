@@ -83,28 +83,75 @@ Après trop de tentatives de connexion (10 par minute et par adresse), il suffit
 
 ## Démonstration (base dédiée, données fictives)
 
+La démonstration tourne sur sa propre base, `agria_demo`, et sur des ports distincts de ceux du développement (8000 et 5173), qui peuvent donc rester ouverts. La base de travail n'est jamais touchée.
+
+### Démarrer (deux terminaux, depuis la racine du dépôt)
+
 ```powershell
-backend\.venv\Scripts\python scripts\dev.py demo-init            # crée agria_demo ; --reset pour la recréer
-backend\.venv\Scripts\python scripts\dev.py demo-server          # Django sur agria_demo, port 8000 (--port 8002 si occupé)
-cd frontend; npm run dev                                            # si demo-server utilise un autre port : $env:AGRIA_API_URL="http://127.0.0.1:8002"; npx vite --port 5175
+# Terminal 1
+backend\.venv\Scripts\python scripts\dev.py db-status                   # l'instance PostgreSQL doit être démarrée (sinon : db-start)
+backend\.venv\Scripts\python scripts\dev.py demo-init                   # première fois : crée agria_demo et affiche 3 mots de passe
+backend\.venv\Scripts\python scripts\dev.py demo-server --port 8002
+
+# Terminal 2
+cd frontend
+$env:AGRIA_API_URL="http://127.0.0.1:8002"; npx vite --port 5175 --strictPort
 ```
 
-`demo-init` affiche **une seule fois** les mots de passe de trois comptes fictifs ; les noter dans un endroit privé. Sinon : `assist_account --reset-password` avec `$env:DB_NAME="agria_demo"`.
+Ouvrir **http://127.0.0.1:5175**.
+
+- `demo-init` refuse d'écraser une base `agria_demo` existante. `demo-init --reset` la supprime et la recrée : n'utiliser `--reset` que si rien de ce qu'elle contient n'est à garder (elle ne contient que des exemples).
+- Les mots de passe des trois comptes fictifs sont affichés **une seule fois**, dans le terminal : les noter dans un endroit privé, jamais dans le dépôt. Pour en obtenir un nouveau sans recréer la base :
+
+```powershell
+cd backend; $env:DB_NAME="agria_demo"
+.venv\Scripts\python manage.py assist_account --email demo-debutant@agria.invalid --reset-password
+Remove-Item Env:DB_NAME; cd ..
+```
 
 | Compte | Ce qu'il montre |
 |---|---|
-| `demo-debutant@agria.invalid` | Débutant : eau inconnue, démarche terminée, budget incomplet, question, relecture demandée |
+| `demo-debutant@agria.invalid` | Débutant : terrain en discussion, eau inconnue, démarche terminée avec un résultat incertain, budget incomplet, question, relecture demandée |
 | `demo-producteur@agria.invalid` | Producteur : campagne précédente archivée, nouvelle campagne au lieu « à revérifier », vue directe |
-| `demo-conseiller@agria.invalid` | Conseiller attribué au dossier du débutant : demandes, consultation, avis |
+| `demo-conseiller@agria.invalid` | Conseiller attribué au dossier du débutant |
 
-Parcours de démonstration conseillé (environ 15 minutes) :
+Utiliser une fenêtre de navigation privée par compte (ou se déconnecter entre deux rôles). Les dossiers portent le bandeau « Exemple de démonstration ».
 
-1. **Débutant :** Aujourd'hui (prochaine action, points bloquants) → Mon plan (point « Source d'eau inconnue » et sa justification) → démarche terminée avec son résultat → Budget (« incomplet », ce n'est pas le coût total) → commencer une saisie puis cliquer ailleurs (confirmation « modifications non enregistrées »).
-2. **Conseiller :** Mes dossiers (relecture demandée, question ouverte) → Relecture : répondre à la question, rédiger un avis avec réserves.
-3. **Débutant :** modifier « Accès à l'eau » → Relecture : avis « à réexaminer » → enregistrer une décision « différer » → Aujourd'hui (projet différé, motif) → Synthèse (imprimer).
-4. **Producteur :** Mes dossiers (campagne archivée à part) → campagne archivée (consultation seulement) → nouvelle campagne (eau « déclarée », à revérifier).
+### Parcours de dix minutes
 
-Les dossiers portent le bandeau « Exemple de démonstration » ; ils ne sont visibles depuis aucun compte réel.
+| Temps | Rôle | Étapes | Résultat attendu |
+|---|---|---|---|
+| 0–3 min | Débutant | Ouvrir le dossier « Exemple fictif — maraîchage ». Lire Aujourd'hui, puis Mon plan | Carte « Renseigner mon projet pas à pas » (4 informations sur 11), prochaine démarche, points bloquants « Accès au terrain encore en discussion » et « Source d'eau inconnue » ; « Contenu générique — Non relu par un spécialiste » |
+| | | Ouvrir la démarche « Identifier une source d'eau utilisable » | Terminée, résultat « incertain » ; carte « Et maintenant : mettre le dossier à jour » : le point reste ouvert, rien n'a changé automatiquement |
+| | | « Mettre à jour : Accès à l'eau » → « Déclaré », source « Puits » → Enregistrer | Le résultat de la démarche est rappelé sans rien préremplir. Retour à la démarche avec « Point encore ouvert : Disponibilité de l'eau déclarée mais non vérifiée » |
+| | | Mon projet → Voir le budget provisoire | « Budget incomplet : 1 poste sans montant… ce n'est pas le coût total » ; postes à examiner proposés, sans prix |
+| 3–6 min | Conseiller | Mes dossiers → dossier du débutant (« Relecture demandée ») | Bandeau « lecture seule » ; navigation « Projet · Plan » |
+| | | Projet → Accès au terrain → « Poser une question sur cette information » → envoyer | « À propos de : Information « Accès au terrain » » puis « Message envoyé. » ; aucun bouton d'enregistrement sur les informations |
+| | | Relecture : « Rédiger un avis » → Contexte du projet, « Revu avec réserves », avis et réserves → enregistrer | « Avis enregistré. » |
+| 6–9 min | Débutant | Aujourd'hui | « Une question du conseiller attend votre réponse : « Accès au terrain » » et l'avis « Revu avec réserves » |
+| | | « Répondre au conseiller » → répondre. Puis Mon projet → Accès au terrain → modifier les précisions → Enregistrer | Réponse visible sous la question |
+| | | Relecture | L'avis est « À réexaminer » (« Modifié depuis cet avis : Contexte du projet ») |
+| | | Décision « Modifier le projet » avec un motif → Enregistrer, puis « Voir la synthèse du dossier » | « Décision enregistrée. » ; la synthèse reprend informations et statuts, démarches et résultat incertain, budget incomplet, avis (à jour ou à réexaminer), questions et décision |
+| 9–10 min | Producteur | Mes dossiers | Campagne active et « Dossiers archivés (consultation) » séparés |
+| | | Ouvrir « Prochaine contre-saison (exemple) » → Mon projet | Lieu et eau repris « Déclaré », avec « à revérifier pour cette campagne » et la source d'origine ; budget vide ; aucune démarche ni résultat repris ; accès direct à chaque information |
+
+Facultatif : pour voir le pas-à-pas depuis le début, créer un compte (« Créer un compte ») puis un projet « Je prépare ma première campagne ».
+
+### Reprendre ou arrêter
+
+- **Arrêter :** `Ctrl+C` dans les deux terminaux. Les données de démonstration restent dans `agria_demo`.
+- **Reprendre :** relancer les deux commandes `demo-server --port 8002` et `npx vite --port 5175` ; les comptes et les saisies sont conservés.
+- **Repartir des exemples d'origine :** `dev.py demo-init --reset` (nouveaux mots de passe affichés une fois).
+
+### Questions pour recueillir un retour
+
+À poser après le parcours, sans commenter les réponses ; noter les réponses telles qu'elles sont données.
+
+1. En une phrase, à quoi sert ce produit, et pour qui ?
+2. Sur l'écran « Aujourd'hui » du débutant, quelle serait la prochaine chose à faire, et qu'est-ce qui vous l'a indiqué ?
+3. Pour une même information, que signifient pour vous « Déclaré », « Vérifié (source indiquée) » et « Situation : point encore ouvert » ?
+4. Après la démarche terminée avec un résultat « incertain », qu'est-ce qui a changé dans le dossier et qu'est-ce qui n'a pas changé ?
+5. Que vous apprend le budget affiché sur le coût du projet, et que ne vous apprend-il pas ?
 
 ## Contrôles
 

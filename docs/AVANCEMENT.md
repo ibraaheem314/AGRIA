@@ -446,3 +446,52 @@ Un premier passage complet a échoué sur le test clavier (`parcours.spec`), qui
 - Le report « à plus tard » et les postes « laissés de côté » sont propres au navigateur : ils ne suivent pas la personne sur un autre appareil (l'information reste simplement non renseignée).
 - Les démarches terminées avant cette version n'ont pas d'issue enregistrée.
 - Base de travail et base de démonstration **non migrées** pendant la mission : `manage.py migrate` (travail) et `dev.py demo-init --reset` (démonstration) restent à lancer par le fondateur.
+
+# Recette finale pour un usage accompagné (12/10/2026)
+
+Recette isolée : base `agria_e2e` recréée à chaque lancement (ports 8001 et 5174), comptes et projets fictifs, conseiller créé et attribué par `create_account` et `assign_advisor`, données de démonstration par `seed_demo` et `assist_account`. Base de travail, dossier AgriCool, base `agria_demo` et serveurs du fondateur (8000, 5173) non touchés. Script de parcours temporaire, supprimé après usage ; captures conservées hors dépôt. Vues ordinateur (1280 px) et téléphone (**390 px**), contrôle du défilement horizontal sur chaque écran.
+
+### Parcours inspectés
+
+| Parcours | Étapes |
+|---|---|
+| Débutant et boucle complète | Relecture sans conseiller → pas-à-pas (lieu, terrain en discussion, eau remise à plus tard, culture « Je ne sais pas » au clavier) → reprise → Mon plan → démarche terminée « incertain » → actualisation et recalcul → budget incomplet (deux postes à examiner, un laissé de côté) → demande de relecture → attribution → consultation par le conseiller → question ciblée (coupure réseau simulée, renvoi sans doublon) → réponse du porteur → avis avec réserves → modification par le porteur → « À réexaminer » → second avis → décision « Modifier le projet » motivée → accueil → synthèses porteur et conseiller |
+| Producteur | Campagne renseignée (lieu déclaré, terrain vérifié, eau inconnue, démarche terminée « favorable », poste de budget) → archivage → liste (active et archivée séparées) → campagne archivée en consultation → nouvelle campagne : lieu repris « à revérifier » (vérifié redevenu déclaré), budget vide, aucune démarche ni résultat repris, accès direct |
+| Démonstration du fondateur | Parcours de dix minutes de [DEMARRAGE.md](DEMARRAGE.md) exécuté sur les données de `seed_demo` (vue ordinateur) ; les résultats attendus du guide sont ceux observés |
+
+### Écarts reproduits et corrigés (`5347f07`)
+
+| Scénario qui échouait | Correction | Régression |
+|---|---|---|
+| Le conseiller pose une question ciblée ; l'accueil du porteur affiche « Aucun retour pour le moment » : rien n'indique qu'une réponse est attendue | L'accueil du porteur signale les questions du conseiller sans réponse (avec l'élément visé) et propose « Répondre au conseiller » ; il signale aussi les réponses reçues à ses propres questions | `relecture.spec` : « question ciblée du conseiller… » |
+| Le conseiller voit « ← Mon projet » et « ← Mon plan » alors que sa navigation dit « Projet » et « Plan » | Libellés de retour selon le rôle | même test |
+| Le formulaire de message ciblé indique « élément précis du dossier (Information) » sans le nommer | Il nomme l'information, la démarche ou le poste visé | même test |
+
+### Vérifié sans écart
+
+- Sans conseiller : « aucune disponibilité ni réponse ne peut être promise » ; une demande de relecture indique qu'elle sera visible dès qu'un conseiller sera attribué.
+- Droits : le conseiller ne voit aucun bouton d'enregistrement sur les informations ; bandeau « lecture seule ».
+- Coupure réseau pendant l'envoi d'une question : message d'échec, saisie conservée, « Réessayer » sans doublon.
+- Navigation au clavier dans le pas-à-pas ; focus déplacé sur l'information suivante.
+- Aucun défilement horizontal à 390 px sur les écrans parcourus.
+
+### Observations de présentation, à arbitrer ou à tester avec des utilisateurs (non corrigées)
+
+- Sur téléphone, l'annonce « une question du conseiller attend votre réponse » se trouve sous trois cartes (pas-à-pas, prochaine démarche, points bloquants). La placer plus haut est un choix de priorité à arbitrer.
+- Une décision « Modifier le projet » ou « Poursuivre » n'apparaît pas à l'accueil (seule « Différer » y est rappelée) ; elle figure dans la relecture et la synthèse.
+- Côté conseiller, « En attente de votre part : 1 question ouverte » compte aussi sa propre question à laquelle le porteur a déjà répondu (elle reste ouverte tant que personne ne la marque résolue).
+- Sur une information mise à jour après une démarche, les anciennes précisions restent dans le champ si le porteur ne les modifie pas (ex. « accord oral » à côté de « Accord obtenu ») : comportement attendu d'un formulaire, mais à observer avec des utilisateurs.
+
+### Contrôles
+
+| Commande (Python 3.14.8, révision `5347f07`) | Résultat |
+|---|---|
+| `backend\.venv\Scripts\python scripts\dev.py check --e2e` | ruff, format, migrations à jour, **166 pytest**, eslint, TypeScript, build ; Playwright **55 réussis**, 1 ignoré (clavier physique sur téléphone) |
+
+`recette.py` n'a pas été relancé : ni la persistance, ni les migrations, ni les scripts n'ont changé depuis son dernier passage réussi (lot 6).
+
+### Limites
+
+- La compréhension par de vrais utilisateurs **n'est pas validée** par cette inspection : les questions de retour du fondateur sont dans [DEMARRAGE.md](DEMARRAGE.md).
+- Contenu agronomique et listes d'aide non relus par un spécialiste.
+- Parcours de démonstration vérifié en vue ordinateur seulement sur les données de `seed_demo` ; les mêmes écrans ont été vus à 390 px dans les parcours A et B.
