@@ -18,7 +18,7 @@ Mise à jour : 11 octobre 2026 (préparation du pilote). Promesse à tester : *A
 
 ## Prochaines étapes
 
-**Priorité du fondateur au 12/10/2026 : finaliser la recette technique de la version locale.** Les fondations livrées ne signifient pas que tous les parcours sont finalisés. Traiter les écarts recensés dans [AVANCEMENT.md](docs/AVANCEMENT.md), « Revue de complétude technique », puis présenter une démonstration locale complète avec ses limites. Les prises de contact ne constituent pas la prochaine tâche de l'agent.
+**Recette technique de la version locale fermée le 12/10/2026** ([AVANCEMENT.md](docs/AVANCEMENT.md), « Clôture de la version locale ») : version démontrable pour un usage accompagné. Restent hors code : révocations (E1), CI distante (E3), enquête G1 (E4–E6), contenu relu (E7) et, seulement si nécessaire, mise en service (E9).
 
 Suivre les dépendances du tableau, pas une séquence obligatoire de E1 à E10. La révocation des clés est urgente ; l'enquête G1 (E4–E6) peut avancer en parallèle des travaux techniques (E2–E3). Ni une fusion GitHub, ni un hébergement, ni la suppression d'un ancien environnement Python ne sont nécessaires aux entretiens.
 

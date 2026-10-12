@@ -24,6 +24,10 @@ Mise à jour : 11 octobre 2026 (brique 6). Ce guide décrit les conventions **ap
 | Enregistrement confirmé | Message de succès **après** la réponse du serveur ; « Aucun changement à enregistrer » si la requête était une reprise |
 | Échec | Message compréhensible, saisie conservée, bouton « Réessayer » qui renvoie la même requête |
 | Hors connexion | Bandeau : rien ne sera enregistré avant le retour du réseau |
+| Modifications non enregistrées | Confirmation « Rester sur la page / Quitter sans enregistrer » avant de quitter ; avertissement du navigateur au rechargement |
+| Dossier archivé | Consultation seulement : date d'archivage, aucune prochaine action, liens d'écriture retirés ; nouvelle campagne possible depuis le projet |
+| Dossier différé | Décision et motif en tête de l'accueil ; préparation toujours possible |
+| Profil | Débutant et conseiller : justifications et étapes visibles, guide « comment avancer » ; producteur : vue directe, explications à déplier |
 | Session expirée | « Reconnectez-vous dans un autre onglet, puis réessayez ici : votre saisie est conservée » |
 
 La couleur accompagne toujours un texte : elle ne porte jamais seule un statut.

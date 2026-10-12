@@ -105,7 +105,7 @@ Compte ─┬─ Projet (profil débutant/producteur, is_demo)
 - **Transaction par requête** (`ATOMIC_REQUESTS`) et **verrou** sur la ligne du dossier pour toute écriture : deux requêtes sur un même dossier sont sérialisées.
 - **Concurrence optimiste** : chaque information et chaque démarche portent une `row_version`. Une écriture fondée sur une version périmée est refusée (409), sauf si son contenu est identique à l'état enregistré : c'est alors une reprise, acceptée sans effet.
 - **Créations idempotentes** : projet, campagne et démarche personnelle portent un `request_id` choisi par l'interface et réutilisé lors d'une nouvelle tentative.
-- **Interface** : « enregistré » n'est affiché qu'après la réponse du serveur. En cas d'erreur, la saisie reste à l'écran et un bouton permet de réessayer avec la même requête. Les écritures ne sont jamais rejouées automatiquement.
+- **Interface** : routeur React en mode « data » ; une garde unique (`shared/unsaved.tsx`) demande confirmation avant de quitter une page dont la saisie n'est pas enregistrée. Aucun brouillon local (D-044). « Enregistré » n'est affiché qu'après la réponse du serveur. En cas d'erreur, la saisie reste à l'écran et un bouton permet de réessayer avec la même requête. Les écritures ne sont jamais rejouées automatiquement.
 
 ## 6. Contenu et niveaux de preuve
 
@@ -113,7 +113,7 @@ Le modèle `preparation-generique` v1 contient des vérifications de préparatio
 
 Publication d'une version relue : elle ne s'applique qu'aux dossiers créés ensuite. Un dossier existant garde sa version (règles, statut de relecture affiché, démarches et historique) ; aucune migration automatique n'existe (test `test_publication_d_une_version_relue_sans_migration_silencieuse`, procédure dans VALIDATION_TERRAIN §7.2).
 
-Les exemples de démonstration (`manage.py seed_demo`) sont créés sur un compte dédié, en `.invalid`, et portent `is_demo` : un bandeau les signale et ils ne sont jamais visibles depuis un compte réel.
+Les exemples de démonstration (`manage.py seed_demo`, lancé par `dev.py demo-init` sur la base dédiée `agria_demo`) sont créés sur trois comptes en `.invalid` et portent `is_demo` : un bandeau les signale et ils ne sont jamais visibles depuis un compte réel.
 
 ## 7. Limites connues
 

@@ -303,7 +303,7 @@ La base de travail n'a pas été réinitialisée. Aucun secret révoqué par l'a
 
 ## Revue de complétude technique (12/10/2026)
 
-**Conclusion : socle fonctionnel testé, clôture de la version locale encore ouverte.** Cette revue ciblée ne constitue pas un audit exhaustif. Elle distingue les défauts reproduits, les écarts de produit constatés dans le code, les limites volontaires du pilote et les conditions de mise en service. La priorité demandée par le fondateur est la finition technique, avant les prises de contact.
+**Conclusion au moment de la revue : socle fonctionnel testé, clôture de la version locale encore ouverte.** *Mise à jour : clôture réalisée le 12/10/2026, voir « Clôture de la version locale » ci-dessous.* Cette revue ciblée ne constitue pas un audit exhaustif. Elle distingue les défauts reproduits, les écarts de produit constatés dans le code, les limites volontaires du pilote et les conditions de mise en service. La priorité demandée par le fondateur est la finition technique, avant les prises de contact.
 
 ### Constats à traiter ou à arbitrer
 
@@ -332,3 +332,61 @@ La base de travail n'a pas été réinitialisée. Aucun secret révoqué par l'a
 5. Démonstration reproductible pour le fondateur : données fictives identifiées, comptes et attribution conseiller préparés sans identifiants publiés, commandes de démarrage, étapes et limites connues.
 
 Une clôture locale ne valide ni le contenu agronomique, ni l'utilité commerciale, ni l'hébergement. Elle donne une version démontrable et un périmètre explicite pour la suite.
+
+## Clôture de la version locale (12/10/2026)
+
+**Verdict : version locale finalisée et démontrable** pour un usage accompagné, sur le périmètre F1–F6. Cela ne vaut ni validation du contenu agronomique, ni utilité terrain démontrée, ni mise en service (voir les limites plus bas).
+
+### Matrice de complétude F1–F6
+
+Classes d'écart : **défaut** (fonctionnement), **finition** (parcours), **limite volontaire** (acceptable en usage accompagné), **dépendance externe**, **hors périmètre**.
+
+| F | Exigence | Écran / API | Preuve | Écart constaté | Classe | Priorité | Critère de fermeture et état |
+|---|---|---|---|---|---|---|---|
+| F1 | Dossier persistant, « je ne sais pas », états, reprise, réutilisation par le producteur, droits | Nouveau projet, Mon projet, fiche d'information ; `/api/projects`, `/api/dossiers/{id}/informations` | `test_dossiers`, `dossier.spec`, `recette.spec`, `recette.py` | T-01 : saisie perdue sans avertissement en quittant la page | Finition | Haute | Confirmation avant toute navigation, retour du navigateur, déconnexion ; avertissement au rechargement ; aucun brouillon local. **Fermé** (`finition.spec`) |
+| F1 | Isolation d'un dossier à l'autre | Mise en page du dossier | `recette.spec` | État d'un formulaire conservé d'un dossier à l'autre (formulaire « nouvelle campagne » resté ouvert) | Défaut | Haute | Pages réinitialisées à chaque dossier. **Fermé** (`recette.spec`, `finition.spec`) |
+| F2 | Points à vérifier expliqués, pas de note universelle | Mon plan ; `/preparation` | `test_preparation`, `plan.spec` | T-03 : promesse d'explications adaptées au profil plus forte que le produit ; texte « Expérience » inexact | Finition | Moyenne | Présentation détaillée (débutant, conseiller) ou directe (producteur), même contenu, même moteur ; textes corrigés (D-043). **Fermé** (`finition.spec`) |
+| F2 | Contenu relu pour la zone et la culture | Modèle `preparation-generique` | `test_publication_d_une_version_relue…` | Contenu non relu | Dépendance externe | — | Relecture par un spécialiste (ROADMAP E7). **Ouvert** |
+| F3 | Démarches avec objectif, étapes, prérequis, statut, résultat | Mon plan, fiche démarche | `test_preparation`, `plan.spec` | T-02 : sur un dossier archivé, « Ma prochaine action » et « Poser une question » restaient proposés | Défaut | Haute | Accueil de consultation, liens d'action retirés, protections serveur inchangées. **Fermé** |
+| F4 | Budget transparent | Budget provisoire ; `/budget` | `test_budget*`, `budget.spec` | Phrase « totalisent 0 FCFA » sans aucun poste chiffré ; « poste(s) » | Finition | Basse | Phrase exacte, pluriels accordés. **Fermé** |
+| F5 | Conseiller attribué, questions, avis versionnés | Relecture ; `/relecture`, `/avis`, `/messages` | `test_relecture`, `relecture.spec` | T-04 : attribution et récupération de compte par l'exploitation, sans autonomie | Limite volontaire | — | Opérations démontrées : `create_account`, `assign_advisor`, `assist_account`. **Accepté** pour l'usage accompagné |
+| F5 | Retours visibles | Accueil | `relecture.spec` | Libellé « Dernier retour du conseiller » affiché au conseiller lui-même | Finition | Basse | « Dernier avis donné » côté conseiller. **Fermé** |
+| F6 | Statuts, décisions, synthèse, archivage | Accueil, Mes dossiers, Synthèse | `test_relecture`, `finition.spec` | Dossier différé non signalé ; dossier archivé rouvert automatiquement ; impossible de préparer la saison suivante depuis un projet archivé ; badges en double | Défaut et finition | Haute | Décision et motif à l'accueil ; archivés rangés à part ; nouvelle campagne possible depuis un projet archivé. **Fermé** |
+| — | Preuve distante, hébergement | CI GitHub | — | T-05 : CI jamais exécutée, aucun environnement hébergé | Dépendance externe | — | Envoi et décision d'hébergement par le propriétaire (E3, E9). **Ouvert** |
+| — | Hors connexion, notifications, PDF serveur | — | — | Absents | Hors périmètre ou limite volontaire | — | Liste des idées différées de la ROADMAP |
+
+### Parcours réellement observés au navigateur
+
+Script d'exploration temporaire (Chrome, captures hors dépôt, script supprimé après usage), en vues 1280 px et 390 px :
+
+1. **Débutant :** création → eau inconnue → démarche → saisie non enregistrée puis navigation (boîte de confirmation) → budget avec un poste sans prix → question → demande de relecture → décision « différer » → synthèse → archivage → accueil de consultation → retour à l'accueil général.
+2. **Producteur :** campagne précédente avec eau vérifiée → nouvelle campagne → eau reprise « déclarée », à revérifier → accueil et plan en vue directe.
+3. **Conseiller :** attribution par `assign_advisor` → liste avec « relecture demandée » → accueil conseiller → avis avec réserves → modification par le porteur → avis « à réexaminer ».
+
+L'inspection visuelle a révélé les finitions corrigées plus haut : pluriels, phrase de budget, libellés de navigation qui passaient sur deux lignes à 390 px, badges en double, libellé du conseiller. Les captures pleine page montrent la barre de navigation fixe au milieu de l'image : c'est un artefact de capture, pas un défaut.
+
+### Démonstration
+
+`dev.py demo-init` puis `demo-server` (base dédiée `agria_demo`) : trois comptes fictifs, connexion vérifiée au navigateur pour chacun en 1280 et 390 px. Opérations du mode accompagné démontrées : création de compte (`create_account`), attribution (`assign_advisor`), compte bloqué (`assist_account --status`, `--reset-password`, `--reactivate`). Procédure dans [DEMARRAGE.md](DEMARRAGE.md).
+
+### Vérifications finales
+
+| Commande (Python 3.14.8, révision `af39144`) | Résultat |
+|---|---|
+| `backend\.venv\Scripts\python scripts\dev.py check --e2e` | ruff, format, migrations à jour, **153 pytest**, eslint, TypeScript, build ; Playwright **43 réussis**, 1 ignoré (clavier physique sur téléphone) |
+| `backend\.venv\Scripts\python scripts\recette.py` | Redémarrage, restauration, session et CSRF par HTTP : OK |
+
+Nouveaux tests de non-régression : `e2e/finition.spec.ts` (T-01 navigation interne, retour du navigateur, fermeture et rechargement, budget, messages et déconnexion ; T-02 archivé et différé ; T-03 profils), `test_dossier_archive_expose_sa_date_et_reste_consultable`, `test_assistance_reinitialisation_et_reactivation`, test de démonstration élargi.
+
+Commits : `0e816a7` (corrections), `af39144` (démonstration et assistance), puis la documentation.
+
+### Limites restantes
+
+- **Contenu agronomique : non validé** (aucune relecture par un spécialiste).
+- **Utilité terrain : non démontrée** (aucun entretien ni dossier réel).
+- **Mise en service : non réalisée** (CI distante jamais exécutée, aucun hébergement, révocations de clés non confirmées).
+- Une saisie en cours est perdue si le navigateur se ferme malgré l'avertissement : aucun brouillon local, par choix (D-044).
+- Pas de notification ni de récupération autonome du mot de passe : l'assistance passe par l'exploitation (D-024, D-034, D-046).
+- La présentation détaillée ou directe dépend du profil du projet ; il n'existe pas de réglage individuel.
+
+Les serveurs de développement lancés par le fondateur sur les ports 8000 et 5173 pendant cette mission n'ont pas été touchés. La démonstration a utilisé les ports 8002 et 5175.

@@ -2,7 +2,7 @@
 
 Version du 11 octobre 2026, après clarification de la cible par le fondateur.
 **Statut au 11/10/2026 : F1–F6 implémentées sur la branche `refonte/fondations` et vérifiées par des tests logiciels ([AVANCEMENT.md](AVANCEMENT.md)). Aucune validation terrain, agronomique ou commerciale.**
-**Revue du 12/10/2026 : la clôture de la version locale reste ouverte.** Les tests existants ne valent pas recette exhaustive de l'expérience utilisateur ; des écarts de navigation, de saisie et d'archivage ont été identifiés. Voir « Revue de complétude technique » dans AVANCEMENT. La priorité demandée par le fondateur est la finition technique avant la poursuite des prises de contact.
+**Clôture du 12/10/2026 : version locale finalisée et démontrable** (écarts de navigation, de saisie, d'archivage et de présentation par profil corrigés ; voir « Clôture de la version locale » dans AVANCEMENT). Cela ne valide ni le contenu agronomique, ni l'utilité terrain, ni une mise en service.
 Le maraîchage est une filière candidate. Culture, zone pilote, canal d'accès et payeur restent à valider.
 
 ## 1. Promesse

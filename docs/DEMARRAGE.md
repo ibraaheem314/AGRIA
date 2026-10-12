@@ -62,17 +62,45 @@ Ouvrir http://127.0.0.1:5173. L'interface relaie `/api` vers Django (même origi
 
 Pour essayer depuis un téléphone du même réseau : `npm run dev -- --host 0.0.0.0`, puis ajouter l'adresse IP du poste à `DJANGO_ALLOWED_HOSTS`. La connexion n'est alors **pas chiffrée** : à réserver à des données de test.
 
-## Comptes et données d'exemple
+## Comptes et opérations du mode accompagné
+
+Sur la base de travail (depuis `backend`) :
 
 ```powershell
-cd backend
-.venv\Scripts\python manage.py createsuperuser                                   # accès à /admin (attribution des conseillers)
+.venv\Scripts\python manage.py createsuperuser                                         # accès à /admin
 .venv\Scripts\python manage.py create_account --email c@exemple.sn --name "Nom" --advisor --random-password
-.venv\Scripts\python manage.py assign_advisor --dossier 12 --email c@exemple.sn   # attribuer (--end pour clore)
-.venv\Scripts\python manage.py seed_demo                                         # dossier fictif, compte demonstration@agria.invalid
+.venv\Scripts\python manage.py assign_advisor --dossier 12 --email c@exemple.sn         # --end pour clore
+.venv\Scripts\python manage.py assist_account --email c@exemple.sn --status             # compte bloqué ?
+.venv\Scripts\python manage.py assist_account --email c@exemple.sn --reset-password     # nouveau mot de passe, affiché une fois
+.venv\Scripts\python manage.py assist_account --email c@exemple.sn --reactivate
 ```
 
-L'attribution d'un dossier à un conseiller se fait par `assign_advisor` ou dans l'administration Django (http://127.0.0.1:5173/admin/, fiche de la campagne). Les modèles de contenu, les informations et les démarches n'y sont qu'en lecture.
+Après trop de tentatives de connexion (10 par minute et par adresse), il suffit d'attendre une minute. L'attribution peut aussi se faire dans l'administration Django, sur la fiche de la campagne.
+
+## Démonstration (base dédiée, données fictives)
+
+```powershell
+backend\.venv\Scripts\python scripts\dev.py demo-init            # crée agria_demo ; --reset pour la recréer
+backend\.venv\Scripts\python scripts\dev.py demo-server          # Django sur agria_demo, port 8000 (--port 8002 si occupé)
+cd frontend; npm run dev                                            # si demo-server utilise un autre port : $env:AGRIA_API_URL="http://127.0.0.1:8002"; npx vite --port 5175
+```
+
+`demo-init` affiche **une seule fois** les mots de passe de trois comptes fictifs ; les noter dans un endroit privé. Sinon : `assist_account --reset-password` avec `$env:DB_NAME="agria_demo"`.
+
+| Compte | Ce qu'il montre |
+|---|---|
+| `demo-debutant@agria.invalid` | Débutant : eau inconnue, démarche terminée, budget incomplet, question, relecture demandée |
+| `demo-producteur@agria.invalid` | Producteur : campagne précédente archivée, nouvelle campagne au lieu « à revérifier », vue directe |
+| `demo-conseiller@agria.invalid` | Conseiller attribué au dossier du débutant : demandes, consultation, avis |
+
+Parcours de démonstration conseillé (environ 15 minutes) :
+
+1. **Débutant :** Aujourd'hui (prochaine action, points bloquants) → Mon plan (point « Source d'eau inconnue » et sa justification) → démarche terminée avec son résultat → Budget (« incomplet », ce n'est pas le coût total) → commencer une saisie puis cliquer ailleurs (confirmation « modifications non enregistrées »).
+2. **Conseiller :** Mes dossiers (relecture demandée, question ouverte) → Relecture : répondre à la question, rédiger un avis avec réserves.
+3. **Débutant :** modifier « Accès à l'eau » → Relecture : avis « à réexaminer » → enregistrer une décision « différer » → Aujourd'hui (projet différé, motif) → Synthèse (imprimer).
+4. **Producteur :** Mes dossiers (campagne archivée à part) → campagne archivée (consultation seulement) → nouvelle campagne (eau « déclarée », à revérifier).
+
+Les dossiers portent le bandeau « Exemple de démonstration » ; ils ne sont visibles depuis aucun compte réel.
 
 ## Contrôles
 
