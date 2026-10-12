@@ -7,6 +7,7 @@ import { formatDateTime } from '../../shared/format'
 import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { dossierKey, useFactHistory, useSaveFact, type Dossier, type FactItem, type FactStatus, type FactValue, type FieldDef } from './api'
 import { describeValue, STATUS_LABEL, STATUS_TONE } from './factDisplay'
+import { SituationLine, useOpenPoints } from './ProjectPage'
 import { useCurrentDossier } from './DossierLayout'
 
 type EditableStatus = Exclude<FactStatus, 'non_renseigne'>
@@ -54,6 +55,7 @@ export function FactEditPage() {
         <Link to={`/d/${dossier.id}/projet`} className="text-brand-700 underline">← Mon projet</Link>
       </p>
       <PageTitle subtitle={fact.why}>{fact.label}</PageTitle>
+      <FactSituation dossierId={dossier.id} factKey={fact.key} />
       {editable ? (
         <FactForm key={fact.key} fact={fact} dossierId={dossier.id} statuses={dossier.statuses} />
       ) : (
@@ -285,4 +287,9 @@ function History({ dossierId, fact }: { dossierId: number; fact: FactItem }) {
       </ol>
     </section>
   )
+}
+
+function FactSituation({ dossierId, factKey }: { dossierId: number; factKey: string }) {
+  const open = useOpenPoints(dossierId).get(factKey)
+  return open ? <SituationLine check={open} dossierId={dossierId} /> : null
 }

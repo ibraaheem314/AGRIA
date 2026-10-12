@@ -2,7 +2,7 @@ import { useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import { ApiError, newRequestId } from '../../shared/api'
 import { useUnsavedChanges } from '../../shared/unsaved'
-import { formatDate } from '../../shared/format'
+import { formatDate, plural } from '../../shared/format'
 import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { useCurrentDossier } from '../dossiers/DossierLayout'
 import { isDetailed } from '../dossiers/guidance'
@@ -115,7 +115,7 @@ export function PlanPage() {
 
       <section aria-labelledby="points" className="space-y-3">
         <h2 id="points" className="text-lg font-semibold">Points à vérifier ({toClarify.length})</h2>
-        {toClarify.length === 0 && <p className="text-muted">Aucun point à clarifier ou à vérifier pour l'instant.</p>}
+        <ChecksState dossierId={dossier.id} toClarify={toClarify.length} toComplete={toComplete} owner={owner} />
         <ul className="space-y-3">
           {[...toClarify].sort((a, b) => Number(b.blocking) - Number(a.blocking)).map((c) => (
             <CheckItem key={c.key} check={c} dossierId={dossier.id} detailed={isDetailed(dossier)} />
@@ -208,4 +208,52 @@ function NewActionForm({ dossierId }: { dossierId: number }) {
       </form>
     </Card>
   )
+}
+
+/**
+ * Trois états à ne pas confondre :
+ * 1. informations insuffisantes : les règles ne peuvent pas encore établir les vérifications ;
+ * 2. points identifiés et encore ouverts ;
+ * 3. aucun point signalé par les règles disponibles — ce qui ne valide pas le projet.
+ */
+function ChecksState({
+  dossierId,
+  toClarify,
+  toComplete,
+  owner,
+}: {
+  dossierId: number
+  toClarify: number
+  toComplete: Check[]
+  owner: boolean
+}) {
+  const first = toComplete[0]
+  if (toComplete.length > 0) {
+    return (
+      <Alert tone="info" title={toClarify === 0 ? 'Informations insuffisantes pour établir les vérifications' : undefined}>
+        <p>
+          {toClarify === 0
+            ? `${plural(toComplete.length, 'information du dossier n’est', 'informations du dossier ne sont')} pas encore renseignée${toComplete.length > 1 ? 's' : ''} : les points à vérifier ne peuvent pas encore être établis.`
+            : `${plural(toComplete.length, 'information reste', 'informations restent')} à renseigner : d'autres points pourraient apparaître.`}
+        </p>
+        {owner && first && (
+          <p className="mt-2">
+            <Link to={`/d/${dossierId}/projet/${first.fact_key}`} className="font-medium underline">
+              Commencer par : {first.fact_label}
+            </Link>
+            <span className="block text-sm">« Je ne sais pas » est une réponse acceptée : elle permet d'avancer et devient un point à vérifier.</span>
+          </p>
+        )}
+      </Alert>
+    )
+  }
+  if (toClarify === 0) {
+    return (
+      <p className="text-muted">
+        Aucun point n'est signalé par les règles disponibles. Ce n'est pas une validation du projet : ces règles sont
+        génériques et non relues. Faites relire le dossier par un conseiller.
+      </p>
+    )
+  }
+  return null
 }

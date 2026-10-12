@@ -31,7 +31,10 @@ STATUS_HELP = {
     "inconnu": "L'information n'est pas connue pour l'instant.",
     "declare": "Vous l'affirmez, sans preuve enregistrée.",
     "estime": "C'est une approximation.",
-    "verifie": "Confirmé par un document, une visite ou une personne : indiquez laquelle.",
+    "verifie": (
+        "Vous indiquez ce qui le confirme (document, visite, personne). AGRIA ne contrôle pas "
+        "cette source, et la situation décrite peut rester à régler."
+    ),
 }
 
 REGIONS = [

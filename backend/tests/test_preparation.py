@@ -405,3 +405,25 @@ def test_publication_d_une_version_relue_sans_migration_silencieuse(porteur, dos
     assert next(c for c in data["checks"] if c["fact_key"] == "eau")["message"] == (
         "Message reformulé en v2"
     )
+
+
+def test_information_verifiee_decrivant_une_situation_non_reglee_reste_un_point_ouvert(
+    porteur, dossier
+):
+    """Lot 1 : « vérifié » qualifie la source, pas la résolution de la situation."""
+    put_info(
+        porteur, dossier, "acces_terrain", "verifie", {"situation": "en_discussion"},
+        "Rencontre avec le propriétaire le 3 octobre",
+    )  # fmt: skip
+    fact = next(f for f in porteur.get(f"/api/dossiers/{dossier['id']}").json()["facts"]
+                if f["key"] == "acces_terrain")  # fmt: skip
+    assert fact["state"]["status"] == "verifie"  # le statut n'est pas modifié
+    check = next(c for c in prep(porteur, dossier)["checks"] if c["fact_key"] == "acces_terrain")
+    assert (check["level"], check["blocking"]) == ("a_clarifier", True)
+    assert check["message"] == "Accès au terrain encore en discussion"
+
+
+def test_dossier_vide_ne_signale_que_des_informations_a_completer(porteur, dossier):
+    checks = prep(porteur, dossier)["checks"]
+    assert checks and all(c["level"] == "a_completer" for c in checks)
+    assert checks[0]["fact_key"] == "localisation"  # ordre : le lieu d'abord

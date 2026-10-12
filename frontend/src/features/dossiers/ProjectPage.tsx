@@ -6,6 +6,7 @@ import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } fro
 import { useBudget } from '../budget/api'
 import { budgetSentence } from '../budget/BudgetPage'
 import { formatDateTime } from '../../shared/format'
+import { usePreparation, type Check } from '../plan/api'
 import { useCreateCampaign, type Dossier, type FactItem } from './api'
 import { describeValue, STATUS_LABEL, STATUS_TONE } from './factDisplay'
 import { useCurrentDossier } from './DossierLayout'
@@ -20,6 +21,7 @@ export function ProjectPage() {
   const dossier = useCurrentDossier()
   const counts = factCounts(dossier)
   const owner = dossier.role === 'porteur'
+  const openPoints = useOpenPoints(dossier.id)
 
   return (
     <div className="space-y-6">
@@ -49,7 +51,13 @@ export function ProjectPage() {
             <h2 id={`section-${section.key}`} className="text-lg font-semibold">{section.label}</h2>
             <ul className="space-y-3">
               {items.map((fact) => (
-                <FactRow key={fact.key} fact={fact} dossierId={dossier.id} editable={owner && !dossier.archived} />
+                <FactRow
+                  key={fact.key}
+                  fact={fact}
+                  dossierId={dossier.id}
+                  editable={owner && !dossier.archived}
+                  openPoint={openPoints.get(fact.key)}
+                />
               ))}
             </ul>
           </section>
@@ -115,7 +123,17 @@ function NewCampaignCard({ dossier }: { dossier: Dossier }) {
   )
 }
 
-function FactRow({ fact, dossierId, editable }: { fact: FactItem; dossierId: number; editable: boolean }) {
+function FactRow({
+  fact,
+  dossierId,
+  editable,
+  openPoint,
+}: {
+  fact: FactItem
+  dossierId: number
+  editable: boolean
+  openPoint?: Check
+}) {
   const lines = describeValue(fact, fact.state.value)
   const empty = fact.state.status === 'non_renseigne'
   return (
@@ -134,6 +152,7 @@ function FactRow({ fact, dossierId, editable }: { fact: FactItem; dossierId: num
       {fact.state.source && (
         <p className="mt-1 text-sm text-muted break-words">Source ou précision : {fact.state.source}</p>
       )}
+      {openPoint && <SituationLine check={openPoint} dossierId={dossierId} />}
       {fact.state.updated_at && (
         <p className="mt-1 text-xs text-muted">
           Modifié le {formatDateTime(fact.state.updated_at)} par {fact.state.updated_by?.display_name}
@@ -166,5 +185,27 @@ export function BudgetCard({ dossierId }: { dossierId: number }) {
         Voir le budget provisoire
       </Link>
     </Card>
+  )
+}
+
+/** Points encore ouverts (hors simple saisie manquante), par information. */
+export function useOpenPoints(dossierId: number): Map<string, Check> {
+  const prep = usePreparation(dossierId)
+  const map = new Map<string, Check>()
+  for (const check of prep.data?.checks ?? []) {
+    if (check.level !== 'a_completer') map.set(check.fact_key, check)
+  }
+  return map
+}
+
+/** Le statut dit d'où vient l'information ; la situation, elle, peut rester à régler. */
+export function SituationLine({ check, dossierId }: { check: Check; dossierId: number }) {
+  return (
+    <p className="mt-2 rounded-md border border-warn-700/30 bg-warn-50 px-2 py-1 text-sm text-warn-700">
+      <strong>Situation : point encore ouvert.</strong> {check.message}.{' '}
+      <Link to={check.action ? `/d/${dossierId}/plan/${check.action.id}` : `/d/${dossierId}/plan`} className="underline">
+        {check.action ? 'Voir la démarche' : 'Voir Mon plan'}
+      </Link>
+    </p>
   )
 }

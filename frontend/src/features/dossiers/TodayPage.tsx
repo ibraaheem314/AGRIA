@@ -100,7 +100,9 @@ export function TodayPage() {
         <Card>
           <h2 className="font-semibold">{dossier.archived ? 'Points restés ouverts à l’archivage' : 'Points bloquants'}</h2>
           {blockingChecks.length === 0 && blockedActions.length === 0 ? (
-            <p className="mt-1 text-muted">Aucun point bloquant signalé.</p>
+            <p className="mt-1 text-muted">
+              Aucun point bloquant n'est signalé par les règles disponibles. Ce n'est pas une validation du projet.
+            </p>
           ) : (
             <ul className="mt-2 space-y-2">
               {blockingChecks.map((c: Check) => (

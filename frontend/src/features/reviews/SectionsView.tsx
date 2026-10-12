@@ -51,7 +51,7 @@ export function SectionsView({ snapshot, dossier, level = 3 }: { snapshot: Snaps
           )}
           <Sub className="font-medium">Points à vérifier ({snapshot.plan.checks.length})</Sub>
           {snapshot.plan.checks.length === 0 ? (
-            <p className="text-sm text-muted">Aucun point signalé.</p>
+            <p className="text-sm text-muted">Aucun point signalé par les règles disponibles (ce n'est pas une validation du projet).</p>
           ) : (
             <ul className="list-disc space-y-0.5 pl-5 text-sm">
               {snapshot.plan.checks.map((c) => (

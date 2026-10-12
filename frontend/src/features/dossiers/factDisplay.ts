@@ -6,15 +6,17 @@ export const STATUS_LABEL: Record<FactStatus, string> = {
   inconnu: 'Je ne sais pas',
   declare: 'Déclaré',
   estime: 'Estimé',
-  verifie: 'Vérifié',
+  verifie: 'Vérifié (source indiquée)',
 }
 
+// Le statut dit d'où vient l'information, pas si la situation est réglée : jamais de vert ici.
+// Une information vérifiée peut confirmer qu'un accord reste à obtenir (point toujours ouvert).
 export const STATUS_TONE: Record<FactStatus, 'neutral' | 'ok' | 'warn' | 'danger' | 'info'> = {
   non_renseigne: 'neutral',
   inconnu: 'warn',
-  declare: 'info',
-  estime: 'info',
-  verifie: 'ok',
+  declare: 'neutral',
+  estime: 'neutral',
+  verifie: 'info',
 }
 
 /** Résumé lisible d'une valeur, champ par champ, à partir des définitions du serveur. */
