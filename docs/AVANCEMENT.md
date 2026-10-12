@@ -300,3 +300,35 @@ Retour arrière possible : `backend/.venv-py310` conservé jusqu'à validation p
 Le lancement global initial de `check --e2e` a renvoyé un code 1 pour le lint/format d'une ligne du message de version Python. Cette ligne a été reformattée ; les contrôles Ruff complets ont ensuite été relancés et réussis. Les 151 tests backend et les 29 parcours navigateur de ce lancement ont réussi. Aucun échec fonctionnel n'a été observé pendant ces contrôles.
 
 La base de travail n'a pas été réinitialisée. Aucun secret révoqué par l'agent, aucun contact externe, aucun entretien, aucun push ni déploiement. Révocations par le propriétaire et démarrage de G1 restent à effectuer ; le pilote G2 reste conditionné aux preuves prévues dans la roadmap.
+
+## Revue de complétude technique (12/10/2026)
+
+**Conclusion : socle fonctionnel testé, clôture de la version locale encore ouverte.** Cette revue ciblée ne constitue pas un audit exhaustif. Elle distingue les défauts reproduits, les écarts de produit constatés dans le code, les limites volontaires du pilote et les conditions de mise en service. La priorité demandée par le fondateur est la finition technique, avant les prises de contact.
+
+### Constats à traiter ou à arbitrer
+
+| ID | Constat et preuve | Conséquence et critère de fermeture |
+|---|---|---|
+| T-01 | **Reproduit au navigateur** : créer un projet, ouvrir « Culture envisagée », choisir « Déclaré », saisir « Oignon » sans enregistrer, cliquer « Mon plan », puis revenir. La saisie est vide, sans avertissement. `FactEditPage.tsx` conserve le formulaire dans l'état du composant ; aucune protection de navigation n'est présente. | Finition UX manquante, distincte de la reprise après erreur réseau déjà testée. Protéger les modifications non enregistrées par un mécanisme cohérent, puis vérifier navigation interne, retour navigateur et rechargement. Ne pas annoncer une sauvegarde serveur pour un simple brouillon local. Examiner aussi budget, démarches et échanges. |
+| T-02 | **Reproduit au navigateur** : déclarer l'eau inconnue, archiver depuis la synthèse, revenir à « Aujourd'hui ». Le bandeau « archivé » coexiste avec « Ma prochaine action — Identifier une source d'eau utilisable ». `TodayPage.tsx` conditionne cette carte au rôle porteur, sans tenir compte de l'archivage. | Affichage incohérent, sans contournement des permissions observé. Présenter l'archive comme consultation ; conserver l'historique et l'accès aux éléments sans suggérer une prochaine étape exécutable dans ce dossier. Vérifier aussi l'état différé et le choix de campagne à l'accueil. |
+| T-03 | **Constaté dans le code, à arbitrer avec le cahier des charges** : la différence de profil porte surtout sur les libellés, l'expérience, le champ « Changements envisagés » et la reprise de campagne. Les explications des démarches sont communes. Pourtant PRODUIT §2 et le champ expérience annoncent une adaptation des explications. | Définir et démontrer le niveau d'accompagnement attendu : explications d'initiation accessibles au débutant, parcours direct pour le producteur, sans double moteur métier ni prescription inventée. Adapter l'interface ou préciser honnêtement la promesse si la distinction actuelle suffit au périmètre retenu. |
+| T-04 | **Limite volontaire** : pas de récupération autonome de mot de passe ; attribution du conseiller par administration ou commande (D-024, D-034). | Acceptable pour une version locale accompagnée si le processus d'exploitation est démontré et documenté. À traiter avant un accès autonome si ce mode est choisi ; ne pas ajouter automatiquement email, SMS ou annuaire. |
+| T-05 | **Preuve distante absente** : CI GitHub jamais exécutée ; aucun environnement hébergé validé. | N'empêche pas une recette locale. Empêche de qualifier l'application de prête pour la mise en service. Dépendances et contrôles décrits dans SECURITE ; aucun push ni déploiement autorisé par cette revue. |
+
+### Vérifications réalisées pendant cette revue
+
+- Lecture du cahier des charges, des routes, formulaires, parcours de relecture, du moteur de préparation et des limites documentées.
+- Deux reproductions ciblées avec Playwright/Chrome sur la base dédiée `agria_e2e`, via les serveurs de test existants. T-01 et T-02 confirmés ; elles ne constituent pas des tests de non-régression des comportements souhaités.
+- Inspection d'une capture de l'accueil archivé à 390 px. Capture locale ignorée : `.local-archive/revue-technique-2026-10-12/dossier-archive.png`.
+- Le script temporaire de reproduction a été retiré ; aucune modification applicative ni correction de T-01/T-02 n'a été effectuée pendant cette revue. Suite complète non relancée : les changements conservés sont documentaires.
+- Base de travail préservée, aucune prise de contact ni publication.
+
+### Conditions de clôture de la version locale
+
+1. Matrice F1–F6 : exigence, écran/API, preuve, écart, priorité et critère d'acceptation ; distinguer défaut, finition, limite volontaire et dépendance externe.
+2. T-01/T-02 corrigés avec tests pertinents ; T-03 explicitement traité ou arbitré. Revue des parcours débutant, producteur et conseiller, états vides, erreurs, droits et dossiers archivés/différés.
+3. Parcours complets observés au navigateur sur ordinateur et petit écran : création, préparation, budget, conseil, décision, synthèse et reprise de campagne. Vérifier les textes, la priorité de l'action proposée, les confirmations et les sorties d'erreur.
+4. Un lancement final de `dev.py check --e2e` réussi sur la révision livrée, puis recette de redémarrage/restauration si les changements affectent la persistance ou les opérations. Pas de revendication de CI distante sans exécution réelle.
+5. Démonstration reproductible pour le fondateur : données fictives identifiées, comptes et attribution conseiller préparés sans identifiants publiés, commandes de démarrage, étapes et limites connues.
+
+Une clôture locale ne valide ni le contenu agronomique, ni l'utilité commerciale, ni l'hébergement. Elle donne une version démontrable et un périmètre explicite pour la suite.

@@ -9,6 +9,7 @@ AGRIA aide un porteur de projet débutant ou un producteur peu accompagné à pr
 | Niveau | État |
 |---|---|
 | **Fondations techniques** | Livrées : les six fonctions de la première version (F1–F6 du [cahier des charges](docs/PRODUIT.md)) |
+| **Clôture de la version locale** | **Ouverte au 12/10/2026** : revue de complétude et corrections de parcours à terminer. Voir [AVANCEMENT.md](docs/AVANCEMENT.md), « Revue de complétude technique ». |
 | **Contrôles exécutés** | Résultats locaux et versions exactes dans [AVANCEMENT.md](docs/AVANCEMENT.md). Runtime courant : Python 3.14.8. **CI GitHub jamais exécutée.** |
 | **Préparation du terrain** | Kit d'enquête G1 et protocole G2 prêts, non exécutés : [VALIDATION_TERRAIN.md](docs/VALIDATION_TERRAIN.md) |
 | **Validation par un spécialiste** | **Aucune.** Le contenu est générique, sans prescription agronomique, et marqué « non relu » dans l'application |
