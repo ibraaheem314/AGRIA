@@ -140,13 +140,13 @@ export function Choice<T extends string>({ legend, help, name, options, value, o
 
 export function Steps({ current, total, label }: { current: number; total: number; label: string }) {
   return (
-    <div className="flex items-center gap-3" aria-label={`Étape ${current} sur ${total} : ${label}`}>
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
       <ol className="flex gap-1.5" aria-hidden="true">
         {Array.from({ length: total }, (_, i) => (
-          <li key={i} className={`h-1.5 w-10 rounded-full ${i < current ? 'bg-brand-700' : 'bg-line'}`} />
+          <li key={i} className={`h-1.5 w-8 rounded-full ${i < current ? 'bg-brand-700' : 'bg-line'}`} />
         ))}
       </ol>
-      <span className="text-sm text-muted">Étape {current} sur {total} · {label}</span>
+      <p className="text-sm text-muted">Étape {current} sur {total} · {label}</p>
     </div>
   )
 }
