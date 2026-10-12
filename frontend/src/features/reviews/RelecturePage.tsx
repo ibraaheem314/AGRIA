@@ -20,6 +20,8 @@ import {
   type Versions,
 } from './api'
 import { SectionsView } from './SectionsView'
+import { useBudget } from '../budget/api'
+import { usePreparation } from '../plan/api'
 
 export function RelecturePage() {
   const dossier = useCurrentDossier()
@@ -348,7 +350,19 @@ function Thread({ message, dossierId, canWrite }: { message: Message; dossierId:
   )
 }
 
+/** Nom de l'élément visé par un nouveau message, lu dans les données déjà chargées du dossier. */
+function useTargetLabel(dossierId: number, targetType: string, targetRef: string): string | null {
+  const dossier = useCurrentDossier()
+  const prep = usePreparation(dossierId)
+  const budget = useBudget(dossierId)
+  if (targetType === 'information') return dossier.facts.find((f) => f.key === targetRef)?.label ?? null
+  if (targetType === 'demarche') return prep.data?.actions.find((a) => String(a.id) === targetRef)?.title ?? null
+  if (targetType === 'poste') return budget.data?.lines.find((l) => String(l.id) === targetRef)?.label ?? null
+  return null
+}
+
 function NewMessage({ dossierId, targetType, targetRef }: { dossierId: number; targetType: string; targetRef: string }) {
+  const targetLabel = useTargetLabel(dossierId, targetType, targetRef)
   const post = usePostMessage(dossierId)
   const requestId = useRef(newRequestId())
   const [kind, setKind] = useState<'question' | 'commentaire'>('question')
@@ -372,7 +386,10 @@ function NewMessage({ dossierId, targetType, targetRef }: { dossierId: number; t
       >
         <h3 className="font-semibold">Nouveau message</h3>
         {targetType !== 'dossier' && (
-          <p className="text-sm text-muted">À propos d'un élément précis du dossier ({TARGET_PREFIX[targetType as Message['target_type']] ?? targetType}).</p>
+          <p className="text-sm text-muted">
+            À propos de : {TARGET_PREFIX[targetType as Message['target_type']] ?? targetType}
+            {targetLabel ? ` « ${targetLabel} »` : ''}.
+          </p>
         )}
         {sent && <p role="status" className="font-medium text-ok-700">Message envoyé.</p>}
         {error && <Alert tone="danger" role="alert">{error.message}</Alert>}

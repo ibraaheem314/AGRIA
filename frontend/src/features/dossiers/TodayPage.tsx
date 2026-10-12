@@ -25,6 +25,15 @@ export function TodayPage() {
   const nextFact = dossier.facts.find((f) => f.state.status === 'non_renseigne')
   const deferral = dossier.status.code === 'differe' ? relecture.data?.decisions.find((d) => d.choice === 'differer') : undefined
   const starting = ['brouillon', 'a_completer'].includes(dossier.status.code)
+  // Échanges qui demandent l'attention du porteur : questions du conseiller sans réponse de sa part,
+  // et ses propres questions auxquelles le conseiller a répondu.
+  const threads = relecture.data?.threads ?? []
+  const toAnswer = threads.filter(
+    (m) => m.kind === 'question' && m.author_role === 'conseiller' && !m.resolved_at && !m.replies.some((r) => r.author_role === 'porteur'),
+  )
+  const answered = threads.filter(
+    (m) => m.kind === 'question' && m.author_role === 'porteur' && !m.resolved_at && m.replies.some((r) => r.author_role === 'conseiller'),
+  )
   // Débutant : la saisie pas à pas est l'action principale tant qu'il reste des informations vides.
   const stepByStep = active && dossier.project.profile === 'debutant' && counts.non_renseigne > 0
 
@@ -172,6 +181,17 @@ export function TodayPage() {
         {relecture.data && (
           <>
             {relecture.data.advisors.length === 0 && <p className="mt-1">Aucun conseiller n'est attribué à ce dossier pour le moment.</p>}
+            {owner && toAnswer.length > 0 && (
+              <p className="mt-1 font-medium text-warn-700">
+                {toAnswer.length === 1 ? 'Une question du conseiller attend votre réponse' : `${toAnswer.length} questions du conseiller attendent votre réponse`} :{' '}
+                {toAnswer.map((m) => (m.target_label ? `« ${m.target_label} »` : 'le dossier')).join(', ')}.
+              </p>
+            )}
+            {owner && answered.length > 0 && (
+              <p className="mt-1">
+                {answered.length === 1 ? 'Le conseiller a répondu à votre question.' : `Le conseiller a répondu à ${answered.length} de vos questions.`}
+              </p>
+            )}
             {relecture.data.reviews[0] ? (
               <div className="mt-1">
                 <p className="font-medium">
@@ -183,12 +203,19 @@ export function TodayPage() {
                 </p>
               </div>
             ) : (
-              relecture.data.advisors.length > 0 && (
+              relecture.data.advisors.length > 0 && toAnswer.length === 0 && answered.length === 0 && (
                 <p className="mt-1">{owner ? 'Aucun retour pour le moment.' : 'Aucun avis donné pour le moment.'}</p>
               )
             )}
-            <Link to={`/d/${dossier.id}/relecture`} className="mt-2 inline-block font-medium text-brand-700 underline">
-              {dossier.archived ? 'Consulter la relecture et les échanges' : 'Ouvrir la relecture et les échanges'}
+            <Link
+              to={`/d/${dossier.id}/relecture${owner && toAnswer.length > 0 && !dossier.archived ? '#messages' : ''}`}
+              className="mt-2 inline-block font-medium text-brand-700 underline"
+            >
+              {dossier.archived
+                ? 'Consulter la relecture et les échanges'
+                : owner && toAnswer.length > 0
+                  ? 'Répondre au conseiller'
+                  : 'Ouvrir la relecture et les échanges'}
             </Link>
           </>
         )}

@@ -41,7 +41,7 @@ export function ActionPage() {
 
   return (
     <div className="space-y-6">
-      <p><Link to={`/d/${dossier.id}/plan`} className="text-brand-700 underline">← Mon plan</Link></p>
+      <p><Link to={`/d/${dossier.id}/plan`} className="text-brand-700 underline">{dossier.role === 'conseiller' ? '← Plan' : '← Mon plan'}</Link></p>
       <PageTitle subtitle={action.goal}>{action.title}</PageTitle>
       <p className="flex flex-wrap items-center gap-2">
         <Badge tone={ACTION_TONE[action.status]}>{action.status_label}</Badge>

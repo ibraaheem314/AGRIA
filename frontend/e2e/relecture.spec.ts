@@ -93,3 +93,35 @@ test('conseiller attribué : avis traçable, avis à réexaminer après modifica
   await advisorContext.close()
   await strangerContext.close()
 })
+
+test('question ciblée du conseiller : visible à l’accueil du porteur jusqu’à sa réponse', async ({ page, browser }) => {
+  await register(page, 'Binta')
+  const id = await createProject(page)
+  const advisorEmail = uniqueEmail('conseil-question')
+  const password = createAdvisor(advisorEmail, 'M. Ba')
+  manage('assign_advisor', '--dossier', String(id), '--email', advisorEmail)
+  const advisorContext = await browser.newContext()
+  const advisor = await advisorContext.newPage()
+  await loginWith(advisor, advisorEmail, password)
+
+  // Le conseiller lit l'information (libellés de son rôle) et pose une question à son sujet.
+  await advisor.goto(`/d/${id}/projet/acces_terrain`)
+  await expect(advisor.getByRole('link', { name: '← Projet' })).toBeVisible()
+  await advisor.getByRole('link', { name: 'Poser une question sur cette information' }).click()
+  await expect(advisor.getByText('À propos de : Information « Accès au terrain ».')).toBeVisible()
+  await advisor.getByRole('textbox', { name: 'Message' }).fill('Le terrain est-il loué ou prêté ?')
+  await advisor.getByRole('button', { name: 'Envoyer', exact: true }).click()
+  await expect(advisor.getByText('Message envoyé.')).toBeVisible()
+
+  // Le porteur voit à l'accueil qu'une réponse est attendue, puis répond.
+  await page.goto(`/d/${id}`)
+  await expect(page.getByText('Une question du conseiller attend votre réponse : « Accès au terrain ».')).toBeVisible()
+  await page.getByRole('link', { name: 'Répondre au conseiller' }).click()
+  await page.getByRole('textbox', { name: 'Répondre' }).fill('Prêté par un oncle, sans écrit.')
+  await page.getByRole('button', { name: 'Envoyer la réponse' }).click()
+  await expect(page.getByText('Prêté par un oncle, sans écrit.')).toBeVisible()
+  await page.goto(`/d/${id}`)
+  await expect(page.getByText(/attend votre réponse/)).toHaveCount(0)
+  await expect(page.getByRole('link', { name: 'Ouvrir la relecture et les échanges' })).toBeVisible()
+  await advisorContext.close()
+})

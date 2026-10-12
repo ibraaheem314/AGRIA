@@ -63,7 +63,7 @@ export function BudgetPage() {
 
   return (
     <div className="space-y-6">
-      <p><Link to={`/d/${dossier.id}/projet`} className="text-brand-700 underline">← Mon projet</Link></p>
+      <p><Link to={`/d/${dossier.id}/projet`} className="text-brand-700 underline">{dossier.role === 'conseiller' ? '← Projet' : '← Mon projet'}</Link></p>
       <PageTitle subtitle="Une estimation des dépenses de préparation et de campagne. Aucune recette ni rentabilité n’est calculée.">
         Budget provisoire
       </PageTitle>
