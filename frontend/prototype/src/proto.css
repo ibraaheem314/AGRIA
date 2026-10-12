@@ -1,0 +1,11 @@
+/* Mêmes jetons visuels que l'application (src/index.css), compositions propres au prototype. */
+@import "../../src/index.css";
+@source "./";
+
+body {
+  font-size: 1rem;
+}
+
+h1, h2, h3 {
+  text-wrap: balance;
+}

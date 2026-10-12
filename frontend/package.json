@@ -12,7 +12,10 @@
     "preview": "vite preview --host 127.0.0.1",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "prototype": "vite --config vite.prototype.config.ts",
+    "build:prototype": "vite build --config vite.prototype.config.ts",
+    "test:prototype": "playwright test --config playwright.prototype.config.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "5.104.1",
