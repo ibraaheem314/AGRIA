@@ -45,6 +45,7 @@ export type DossierSummary = {
   pending: { open_questions: number; review_requested: boolean }
   label: string
   archived: boolean
+  archived_at: string | null
   role: 'porteur' | 'conseiller'
   created_at: string
   updated_at: string

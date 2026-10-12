@@ -18,7 +18,7 @@ La vision à terme couvre la préparation, le suivi de campagne et le bilan. La 
 | Débutant avec projet concret | Je prépare ma première campagne | Accès envisagé au terrain, ressources disponibles, connaissances et vérifications à effectuer |
 | Producteur déjà actif, peu accompagné | Je prépare ma prochaine campagne | Pratiques précédentes, difficultés constatées, moyens existants et changements envisagés |
 
-Les explications s'adaptent à l'expérience. Les règles de qualité et les permissions restent identiques. Aucun double produit ni double base de données.
+Les explications s'adaptent à l'expérience **par leur présentation** : pour le débutant, un guide « comment avancer », des justifications et des étapes visibles ; pour le producteur, une vue directe où les justifications et les étapes se déplient à la demande. Le contenu des explications, les points à vérifier, les règles de qualité et les permissions restent identiques (D-043). Il n'existe pas d'explications d'initiation spécifiques au débutant : elles relèveraient d'un contenu relu par un spécialiste. Aucun double produit ni double base de données.
 
 Le premier pilote peut ne retenir qu'un profil si les entretiens révèlent des besoins incompatibles. Les curieux sans démarche concrète ne constituent pas la cible initiale.
 

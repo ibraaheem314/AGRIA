@@ -332,3 +332,18 @@ def test_commande_assign_advisor(porteur, conseiller_user, dossier, session):
         call_command(
             "assign_advisor", dossier=dossier["id"], email="awa@example.sn"
         )  # pas conseiller
+
+
+def test_dossier_archive_expose_sa_date_et_reste_consultable(porteur, dossier):
+    assert porteur.get(base(dossier)).json()["archived_at"] is None
+    porteur.post(f"{base(dossier)}/archiver")
+    data = porteur.get(base(dossier)).json()
+    assert data["archived"] is True and data["archived_at"] is not None
+    assert porteur.get(f"{base(dossier)}/preparation").status_code == 200
+    assert porteur.get(f"{base(dossier)}/synthese").status_code == 200
+    # Une nouvelle campagne du même projet reste possible (saison suivante).
+    response = porteur.post(
+        f"/api/projects/{dossier['project']['id']}/campaigns",
+        {"label": "Saison suivante", "request_id": str(uuid.uuid4()), "copy_from": dossier["id"]},
+    )
+    assert response.status_code == 201

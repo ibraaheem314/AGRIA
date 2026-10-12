@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { ApiError } from '../../shared/api'
+import { useUnsavedChanges } from '../../shared/unsaved'
 import { formatDateTime } from '../../shared/format'
 import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { dossierKey, useFactHistory, useSaveFact, type Dossier, type FactItem, type FactStatus, type FactValue, type FieldDef } from './api'
@@ -62,11 +63,13 @@ export function FactEditPage() {
           {fact.state.source && <p className="mt-1 text-sm text-muted">Source ou précision : {fact.state.source}</p>}
         </Card>
       )}
-      <p>
-        <Link to={`/d/${dossier.id}/relecture?cible=information:${fact.key}#messages`} className="font-medium text-brand-700 underline">
-          Poser une question sur cette information
-        </Link>
-      </p>
+      {!dossier.archived && (
+        <p>
+          <Link to={`/d/${dossier.id}/relecture?cible=information:${fact.key}#messages`} className="font-medium text-brand-700 underline">
+            Poser une question sur cette information
+          </Link>
+        </p>
+      )}
       <History dossierId={dossier.id} fact={fact} />
     </div>
   )
@@ -85,6 +88,8 @@ function FactForm({
   const queryClient = useQueryClient()
   const save = useSaveFact(dossierId, fact.key)
   const [draft, setDraft] = useState<Draft>(() => draftFrom(fact))
+  const [baseline, setBaseline] = useState<Draft>(() => draftFrom(fact))
+  const { allowNextNavigation } = useUnsavedChanges(JSON.stringify(draft) !== JSON.stringify(baseline))
   const [localError, setLocalError] = useState<string | null>(null)
   // Version lue à l'ouverture : envoyée telle quelle à chaque essai (reprise sans doublon,
   // conflit explicite si quelqu'un d'autre a modifié entre-temps).
@@ -95,6 +100,7 @@ function FactForm({
     const fresh = queryClient.getQueryData<Dossier>(dossierKey(dossierId))?.facts.find((f) => f.key === fact.key)
     if (fresh) {
       setDraft(draftFrom(fresh))
+      setBaseline(draftFrom(fresh))
       setExpectedVersion(fresh.state.row_version)
       save.reset()
     }
@@ -110,10 +116,12 @@ function FactForm({
     save.mutate(
       { status: draft.status, value: valueFrom(fact, draft), source: draft.source, expected_version: expectedVersion },
       {
-        onSuccess: (result) =>
+        onSuccess: (result) => {
+          allowNextNavigation()
           navigate(`/d/${dossierId}/projet`, {
             state: { flash: result.changed ? `« ${fact.label} » enregistré.` : 'Aucun changement à enregistrer.' },
-          }),
+          })
+        },
       },
     )
   }

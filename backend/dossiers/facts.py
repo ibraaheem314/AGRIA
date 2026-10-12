@@ -214,7 +214,10 @@ DEFINITIONS: tuple[FactDefinition, ...] = (
             "debutant": "Vos connaissances agricoles",
             "producteur": "Vos campagnes précédentes",
         },
-        why="Les explications et les points à vérifier s'adaptent à votre expérience.",
+        why=(
+            "Elle aide votre conseiller à adapter ses explications. Les points à vérifier restent "
+            "les mêmes pour tous."
+        ),
         fields=(
             Field("description", "Décrivez votre expérience et les difficultés rencontrées",
                   "longtext", required=True),

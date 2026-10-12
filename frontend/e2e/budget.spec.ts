@@ -50,7 +50,7 @@ test('budget incomplet, validation, reprise réseau sans doublon et retrait hist
   await expect(page.getByRole('heading', { name: "Main-d'œuvre repiquage" })).toHaveCount(1)
 
   // Le budget est annoncé incomplet ; le total n'est que celui des postes chiffrés.
-  await expect(page.getByText(/^Budget incomplet : 1 poste\(s\) sans montant\. Les postes chiffrés totalisent 37\s500\sFCFA — ce n’est pas le coût total\.$/).first()).toBeVisible()
+  await expect(page.getByText(/^Budget incomplet : 1 poste sans montant\. Les postes chiffrés totalisent 37\s500\sFCFA — ce n’est pas le coût total\.$/).first()).toBeVisible()
 
   // Retrait : le poste disparaît des totaux mais reste dans l'historique.
   await page.getByRole('button', { name: 'Retirer : Semences' }).click()

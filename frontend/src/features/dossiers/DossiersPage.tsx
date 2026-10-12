@@ -1,5 +1,5 @@
 import { Link, Navigate } from 'react-router'
-import { formatDateTime } from '../../shared/format'
+import { formatDateTime, plural } from '../../shared/format'
 import { Alert, Badge, ButtonLink, Card, Loading, PageTitle } from '../../shared/ui'
 import { useDossiers, type DossierSummary } from './api'
 import { lastDossier } from './lastDossier'
@@ -11,8 +11,10 @@ export function HomeRedirect() {
   if (dossiers.isError) return <Alert tone="danger" role="alert">{dossiers.error.message}</Alert>
   const list = dossiers.data
   if (list.length === 0) return <Welcome />
+  // Un dossier archivé n'est jamais rouvert automatiquement : on choisit parmi les dossiers actifs.
+  const active = list.filter((d) => !d.archived)
   const last = lastDossier()
-  const target = list.find((d) => d.id === last) ?? (list.length === 1 ? list[0] : undefined)
+  const target = active.find((d) => d.id === last) ?? (active.length === 1 ? active[0] : undefined)
   if (target) return <Navigate to={`/d/${target.id}`} replace />
   return <Navigate to="/dossiers" replace />
 }
@@ -39,13 +41,22 @@ export function DossiersPage() {
   const dossiers = useDossiers()
   if (dossiers.isPending) return <Loading />
   if (dossiers.isError) return <Alert tone="danger" role="alert">{dossiers.error.message}</Alert>
-  const own = dossiers.data.filter((d) => d.role === 'porteur')
-  const assigned = dossiers.data.filter((d) => d.role === 'conseiller')
+  const own = dossiers.data.filter((d) => d.role === 'porteur' && !d.archived)
+  const assigned = dossiers.data.filter((d) => d.role === 'conseiller' && !d.archived)
+  const archived = dossiers.data.filter((d) => d.archived)
   return (
     <div className="space-y-6">
       <PageTitle>Mes dossiers</PageTitle>
       {own.length > 0 && <DossierList title="Mes projets" items={own} />}
       {assigned.length > 0 && <DossierList title="Dossiers qui me sont attribués" items={assigned} />}
+      {archived.length > 0 && (
+        <>
+          <DossierList title="Dossiers archivés (consultation)" items={archived} />
+          <p className="text-sm text-muted">
+            Pour préparer la saison suivante d’un projet archivé, ouvrez-le puis « Préparer une autre campagne » dans Mon projet.
+          </p>
+        </>
+      )}
       {dossiers.data.length === 0 && <p className="text-muted">Aucun dossier pour le moment.</p>}
       <ButtonLink to="/projets/nouveau" variant="secondary">Nouveau projet</ButtonLink>
     </div>
@@ -65,11 +76,12 @@ function DossierList({ title, items }: { title: string; items: DossierSummary[] 
             <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted">
               {d.project.profile_label} · modifié le {formatDateTime(d.updated_at)}
               {d.role === 'conseiller' && <> · porteur : {d.project.owner.display_name}</>}
-              <Badge tone="info">{d.status.label}</Badge>
-              {d.pending.review_requested && <Badge tone="warn">Relecture demandée</Badge>}
-              {d.pending.open_questions > 0 && <Badge tone="warn">{d.pending.open_questions} question(s) ouverte(s)</Badge>}
+              <Badge tone={d.archived ? 'neutral' : 'info'}>{d.status.label}</Badge>
+              {!d.archived && d.pending.review_requested && <Badge tone="warn">Relecture demandée</Badge>}
+              {!d.archived && d.pending.open_questions > 0 && (
+                <Badge tone="warn">{plural(d.pending.open_questions, 'question ouverte', 'questions ouvertes')}</Badge>
+              )}
               {d.project.is_demo && <Badge tone="warn">Démonstration</Badge>}
-              {d.archived && <Badge>Archivé</Badge>}
             </p>
           </Card>
         ))}

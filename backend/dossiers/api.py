@@ -23,6 +23,7 @@ def campaign_summary(campaign: Campaign, user) -> dict:
         "id": campaign.pk,
         "label": campaign.label,
         "archived": campaign.archived_at is not None,
+        "archived_at": campaign.archived_at,
         "role": role_on(user, campaign),
         "created_at": campaign.created_at,
         "updated_at": campaign.updated_at,

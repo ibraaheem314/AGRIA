@@ -53,3 +53,8 @@ export function formatFcfa(value: number | string): string {
 export function todayInDakar(): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Dakar' }).format(new Date())
 }
+
+/** « 1 poste », « 2 postes » : accord en nombre sans écrire « poste(s) ». */
+export function plural(count: number, singular: string, pluralForm = `${singular}s`): string {
+  return `${count} ${count === 1 || count === 0 ? singular : pluralForm}`
+}

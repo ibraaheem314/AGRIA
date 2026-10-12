@@ -1,7 +1,8 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import { ApiError, newRequestId } from '../../shared/api'
-import { formatDate, formatDateTime, formatDecimal, formatFcfa } from '../../shared/format'
+import { useUnsavedChanges } from '../../shared/unsaved'
+import { formatDate, formatDateTime, formatDecimal, formatFcfa, plural } from '../../shared/format'
 import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { useCurrentDossier } from '../dossiers/DossierLayout'
 import {
@@ -28,10 +29,14 @@ export function budgetSentence(t: Totals): string {
   switch (t.status) {
     case 'vide':
       return 'Aucun poste chiffré pour l’instant.'
-    case 'incomplet':
-      return `Budget incomplet : ${t.incomplete} poste(s) sans montant. Les postes chiffrés totalisent ${formatFcfa(t.priced_total)}${
+    case 'incomplet': {
+      const missing = `Budget incomplet : ${plural(t.incomplete, 'poste')} sans montant.`
+      const priced = t.lines - t.owned - t.incomplete
+      if (priced === 0) return `${missing} Aucun poste n’est encore chiffré.`
+      return `${missing} Les postes chiffrés totalisent ${formatFcfa(t.priced_total)}${
         t.estimated_total ? `, dont ${formatFcfa(t.estimated_total)} estimés` : ''
       } — ce n’est pas le coût total.`
+    }
     case 'complet_estime':
       return `Tous les postes sont chiffrés : ${formatFcfa(t.priced_total)}, dont ${formatFcfa(t.estimated_total)} d’estimations.`
     case 'complet':
@@ -121,6 +126,7 @@ export function BudgetPage() {
                   line={line}
                   dossierId={dossier.id}
                   owner={owner}
+                  canAsk={!dossier.archived}
                   onEdit={() => { setFlash(null); setEditing(line) }}
                   onRemoved={() => setFlash(`« ${line.label} » retiré du budget (conservé dans l’historique).`)}
                 />
@@ -144,12 +150,14 @@ function LineItem({
   line,
   dossierId,
   owner,
+  canAsk,
   onEdit,
   onRemoved,
 }: {
   line: BudgetLine
   dossierId: number
   owner: boolean
+  canAsk: boolean
   onEdit: () => void
   onRemoved: () => void
 }) {
@@ -176,11 +184,13 @@ function LineItem({
         </p>
       )}
       {line.notes && <p className="mt-1 text-sm text-muted">{line.notes}</p>}
-      <p className="mt-1 text-sm">
-        <Link to={`/d/${dossierId}/relecture?cible=poste:${line.id}#messages`} className="text-brand-700 underline">
-          Poser une question<span className="sr-only"> sur « {line.label} »</span>
-        </Link>
-      </p>
+      {canAsk && (
+        <p className="mt-1 text-sm">
+          <Link to={`/d/${dossierId}/relecture?cible=poste:${line.id}#messages`} className="text-brand-700 underline">
+            Poser une question<span className="sr-only"> sur « {line.label} »</span>
+          </Link>
+        </p>
+      )}
       {remove.error && <p role="alert" className="mt-2 text-sm text-danger-700">{remove.error.message}</p>}
       {owner && (
         <div className="mt-2 flex flex-wrap gap-2">
@@ -240,6 +250,8 @@ function LineForm({
   const mutation = line ? update : create
   const requestId = useRef(newRequestId())
   const [form, setForm] = useState<LineInput>(() => toInput(line))
+  const [baseline] = useState<LineInput>(() => toInput(line))
+  useUnsavedChanges(JSON.stringify(form) !== JSON.stringify(baseline))
   const set = <K extends keyof LineInput>(key: K, value: LineInput[K]) => setForm((f) => ({ ...f, [key]: value }))
   const error = mutation.error instanceof ApiError ? mutation.error : null
   const missing = form.price_status === 'manquant'

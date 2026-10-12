@@ -1,6 +1,7 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { ApiError, newRequestId } from '../../shared/api'
+import { useUnsavedChanges } from '../../shared/unsaved'
 import { formatDateTime } from '../../shared/format'
 import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { useCurrentDossier } from '../dossiers/DossierLayout'
@@ -92,6 +93,7 @@ function RequestReview({ dossierId, relecture }: { dossierId: number; relecture:
   const requestId = useRef(newRequestId())
   const [note, setNote] = useState('')
   const [open, setOpen] = useState(false)
+  useUnsavedChanges(open && note.trim() !== '')
   const pending = relecture.requests.find((r) => !r.answered)
   if (pending) {
     return <p className="mt-3 text-sm">Relecture demandée le {formatDateTime(pending.created_at)}, en attente d'avis.</p>
@@ -110,7 +112,7 @@ function RequestReview({ dossierId, relecture }: { dossierId: number; relecture:
     >
       {request.error && <Alert tone="danger" role="alert">{request.error.message}</Alert>}
       {relecture.advisors.length === 0 && (
-        <Alert tone="warn">Aucun conseiller n'est attribué : la demande sera visible dès qu'un conseiller le sera.</Alert>
+        <Alert tone="warn">La demande sera visible dès qu'un conseiller sera attribué à ce dossier.</Alert>
       )}
       <Field label="Message pour le conseiller" help="Facultatif : ce sur quoi vous voulez un avis.">
         {(p) => <textarea {...p} rows={3} className={inputClass} value={note} onChange={(e) => setNote(e.target.value)} />}
@@ -177,6 +179,7 @@ function ReviewForm({ dossierId, relecture }: { dossierId: number; relecture: Re
   const [reservations, setReservations] = useState('')
   const [sent, setSent] = useState(false)
   const error = give.error instanceof ApiError ? give.error : null
+  useUnsavedChanges(seen !== null && (scope.length > 0 || verdict !== '' || opinion.trim() !== '' || reservations.trim() !== ''))
 
   if (!seen) {
     return (
@@ -293,6 +296,7 @@ function Thread({ message, dossierId, canWrite }: { message: Message; dossierId:
   const reply = usePostMessage(dossierId)
   const requestId = useRef(newRequestId())
   const [body, setBody] = useState('')
+  useUnsavedChanges(body.trim() !== '')
   const isQuestion = message.kind === 'question'
   return (
     <Card as="li">
@@ -349,6 +353,7 @@ function NewMessage({ dossierId, targetType, targetRef }: { dossierId: number; t
   const requestId = useRef(newRequestId())
   const [kind, setKind] = useState<'question' | 'commentaire'>('question')
   const [body, setBody] = useState('')
+  useUnsavedChanges(body.trim() !== '')
   const [sent, setSent] = useState(false)
   const error = post.error instanceof ApiError ? post.error : null
   return (
@@ -394,6 +399,7 @@ function DecisionForm({ dossierId, relecture }: { dossierId: number; relecture: 
   const requestId = useRef(newRequestId())
   const [choice, setChoice] = useState('')
   const [reason, setReason] = useState('')
+  useUnsavedChanges(choice !== '' || reason.trim() !== '')
   const [sent, setSent] = useState(false)
   const error = decide.error instanceof ApiError ? decide.error : null
   return (

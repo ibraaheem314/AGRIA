@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router'
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router'
 import { BudgetPage } from '../features/budget/BudgetPage'
 import { LoginPage } from '../features/auth/LoginPage'
 import { RegisterPage } from '../features/auth/RegisterPage'
@@ -17,32 +17,34 @@ import { AppLayout } from './AppLayout'
 import { NotFoundPage } from './NotFoundPage'
 import { RequireAuth } from './RequireAuth'
 
-export function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<AppLayout />}>
-          <Route path="/connexion" element={<LoginPage />} />
-          <Route path="/inscription" element={<RegisterPage />} />
-          <Route path="/aide" element={<HelpPage />} />
-          <Route element={<RequireAuth />}>
-            <Route index element={<HomeRedirect />} />
-            <Route path="/dossiers" element={<DossiersPage />} />
-            <Route path="/projets/nouveau" element={<NewProjectPage />} />
-            <Route path="/d/:dossierId" element={<DossierLayout />}>
-              <Route index element={<TodayPage />} />
-              <Route path="projet" element={<ProjectPage />} />
-              <Route path="projet/:factKey" element={<FactEditPage />} />
-              <Route path="projet/budget" element={<BudgetPage />} />
-              <Route path="plan" element={<PlanPage />} />
-              <Route path="plan/:actionId" element={<ActionPage />} />
-              <Route path="relecture" element={<RelecturePage />} />
-              <Route path="synthese" element={<SynthesePage />} />
-            </Route>
-          </Route>
-          <Route path="*" element={<NotFoundPage />} />
+// Routeur « data » : nécessaire pour intercepter toute navigation (liens, retour du
+// navigateur) quand une saisie n'est pas enregistrée (voir shared/unsaved.tsx).
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route element={<AppLayout />}>
+      <Route path="/connexion" element={<LoginPage />} />
+      <Route path="/inscription" element={<RegisterPage />} />
+      <Route path="/aide" element={<HelpPage />} />
+      <Route element={<RequireAuth />}>
+        <Route index element={<HomeRedirect />} />
+        <Route path="/dossiers" element={<DossiersPage />} />
+        <Route path="/projets/nouveau" element={<NewProjectPage />} />
+        <Route path="/d/:dossierId" element={<DossierLayout />}>
+          <Route index element={<TodayPage />} />
+          <Route path="projet" element={<ProjectPage />} />
+          <Route path="projet/:factKey" element={<FactEditPage />} />
+          <Route path="projet/budget" element={<BudgetPage />} />
+          <Route path="plan" element={<PlanPage />} />
+          <Route path="plan/:actionId" element={<ActionPage />} />
+          <Route path="relecture" element={<RelecturePage />} />
+          <Route path="synthese" element={<SynthesePage />} />
         </Route>
-      </Routes>
-    </BrowserRouter>
-  )
+      </Route>
+      <Route path="*" element={<NotFoundPage />} />
+    </Route>,
+  ),
+)
+
+export function App() {
+  return <RouterProvider router={router} />
 }

@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router'
 import { ApiError } from '../../shared/api'
+import { useUnsavedChanges } from '../../shared/unsaved'
 import { formatDate, formatDateTime, todayInDakar } from '../../shared/format'
 import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { useCurrentDossier } from '../dossiers/DossierLayout'
+import { isDetailed } from '../dossiers/guidance'
 import { ACTION_TONE, useActionHistory, usePreparation, useUpdateAction, type ActionStatus, type PlanAction } from './api'
 
 const STATUS_LABEL: Record<ActionStatus, string> = {
@@ -61,10 +63,17 @@ export function ActionPage() {
 
       {action.steps.length > 0 && (
         <Card>
-          <h2 className="font-semibold">Étapes</h2>
-          <ol className="mt-2 list-decimal space-y-1 pl-5">
-            {action.steps.map((step) => <li key={step}>{step}</li>)}
-          </ol>
+          <details open={isDetailed(dossier)}>
+            <summary className="cursor-pointer font-semibold">Étapes proposées ({action.steps.length})</summary>
+            <ol className="mt-2 list-decimal space-y-1 pl-5">
+              {action.steps.map((step) => <li key={step}>{step}</li>)}
+            </ol>
+            {isDetailed(dossier) && dossier.role === 'porteur' && !dossier.archived && (
+              <p className="mt-2 text-sm text-muted">
+                Une étape n'est pas claire ? Posez la question à votre conseiller depuis le bas de cette page.
+              </p>
+            )}
+          </details>
         </Card>
       )}
 
@@ -83,11 +92,13 @@ export function ActionPage() {
       )}
 
       {editable && <StatusForm dossierId={dossier.id} action={action} />}
-      <p>
-        <Link to={`/d/${dossier.id}/relecture?cible=demarche:${action.id}#messages`} className="font-medium text-brand-700 underline">
-          Poser une question sur cette démarche
-        </Link>
-      </p>
+      {!dossier.archived && (
+        <p>
+          <Link to={`/d/${dossier.id}/relecture?cible=demarche:${action.id}#messages`} className="font-medium text-brand-700 underline">
+            Poser une question sur cette démarche
+          </Link>
+        </p>
+      )}
       <ActionHistory dossierId={dossier.id} actionId={action.id} />
     </div>
   )
@@ -103,6 +114,11 @@ function StatusForm({ dossierId, action }: { dossierId: number; action: PlanActi
   const [reason, setReason] = useState(action.blocked_reason)
   const [due, setDue] = useState(action.due_date ?? '')
   const [done, setDone] = useState<string | null>(null)
+  useUnsavedChanges(
+    (mode === 'terminer' && result.trim() !== '') ||
+      (mode === 'bloquer' && reason !== action.blocked_reason) ||
+      (mode === 'echeance' && due !== (action.due_date ?? '')),
+  )
   const error = update.error instanceof ApiError ? update.error : null
 
   function send(body: Parameters<typeof update.mutate>[0], message: string) {

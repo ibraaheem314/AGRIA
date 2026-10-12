@@ -1,9 +1,11 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import { ApiError, newRequestId } from '../../shared/api'
+import { useUnsavedChanges } from '../../shared/unsaved'
 import { formatDate } from '../../shared/format'
 import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { useCurrentDossier } from '../dossiers/DossierLayout'
+import { isDetailed } from '../dossiers/guidance'
 import { ACTION_TONE, LEVEL_TONE, useCreateAction, usePreparation, type Check, type PlanAction, type Template } from './api'
 
 export function TemplateNotice({ template }: { template: Template }) {
@@ -24,7 +26,7 @@ export function TemplateNotice({ template }: { template: Template }) {
   )
 }
 
-export function CheckItem({ check, dossierId }: { check: Check; dossierId: number }) {
+export function CheckItem({ check, dossierId, detailed = true }: { check: Check; dossierId: number; detailed?: boolean }) {
   return (
     <Card as="li">
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -34,7 +36,14 @@ export function CheckItem({ check, dossierId }: { check: Check; dossierId: numbe
           <Badge tone={LEVEL_TONE[check.level]}>{check.level_label}</Badge>
         </span>
       </div>
-      <p className="mt-1 text-sm text-muted">Pourquoi ? {check.why}</p>
+      {detailed ? (
+        <p className="mt-1 text-sm text-muted">Pourquoi ? {check.why}</p>
+      ) : (
+        <details className="mt-1 text-sm text-muted">
+          <summary className="cursor-pointer">Pourquoi ?</summary>
+          {check.why}
+        </details>
+      )}
       <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
         <Link to={`/d/${dossierId}/projet/${check.fact_key}`} className="font-medium text-brand-700 underline">
           {check.level === 'a_completer' ? 'Compléter' : 'Mettre à jour'} : {check.fact_label}
@@ -109,7 +118,7 @@ export function PlanPage() {
         {toClarify.length === 0 && <p className="text-muted">Aucun point à clarifier ou à vérifier pour l'instant.</p>}
         <ul className="space-y-3">
           {[...toClarify].sort((a, b) => Number(b.blocking) - Number(a.blocking)).map((c) => (
-            <CheckItem key={c.key} check={c} dossierId={dossier.id} />
+            <CheckItem key={c.key} check={c} dossierId={dossier.id} detailed={isDetailed(dossier)} />
           ))}
         </ul>
         {toComplete.length > 0 && (
@@ -160,6 +169,7 @@ function NewActionForm({ dossierId }: { dossierId: number }) {
   const [open, setOpen] = useState(false)
   const [title, setTitle] = useState('')
   const [goal, setGoal] = useState('')
+  useUnsavedChanges(open && (title.trim() !== '' || goal.trim() !== ''))
 
   function submit(event: FormEvent) {
     event.preventDefault()

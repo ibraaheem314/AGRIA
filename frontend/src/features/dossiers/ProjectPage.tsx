@@ -1,6 +1,7 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { ApiError, newRequestId } from '../../shared/api'
+import { useUnsavedChanges } from '../../shared/unsaved'
 import { Alert, Badge, Button, Card, Field, inputClass, Loading, PageTitle } from '../../shared/ui'
 import { useBudget } from '../budget/api'
 import { budgetSentence } from '../budget/BudgetPage'
@@ -55,7 +56,7 @@ export function ProjectPage() {
         )
       })}
 
-      {owner && !dossier.archived && <NewCampaignCard dossier={dossier} />}
+      {owner && <NewCampaignCard dossier={dossier} />}
     </div>
   )
 }
@@ -67,20 +68,28 @@ function NewCampaignCard({ dossier }: { dossier: Dossier }) {
   const [open, setOpen] = useState(false)
   const [label, setLabel] = useState('')
   const [reuse, setReuse] = useState(true)
+  const { allowNextNavigation } = useUnsavedChanges(open && label.trim() !== '')
   const error = create.error instanceof ApiError ? create.error : null
 
   function submit(event: FormEvent) {
     event.preventDefault()
     create.mutate(
       { label, request_id: requestId.current, copy_from: reuse ? dossier.id : null },
-      { onSuccess: (d) => navigate(`/d/${d.id}/projet`, { state: { flash: `Campagne « ${d.label} » créée.` } }) },
+      {
+        onSuccess: (d) => {
+          allowNextNavigation()
+          navigate(`/d/${d.id}/projet`, { state: { flash: `Campagne « ${d.label} » créée.` } })
+        },
+      },
     )
   }
 
   return (
     <Card>
       <h2 className="font-semibold">Préparer une autre campagne</h2>
-      <p className="mt-1 text-sm text-muted">Pour la saison suivante du même projet. Ce dossier-ci reste inchangé.</p>
+      <p className="mt-1 text-sm text-muted">
+        Pour la saison suivante du même projet. Ce dossier-ci reste inchangé{dossier.archived ? ' (archivé)' : ''}.
+      </p>
       {!open ? (
         <Button variant="secondary" className="mt-3" onClick={() => setOpen(true)}>Nouvelle campagne</Button>
       ) : (

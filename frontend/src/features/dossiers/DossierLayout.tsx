@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link, Outlet, useLocation, useOutletContext, useParams } from 'react-router'
 import { ApiError } from '../../shared/api'
+import { formatDate } from '../../shared/format'
 import { Alert, Loading, PageTitle } from '../../shared/ui'
 import { useDossier, type Dossier } from './api'
 import { rememberDossier } from './lastDossier'
@@ -45,13 +46,18 @@ export function DossierLayout() {
           Vous consultez le dossier de {d.project.owner.display_name} en tant que conseiller : les informations du porteur sont en lecture seule.
         </Alert>
       )}
-      {d.archived && <Alert tone="neutral">Ce dossier est archivé : il n'est plus modifiable.</Alert>}
+      {d.archived && (
+        <Alert tone="neutral">
+          Dossier archivé{d.archived_at ? ` le ${formatDate(d.archived_at)}` : ''} : consultation seulement, plus aucune modification possible.
+        </Alert>
+      )}
       {flash && (
         <Alert tone="ok" role="status">
           {flash}
         </Alert>
       )}
-      <Outlet context={d} />
+      {/* Clé par dossier : aucun état de formulaire ne passe d'un dossier à un autre. */}
+      <Outlet key={d.id} context={d} />
     </div>
   )
 }

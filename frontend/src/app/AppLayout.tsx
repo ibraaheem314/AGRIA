@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useMatch, useNavigate } from 'react
 import { useLogout, useMe } from '../features/auth/session'
 import { useDossiers } from '../features/dossiers/api'
 import { forgetDossier, lastDossier } from '../features/dossiers/lastDossier'
+import { UnsavedChangesProvider, useConfirmLeave } from '../shared/unsaved'
 
 /** En-tête, navigation principale (Aujourd'hui · Mon projet · Mon plan · Aide) et contenu. */
 function subscribeOnline(callback: () => void) {
@@ -20,6 +21,15 @@ function useOnline() {
 }
 
 export function AppLayout() {
+  return (
+    <UnsavedChangesProvider>
+      <Layout />
+    </UnsavedChangesProvider>
+  )
+}
+
+function Layout() {
+  const confirmLeave = useConfirmLeave()
   const me = useMe()
   const online = useOnline()
   const location = useLocation()
@@ -66,12 +76,14 @@ export function AppLayout() {
                 type="button"
                 className="min-h-11 rounded-md px-2 text-brand-800 underline"
                 onClick={() =>
-                  logout.mutate(undefined, {
-                    onSuccess: () => {
-                      forgetDossier()
-                      navigate('/connexion')
-                    },
-                  })
+                  confirmLeave(() =>
+                    logout.mutate(undefined, {
+                      onSuccess: () => {
+                        forgetDossier()
+                        navigate('/connexion')
+                      },
+                    }),
+                  )
                 }
               >
                 Se déconnecter
@@ -88,7 +100,7 @@ export function AppLayout() {
                     to={link.to}
                     end={link.end}
                     className={({ isActive }) =>
-                      `flex min-h-12 items-center justify-center border-t-4 px-4 text-sm font-medium sm:border-b-4 sm:border-t-0 ${
+                      `flex min-h-12 items-center justify-center whitespace-nowrap border-t-4 px-1 text-sm font-medium sm:border-b-4 sm:border-t-0 sm:px-4 ${
                         isActive ? 'border-brand-700 text-brand-800' : 'border-transparent text-muted hover:text-ink'
                       }`
                     }

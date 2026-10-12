@@ -1,6 +1,7 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
 import { ApiError, newRequestId } from '../../shared/api'
+import { useUnsavedChanges } from '../../shared/unsaved'
 import { Alert, Button, Card, Field, inputClass, PageTitle } from '../../shared/ui'
 import { useCreateProject, type Profile } from './api'
 
@@ -29,6 +30,7 @@ export function NewProjectPage() {
     campaign_label: '',
   })
   const [localError, setLocalError] = useState<string | null>(null)
+  const { allowNextNavigation } = useUnsavedChanges(Boolean(form.name || form.profile || form.campaign_label))
 
   function submit(event: FormEvent) {
     event.preventDefault()
@@ -39,7 +41,12 @@ export function NewProjectPage() {
     setLocalError(null)
     create.mutate(
       { name: form.name, profile: form.profile, campaign_label: form.campaign_label, request_id: requestId.current },
-      { onSuccess: (dossier) => navigate(`/d/${dossier.id}/projet`, { state: { flash: 'Projet créé.' } }) },
+      {
+        onSuccess: (dossier) => {
+          allowNextNavigation()
+          navigate(`/d/${dossier.id}/projet`, { state: { flash: 'Projet créé.' } })
+        },
+      },
     )
   }
 
