@@ -9,6 +9,8 @@
     python scripts/dev.py db-backup      sauvegarde la base dans backups/
     python scripts/dev.py db-restore F   restaure la sauvegarde F dans une base séparée (--into NOM)
     python scripts/dev.py e2e-server     recrée la base agria_e2e et lance Django (Playwright)
+    python scripts/dev.py demo-init      crée la base de démonstration agria_demo (--reset)
+    python scripts/dev.py demo-server    lance Django sur agria_demo (127.0.0.1:8000, --port)
     python scripts/dev.py check          lance tous les contrôles (ruff, pytest, eslint, tsc, build)
 
 L'instance de développement n'écoute que sur 127.0.0.1 avec authentification « trust » :
@@ -257,6 +259,52 @@ def venv_python() -> str:
     raise AssertionError
 
 
+DEMO_DB = "agria_demo"
+
+
+def demo_env() -> dict:
+    # Base de démonstration séparée de la base de travail ; inscription libre fermée.
+    return {
+        **os.environ,
+        "DB_NAME": DEMO_DB,
+        "AGRIA_ALLOW_SIGNUP": "false",
+        "PYTHONIOENCODING": "utf-8",
+    }
+
+
+def cmd_demo_init(args) -> None:
+    """Base agria_demo : migrations, contenu, comptes et dossiers fictifs."""
+    if not is_running():
+        fail("L'instance n'est pas démarrée : python scripts/dev.py db-start")
+    base = ["-h", DB_HOST, "-p", DB_PORT, "-U", DB_USER]
+    if database_exists(DEMO_DB):
+        if not args.reset:
+            fail(
+                f"La base {DEMO_DB} existe déjà. Ajouter --reset pour la recréer "
+                "(les données de démonstration seront perdues)."
+            )
+        run([tool("dropdb"), *base, "--force", DEMO_DB])
+    if run([tool("createdb"), *base, DEMO_DB]).returncode:
+        fail(f"createdb {DEMO_DB} a échoué.")
+    py = venv_python()
+    for command in (["migrate", "--noinput"], ["load_content"], ["seed_demo"]):
+        if run([py, "manage.py", *command], cwd=BACKEND, env=demo_env()).returncode:
+            fail(f"manage.py {' '.join(command)} a échoué.")
+    print(
+        f"Base « {DEMO_DB} » prête. Lancer : python scripts/dev.py demo-server, puis npm run dev."
+    )
+
+
+def cmd_demo_server(args) -> None:
+    if not database_exists(DEMO_DB):
+        fail(f"Base {DEMO_DB} absente : python scripts/dev.py demo-init")
+    run(
+        [venv_python(), "manage.py", "runserver", f"127.0.0.1:{args.port}"],
+        cwd=BACKEND,
+        env=demo_env(),
+    )
+
+
 E2E_DB = "agria_e2e"
 E2E_SETUP = [["migrate", "--noinput"], ["load_content"]]
 
@@ -345,6 +393,14 @@ def main() -> None:
     restore.add_argument("--into", default="agria_restauration", help="base cible (recréée)")
     restore.add_argument("--replace", action="store_true", help="autorise --into agria")
     restore.set_defaults(func=cmd_db_restore)
+    demo = sub.add_parser("demo-init")
+    demo.add_argument("--reset", action="store_true", help="recrée agria_demo si elle existe")
+    demo.set_defaults(func=cmd_demo_init)
+    demo_server = sub.add_parser("demo-server")
+    demo_server.add_argument(
+        "--port", default="8000", help="8000 par défaut ; autre port si occupé"
+    )
+    demo_server.set_defaults(func=cmd_demo_server)
     e2e = sub.add_parser("e2e-server")
     e2e.add_argument("--port", default="8001")
     e2e.set_defaults(func=cmd_e2e_server)

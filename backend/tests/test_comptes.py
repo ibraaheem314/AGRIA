@@ -108,3 +108,34 @@ def test_compte_desactive_ne_peut_plus_lire(make_user, session):
     user.is_active = False
     user.save()
     assert s.get("/api/dossiers").status_code == 401
+
+
+def test_assistance_reinitialisation_et_reactivation(make_user, session, capsys):
+    from django.core.management import CommandError, call_command
+
+    user = make_user("bloque@example.sn")
+    ancienne = session(user)
+    call_command("assist_account", email="BLOQUE@example.sn", reset_password=True)
+    nouveau = capsys.readouterr().out.strip().splitlines()[-1].split()[-1]
+    # L'ancien mot de passe ne marche plus, l'ancienne session est fermée, le nouveau marche.
+    assert ancienne.get("/api/dossiers").status_code == 401
+    refus = session().post("/api/auth/login", {"email": user.email, "password": PASSWORD})
+    assert refus.status_code == 401
+    ok = session().post("/api/auth/login", {"email": user.email, "password": nouveau})
+    assert ok.status_code == 200
+
+    user.refresh_from_db()  # sans cela, l'ancien mot de passe en mémoire serait réécrit
+    user.is_active = False
+    user.save(update_fields=["is_active"])
+    assert (
+        session().post("/api/auth/login", {"email": user.email, "password": nouveau}).status_code
+        == 401
+    )
+    call_command("assist_account", email=user.email, reactivate=True, status=True)
+    assert "actif" in capsys.readouterr().out
+    assert (
+        session().post("/api/auth/login", {"email": user.email, "password": nouveau}).status_code
+        == 200
+    )
+    with pytest.raises(CommandError):
+        call_command("assist_account", email="inconnu@example.sn", status=True)

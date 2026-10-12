@@ -11,7 +11,7 @@ from django.utils import timezone
 
 from dossiers.models import AdvisorAssignment, Project
 from preparation import content as content_store
-from preparation.models import Action, ActionEvent, CampaignPlan, PreparationTemplate
+from preparation.models import Action, ActionEvent, PreparationTemplate
 from tests.conftest import new_project
 
 pytestmark = pytest.mark.django_db
@@ -333,14 +333,38 @@ def test_demarche_d_un_autre_dossier_introuvable(porteur, dossier):
 # --- Démonstration ------------------------------------------------------------------------
 
 
-def test_demonstration_identifiee_et_separee(porteur, capsys):
+def test_demonstration_identifiee_et_separee(porteur, capsys, session):
+    from django.contrib.auth import get_user_model
+
+    from dossiers.models import AdvisorAssignment, Campaign
+
     call_command("seed_demo")
-    demo = Project.objects.get(is_demo=True)
-    assert demo.owner.email.endswith(".invalid")
-    assert CampaignPlan.objects.filter(campaign__project=demo).exists()
+    out = capsys.readouterr().out
+    demos = Project.objects.filter(is_demo=True)
+    assert demos.count() == 2
+    assert all(p.owner.email.endswith(".invalid") for p in demos)
+    # Débutant : budget incomplet, question, demande de relecture, conseiller attribué.
+    debutant = Campaign.objects.get(project__owner__email="demo-debutant@agria.invalid")
+    assert AdvisorAssignment.objects.filter(campaign=debutant, ended_at__isnull=True).exists()
+    assert debutant.review_requests.exists() and debutant.comments.exists()
+    # Producteur : campagne précédente archivée, nouvelle campagne au lieu « à revérifier ».
+    campaigns = Campaign.objects.filter(project__owner__email="demo-producteur@agria.invalid")
+    assert sorted(c.archived_at is not None for c in campaigns) == [False, True]
+    nouvelle = campaigns.get(archived_at__isnull=True)
+    assert nouvelle.facts.get(key="eau").status == "declare"
+    # Mots de passe affichés une fois et utilisables ; jamais stockés en clair.
+    users = get_user_model().objects.filter(email__endswith="@agria.invalid")
+    assert users.count() == 3
+    password = next(line.split()[-1] for line in out.splitlines() if "demo-conseiller" in line)
+    assert all(password not in u.password for u in users)
+    conseiller = session()
+    conseiller.post(
+        "/api/auth/login", {"email": "demo-conseiller@agria.invalid", "password": password}
+    )
+    assert [d["id"] for d in conseiller.get("/api/dossiers").json()] == [debutant.pk]
     assert porteur.get("/api/dossiers").json() == []  # invisible pour un compte réel
     call_command("seed_demo")  # idempotent
-    assert Project.objects.filter(is_demo=True).count() == 1
+    assert Project.objects.filter(is_demo=True).count() == 2
 
 
 def test_publication_d_une_version_relue_sans_migration_silencieuse(porteur, dossier, tmp_path):
