@@ -121,21 +121,46 @@ Remove-Item Env:DB_NAME; cd ..
 
 | Temps | Rôle | Étapes | Résultat attendu |
 |---|---|---|---|
-| 0–3 min | Débutant | Ouvrir le dossier « Exemple fictif — maraîchage », lire Aujourd'hui | Une seule carte « À faire maintenant » (démarche « Confirmer l'accès au terrain pour toute la campagne ») ; « Aussi possible » : renseigner les informations restantes pas à pas ; « Échanges et relecture » : une question en attente d'une réponse du conseiller, relecture demandée sans avis reçu |
-| | | Mon plan → démarche « Identifier une source d'eau utilisable » | Terminée, résultat « incertain » ; « Et maintenant : mettre le dossier à jour » : rien n'a changé automatiquement |
+| 0–3 min | Débutant | Ouvrir le dossier « Exemple fictif — maraîchage », lire la synthèse (espace « Projet ») | Une seule carte « À faire maintenant » (démarche « Confirmer l'accès au terrain pour toute la campagne ») ; « Aussi possible » : renseigner les informations restantes pas à pas ; « Échanges et relecture » : une question en attente d'une réponse du conseiller, relecture demandée sans avis reçu |
+| | | Démarches → démarche « Identifier une source d'eau utilisable » | Terminée, résultat « incertain » ; « Et maintenant : mettre le dossier à jour » : rien n'a changé automatiquement |
 | | | « Mettre à jour : Accès à l'eau » → « Déclaré », source « Puits » → Enregistrer | Le résultat de la démarche est rappelé sans rien préremplir ; retour à la démarche avec « Point encore ouvert : Disponibilité de l'eau déclarée mais non vérifiée » |
-| | | Budget (depuis le résumé de l'accueil) | « Budget incomplet… ce n'est pas le coût total » ; postes à examiner, sans prix |
+| | | Budget (navigation) | « Budget incomplet… ce n'est pas le coût total » ; postes à examiner, sans prix |
 | 3–6 min | Conseiller | Se déconnecter, se connecter en conseiller. Mes dossiers | Badges « 1 question attend votre réponse » et « Relecture demandée » |
 | | | Ouvrir le dossier | Bandeau nommant le porteur, le projet et la campagne ; « À faire maintenant » : répondre à la question du porteur ; « Aussi possible » : examiner le dossier et rédiger un avis ; navigation « Projet · Plan » |
 | | | Plan → titre « Plan du projet » ; liens « Consulter l'information » ; ouvrir « Accès au terrain » → « Poser une question sur cette information » → envoyer | Aucun lien « Compléter » ou « Mettre à jour » ; « À propos de : Information « Accès au terrain » » puis « Message envoyé. » |
 | | | Relecture : répondre à la question du porteur, puis « Rédiger un avis » → Contexte du projet, « Revu avec réserves », avis et réserves → enregistrer | « Avis enregistré. » ; la question du porteur passe à « Vous avez répondu, question ouverte » |
-| 6–9 min | Débutant | Se déconnecter, se reconnecter en débutant. Aujourd'hui | « À faire maintenant · Une réponse est attendue de vous » ; « Échanges et relecture » : réponse reçue à votre question (encore ouverte), dernier avis « Revu avec réserves » « À jour » |
-| | | « Répondre au conseiller » → répondre. Puis Mon projet → Accès au terrain → modifier les précisions → Enregistrer | La page s'ouvre sur les échanges ; réponse visible sous la question |
-| | | Relecture → décision « Modifier le projet » avec un motif → Enregistrer, puis Aujourd'hui et la synthèse | Avis « À réexaminer » ; à l'accueil, « Dernière décision du porteur : Modifier le projet » avec auteur, date et motif ; la synthèse reprend informations, démarches, budget incomplet, avis et décision |
+| 6–9 min | Débutant | Se déconnecter, se reconnecter en débutant. Synthèse (« Projet ») | « À faire maintenant · Une réponse est attendue de vous » ; « Échanges et relecture » : réponse reçue à votre question (encore ouverte), dernier avis « Revu avec réserves » « À jour » |
+| | | « Répondre au conseiller » → répondre. Puis sujet « Le lieu et le terrain » → Accès au terrain → modifier les précisions → Enregistrer | La page s'ouvre sur les échanges ; réponse visible sous la question |
+| | | Conseiller → décision « Modifier le projet » avec un motif → Enregistrer, puis Projet et la synthèse imprimable | Avis « À réexaminer » ; à l'accueil, « Dernière décision du porteur : Modifier le projet » avec auteur, date et motif ; la synthèse reprend informations, démarches, budget incomplet, avis et décision |
 | 9–10 min | Producteur | Se déconnecter, se connecter en producteur. Mes dossiers | Campagne active et « Dossiers archivés (consultation) » séparés |
-| | | Ouvrir « Prochaine contre-saison (exemple) » → Mon projet | Lieu et eau repris « Déclaré », « à revérifier pour cette campagne » ; budget vide ; aucune démarche ni résultat repris ; accès direct à chaque information |
+| | | Ouvrir « Prochaine contre-saison (exemple) » → Toutes les informations | Lieu et eau repris « Déclaré », « à revérifier pour cette campagne » ; budget vide ; aucune démarche ni résultat repris ; accès direct à chaque information |
 
-Facultatif : pour voir le pas-à-pas depuis le début, créer un compte (« Créer un compte ») puis un projet « Je prépare ma première campagne ».
+Facultatif : pour voir les premières questions depuis le début, suivre la démonstration UX3-A ci-dessous.
+
+Les dossiers de démonstration existants restent rattachés au contenu v1 (voir AVANCEMENT, « Contenu de préparation v2 »).
+
+### Démonstration UX3-A en cinq minutes (premières questions sur les API réelles)
+
+Sur la base de démonstration (inscription fermée), avec un compte d'essai créé en ligne de commande. Ces deux commandes ajoutent le contenu v2 et un compte ; elles ne modifient ni les comptes ni les dossiers existants. À lancer par le fondateur, s'il le souhaite :
+
+```powershell
+cd backend; $env:DB_NAME="agria_demo"
+.venv\Scripts\python manage.py load_content     # charge la v2 « Pluie seulement » ; dossiers existants inchangés
+.venv\Scripts\python manage.py create_account --email essai-ux3@agria.invalid --name "Awa (essai)" --random-password
+Remove-Item Env:DB_NAME; cd ..
+```
+
+| Temps | Faire | Observer |
+|---|---|---|
+| 0–2 min | Se connecter avec le compte d’essai → « Commencer un projet » → « Je prépare ma première campagne » → Créer | Arrivée sur « Préparez votre première campagne » ; « Commencer » |
+| | Culture « Oignon », mois de début → « Enregistrer et continuer » ; région, terrain « En discussion » → continuer ; eau « Pluie seulement » → continuer | « Étape … enregistrée dans votre dossier » après chaque étape, jamais avant la réponse du serveur |
+| | Vente : écrire un début de réponse, puis « Se déconnecter » | Confirmation « Modifications non enregistrées » ; « Quitter sans enregistrer » |
+| 2–3 min | Se reconnecter | La synthèse s'ouvre : culture, lieu, eau conservés ; « À faire maintenant · Terminer les premières questions (1 sans réponse) » → reprise à « La vente » |
+| | « Répondre plus tard » → « Enregistrer et vérifier mes réponses » → « Voir ma première synthèse » | « Votre point de départ » ; vente « à répondre plus tard » ; sujet « L'eau » : « Eau de pluie seulement : disponibilité à examiner localement » |
+| 3–5 min | Sujet « L'eau » → « Faire examiner localement une campagne qui dépend de la pluie » → « Terminer et indiquer le résultat », résultat **Incertain** | Aucune étape n'invite à interroger un gestionnaire ; « Et maintenant : mettre le dossier à jour » |
+| | « Mettre à jour : Accès à l'eau » → source « Puits », précisions → Enregistrer ; se déconnecter puis se reconnecter | Résultat rappelé sans rien préremplir ; « Point encore ouvert : … » (recalcul du serveur) ; après reconnexion, « Accès à l'eau : Puits » dans la synthèse et la démarche « Terminée · résultat incertain » dans le sujet |
+
+Sans `load_content`, un nouveau dossier de la base de démonstration reste rattaché à la v1 : l'eau « Pluie seulement » y propose encore « Confirmer la disponibilité de l'eau ». Même remarque pour la base de travail (`manage.py load_content` sans `DB_NAME`).
 
 ### Reprendre ou arrêter
 
@@ -148,7 +173,7 @@ Facultatif : pour voir le pas-à-pas depuis le début, créer un compte (« Cré
 À poser après le parcours, sans commenter les réponses ; noter les réponses telles qu'elles sont données.
 
 1. En une phrase, à quoi sert ce produit, et pour qui ?
-2. Sur l'écran « Aujourd'hui » du débutant, quelle serait la prochaine chose à faire, et qu'est-ce qui vous l'a indiqué ?
+2. Sur la synthèse du débutant, quelle serait la prochaine chose à faire, et qu'est-ce qui vous l'a indiqué ?
 3. Pour une même information, que signifient pour vous « Déclaré », « Vérifié (source indiquée) » et « Situation : point encore ouvert » ?
 4. Après la démarche terminée avec un résultat « incertain », qu'est-ce qui a changé dans le dossier et qu'est-ce qui n'a pas changé ?
 5. Que vous apprend le budget affiché sur le coût du projet, et que ne vous apprend-il pas ?

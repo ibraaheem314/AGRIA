@@ -609,7 +609,7 @@ Itération ciblée sur trois moments (commencer, comprendre la synthèse et choi
 Tests backend et recette de restauration non relancés : ni le backend, ni les API, ni les données de l'application n'ont changé. Captures avant/après du même scénario conservées hors dépôt.
 
 
-# UX3-A — intégration du parcours débutant aux API réelles (en cours)
+# UX3-A — intégration du parcours débutant aux API réelles (livré le 13/10/2026)
 
 Direction retenue par le fondateur à l'issue de UX2 pour l'intégration : préparation progressive, synthèse courte, lecture du dossier par sujet, action principale explicite, espaces Projet · Démarches · Budget · Conseiller, parcours adaptés au rôle. Ce choix autorise l'intégration ; il ne vaut ni validation terrain, ni validation agronomique, ni autorisation de déploiement. L'essai du fondateur n'est pas une étude utilisateur.
 
@@ -639,3 +639,53 @@ Défaut confirmé : en v1, une eau « Pluie seulement » déclarée ou estimée 
 - **Nouveaux dossiers :** rattachés à la v2 dès que `load_content` l'a chargée (dernière version active).
 - **Dossiers existants :** restent rattachés à la version de leur création (v1) ; leurs règles, démarches, résultats et historiques ne sont pas réécrits, et la correction ne s'y applique pas. Pour en bénéficier, préparer une nouvelle campagne du projet (rattachée à la v2). Aucun outil de migration de contenu n'est créé.
 - **Base de travail :** `manage.py load_content` charge la v2 (sans effet sur les dossiers existants) ; opération laissée au fondateur.
+
+### Ce qui fonctionne sur les API réelles
+
+| Étape de la boucle | Écran | Écritures | Preuve |
+|---|---|---|---|
+| Créer un projet | `/projets/nouveau` ; le débutant est conduit à `/d/:id/demarrer` (le producteur garde « Toutes les informations ») | `POST /api/projects`, identifiant de requête inchangé | `debutant.spec.ts` (aucun doublon dans « Mes dossiers ») |
+| Premières questions | Quatre étapes et un récapitulatif (`OnboardingPage`) | `PUT …/informations/<clé>` à chaque « Enregistrer et continuer » ; seules les réponses modifiées sont envoyées ; une réponse remplace les champs posés et garde les autres (surface, précisions, fin) | Interruption puis reprise après reconnexion ; coupure réseau dont la réponse se perd, renvoi sans conflit ni second historique ; conflit avec un autre onglet |
+| Synthèse | `/d/:id` pour le porteur (`TodayPage`) : résumé, action principale (`priority.ts`), sujets, « État du dossier », échanges, décision | Aucune | Résumé, une seule action, sujets ; états chargement, erreur, différé, archivé, sans conseiller |
+| Sujet | `/d/:id/sujet/:sujet` (`SubjectPage`) | Aucune (renvoie à la fiche, à la démarche, aux échanges) | Points et démarches du serveur ; conseiller en lecture ; archivé au passé |
+| Démarche, résultat, actualisation | Écrans existants (`ActionPage`, `FactEditPage` avec `?depuis=` ou `?sujet=`) | `PATCH …/actions/<id>`, `PUT …/informations/<clé>` | Résultat incertain conservé ; résultat rappelé sans rien préremplir ; « Point encore ouvert : … » calculé par le serveur |
+| Reconnexion | Synthèse rouverte | — | Valeurs, démarche terminée et résultat relus depuis le serveur |
+
+Navigation : porteur **Projet · Démarches · Budget · Conseiller · Aide** ; conseiller **Aujourd'hui · Projet · Plan · Échanges · Aide**. Toutes les adresses antérieures restent valides. Une règle ESLint interdit tout import du prototype dans `src`.
+
+### Décisions de données et de contenu
+
+- **Aucune migration, aucun nouveau champ.** Les premières questions écrivent les informations existantes avec l'API existante ; « Répondre plus tard » reste le repère local D-049 (`deferred.ts`, partagé avec le pas-à-pas), jamais une donnée métier. Sur un autre navigateur, une réponse différée apparaît simplement « pas encore abordée ».
+- Les premières questions ne posent que « Déclaré » ou « Je ne sais pas encore ». Une information estimée ou vérifiée n'y est pas modifiable : elle s'ouvre dans sa fiche, avec sa source. Aucun passage automatique à « Vérifié ».
+- Ordre de l'accueil : un débutant dont les premières questions sont inachevées (hors réponses remises à plus tard) est d'abord invité à les terminer ; la démarche prête reste proposée « en parallèle » (table de `docs/INTERFACE.md`). Ordre de présentation seulement.
+- Contenu v2 « Pluie seulement » : voir la section précédente ; nouveaux dossiers rattachés à la v2 une fois chargée.
+
+### Dossiers antérieurs à UX3-A
+
+Rien n'est converti. Un dossier existant s'ouvre sur la nouvelle synthèse avec ses informations, démarches, résultats et historiques tels quels, et reste sur sa version de contenu (v1 pour tous les dossiers existants). S'il est débutant et que des premières questions n'ont pas de réponse, l'accueil propose de les terminer ; les réponses déjà enregistrées sont reprises telles quelles. Les données locales du prototype ne sont ni lues ni converties.
+
+### Défaut corrigé en chemin
+
+Protection des saisies : la valeur du contexte était recréée à chaque rendu, ce qui réarmait la protection juste après « Quitter sans enregistrer » lors d'une déconnexion (la redirection vers la connexion restait bloquée). Valeur rendue stable (`shared/unsaved.tsx`) ; vérifié par la boucle e2e (déconnexion pendant une saisie).
+
+### Ce qui reste sur les anciens écrans
+
+Liste des démarches (`/plan`), budget, relecture et échanges, synthèse imprimable, « Toutes les informations » (`/projet`), pas-à-pas (accessible depuis « Toutes les informations » et proposé après les premières questions), accueil du conseiller (avec, en plus, la liste des sujets), création de campagne et reprise producteur.
+
+### Vérifications
+
+| Commande | Résultat |
+|---|---|
+| `backend\.venv\Scripts\python scripts\dev.py check --e2e` (révision finale) | ruff, format, migrations à jour, pytest **172 réussis**, eslint, TypeScript, build ; Playwright **79 réussis, 1 ignoré** (clavier physique sur téléphone, inchangé) en ordinateur et téléphone (Pixel 7), base dédiée `agria_e2e` |
+| `e2e/debutant.spec.ts` (nouveau, compris ci-dessus) | Boucle complète ; inconnue / différée ; coupure réseau sans doublon ; conflit ; dossier d'un autre introuvable ; conseiller en lecture par sujet ; archivé ; aucune requête vers le prototype (5176/5177) |
+| `e2e/qualite.spec.ts` | axe-core et 360 px étendus à `/demarrer`, `/sujet/eau`, `/sujet/moyens` |
+| Captures 1280 et 390 px (hors dépôt) | Premières questions, récapitulatif, synthèse, sujet ; corrections : valeurs du résumé sans nom de champ, raison du pas-à-pas adaptée |
+
+Non exécutés : `scripts/recette.py` (ni migration, ni persistance, ni script modifiés) ; `npm run test:prototype` (prototype inchangé). Aucune base de travail ni de démonstration n'a été touchée : `load_content` sur ces bases reste à lancer par le fondateur.
+
+### Limites et suite (UX3-B, non commencé)
+
+- Validations terrain et agronomique toujours ouvertes ; contenus v1 et v2 non relus. L'essai du fondateur n'est pas une étude utilisateur.
+- Réponse différée locale au navigateur (D-049).
+- Premières questions pensées pour le débutant ; le producteur garde l'accès direct.
+- UX3-B proposé : budget guidé ; échanges et avis (destinataire explicite, vocabulaire porteur / conseiller, accueil du conseiller) ; reprise de campagne producteur (informations reprises à reconfirmer) ; retrait ou redirection des écrans remplacés.

@@ -36,7 +36,7 @@ test.describe('parcours au clavier', () => {
     await page.keyboard.press('Tab')
     await page.keyboard.type(PASSWORD)
     await page.keyboard.press('Enter')
-    await expect(page.getByRole('heading', { name: 'Aujourd’hui' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Les sujets du dossier' })).toBeVisible()
 
     await page.goto(`/d/${id}/projet/eau`)
     // On tabule une fois la page affichée, comme une personne au clavier.
@@ -93,7 +93,7 @@ test('session expirée pendant la saisie : message clair, reconnexion ailleurs, 
   await other.getByLabel('Adresse email').fill(email)
   await other.getByLabel('Mot de passe').fill(PASSWORD)
   await other.getByRole('button', { name: 'Se connecter' }).click()
-  await expect(other.getByRole('heading', { name: 'Aujourd’hui' })).toBeVisible()
+  await expect(other.getByRole('heading', { name: 'Les sujets du dossier' })).toBeVisible()
   await other.close()
 
   await page.getByRole('button', { name: 'Enregistrer' }).click()

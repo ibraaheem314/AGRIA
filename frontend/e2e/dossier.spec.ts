@@ -6,6 +6,7 @@ test('débutant : connexion, projet, information inconnue, sauvegarde et réouve
   const id = await createProject(page)
 
   // Aucune information n'est préremplie.
+  await page.goto(`/d/${id}/projet`)
   await expect(page.getByText('Non renseignées : 11')).toBeVisible()
 
   // « Je ne sais pas » est une réponse acceptée et enregistrée sans valeur.
@@ -30,8 +31,8 @@ test('débutant : connexion, projet, information inconnue, sauvegarde et réouve
   // Déconnexion, reconnexion : le dossier est rouvert tel qu'enregistré.
   await page.getByRole('button', { name: 'Se déconnecter' }).click()
   await login(page, email)
-  await expect(page.getByRole('heading', { name: 'Aujourd’hui' })).toBeVisible()
-  await page.getByRole('link', { name: 'Mon projet' }).click()
+  await expect(page.getByRole('heading', { level: 1, name: 'Parcelle de test' })).toBeVisible()
+  await page.getByRole('link', { name: 'Toutes les informations' }).click()
   await expect(page.getByText('Région : Thiès')).toBeVisible()
   await expect(page.getByText('Vérifiées : 1')).toBeVisible()
   await expect(page.getByText('« Je ne sais pas » : 1')).toBeVisible()

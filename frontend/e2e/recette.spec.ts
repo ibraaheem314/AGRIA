@@ -25,7 +25,7 @@ test('exploitant : prochaine campagne préparée à partir de la précédente, s
   // L'eau est reprise comme « déclarée », à revérifier ; rien n'est présenté comme vérifié.
   await expect(page.getByText('Vérifiées : 0')).toBeVisible()
   await expect(page.getByText(/Repris de la campagne « Contre-saison 2026 » .* à revérifier/)).toBeVisible()
-  await page.getByRole('link', { name: 'Mon plan' }).click()
+  await page.getByRole('link', { name: 'Démarches', exact: true }).click()
   await expect(page.getByText("Disponibilité de l'eau déclarée mais non vérifiée")).toBeVisible()
 
   // La campagne précédente reste intacte.

@@ -21,16 +21,16 @@ test.describe('T-01 : saisies non enregistrées protégées', () => {
     const id = await createProject(page)
     await startUnsavedCulture(page, id)
 
-    await page.getByRole('link', { name: 'Mon plan' }).click()
+    await page.getByRole('link', { name: 'Démarches', exact: true }).click()
     const dialog = page.getByRole('dialog', { name: 'Modifications non enregistrées' })
     await expect(dialog).toBeVisible()
     await dialog.getByRole('button', { name: 'Rester sur la page' }).click()
     await expect(dialog).toHaveCount(0)
     await expect(page.getByLabel('Culture')).toHaveValue('Oignon')
 
-    await page.getByRole('link', { name: 'Mon plan' }).click()
+    await page.getByRole('link', { name: 'Démarches', exact: true }).click()
     await page.getByRole('button', { name: 'Quitter sans enregistrer' }).click()
-    await expect(page.getByRole('heading', { name: 'Mon plan' })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1, name: 'Démarches' })).toBeVisible()
     await page.goto(`/d/${id}/projet`)
     await expect(page.getByRole('link', { name: 'Compléter : Culture envisagée' })).toBeVisible() // rien d'enregistré
   })
@@ -79,7 +79,7 @@ test.describe('T-01 : saisies non enregistrées protégées', () => {
     await page.goto(`/d/${id}/projet/budget`)
     await page.getByRole('button', { name: 'Ajouter un poste' }).click()
     await page.getByRole('textbox', { name: /^Poste/ }).fill('Semences')
-    await page.getByRole('link', { name: 'Aujourd’hui' }).click()
+    await page.getByRole('link', { name: 'Projet', exact: true }).click()
     await expect(page.getByRole('dialog', { name: 'Modifications non enregistrées' })).toBeVisible()
     await page.getByRole('button', { name: 'Rester sur la page' }).click()
     await expect(page.getByRole('textbox', { name: /^Poste/ })).toHaveValue('Semences')
@@ -92,7 +92,7 @@ test.describe('T-01 : saisies non enregistrées protégées', () => {
     await page.getByRole('button', { name: 'Annuler' }).click() // ferme le formulaire : plus rien à protéger
     await page.goto(`/d/${id}/relecture`)
     await page.getByRole('textbox', { name: 'Message' }).fill('Question en cours de rédaction')
-    await page.getByRole('link', { name: 'Mon projet' }).click()
+    await page.getByRole('link', { name: 'Budget', exact: true }).click()
     await expect(page.getByRole('dialog', { name: 'Modifications non enregistrées' })).toBeVisible()
   })
 })
@@ -110,7 +110,8 @@ test.describe('T-02 : dossiers archivés et différés', () => {
     await expect(page.getByRole('heading', { name: 'Dossier archivé : consultation seulement' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Ma prochaine action' })).toHaveCount(0)
     await expect(page.getByRole('link', { name: /Compléter|Voir les étapes/ })).toHaveCount(0)
-    await expect(page.getByRole('heading', { name: 'Points restés ouverts à l’archivage' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Les sujets à l’archivage' })).toBeVisible()
+    await expect(page.getByRole('link', { name: /^L’eau/ })).toContainText('Restait inconnu')
 
     await page.goto(`/d/${id}/projet/eau`)
     await expect(page.getByRole('link', { name: /Poser une question/ })).toHaveCount(0)
@@ -126,8 +127,8 @@ test.describe('T-02 : dossiers archivés et différés', () => {
     await page.getByLabel(/^Campagne préparée/).fill('Saison suivante')
     await page.getByRole('button', { name: 'Créer la campagne' }).click()
     await expect(page.getByText('Campagne « Saison suivante » créée.')).toBeVisible()
-    await page.getByRole('link', { name: 'Aujourd’hui' }).click() // pas de blocage : aucun état ne fuit d'un dossier à l'autre
-    await expect(page.getByRole('heading', { name: 'Aujourd’hui' })).toBeVisible()
+    await page.getByRole('link', { name: 'Projet', exact: true }).click() // pas de blocage : aucun état ne fuit d'un dossier à l'autre
+    await expect(page.getByRole('heading', { level: 2, name: 'Ce que vous avez indiqué' })).toBeVisible()
   })
 
   test('différé : décision et motif affichés, reprise possible', async ({ page }) => {
@@ -155,7 +156,8 @@ test.describe('T-03 : accompagnement selon le profil, même moteur', () => {
     const id = await createProject(page)
     await setUnknownWater(page, id)
     await page.goto(`/d/${id}`)
-    await expect(page.getByText('Comment avancer', { exact: true })).toBeVisible()
+    // Le guide « Comment avancer » est remplacé par les premières questions (UX3-A).
+    await expect(page.getByRole('link', { name: 'Reprendre les premières questions' })).toBeVisible()
     await expect(page.getByText(/Sans eau identifiée.*Elle peut avancer en parallèle de la saisie\./)).toBeVisible()
 
     const ctx = await browser.newContext()

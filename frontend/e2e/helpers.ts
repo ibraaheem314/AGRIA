@@ -74,7 +74,7 @@ export async function createProject(
   return id
 }
 
-/** Ouvre une information depuis « Mon projet ». */
+/** Ouvre une information depuis « Toutes les informations ». */
 export async function openFact(page: Page, dossierId: number, label: string) {
   await page.goto(`/d/${dossierId}/projet`)
   await page.getByRole('link', { name: new RegExp(`(Compléter|Mettre à jour) : ${label}`) }).click()

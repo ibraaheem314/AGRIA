@@ -18,7 +18,8 @@ test('débutant : une seule priorité, la démarche reste accessible sans consig
 
   await expect(primary(page)).toHaveCount(1)
   await expect(primary(page)).toHaveText('À faire maintenant · Renseigner le dossier')
-  await expect(page.getByRole('link', { name: 'Continuer pas à pas' })).toBeVisible()
+  // Premières questions interrompues : les terminer d'abord (UX3-A).
+  await expect(page.getByRole('link', { name: 'Reprendre les premières questions' })).toBeVisible()
   // La démarche est proposée en secondaire, explicitement indépendante de la saisie.
   const also = page.getByRole('region', { name: 'Aussi possible' })
   await expect(also.getByRole('link', { name: "Identifier une source d'eau utilisable" })).toBeVisible()
@@ -26,9 +27,9 @@ test('débutant : une seule priorité, la démarche reste accessible sans consig
   await expect(page.getByText(/d'abord/)).toHaveCount(0)
   await expect(page.getByRole('heading', { name: 'Ma prochaine action' })).toHaveCount(0)
 
-  // Destination vérifiée : le pas-à-pas s'ouvre sur l'information attendue.
-  await page.getByRole('link', { name: 'Continuer pas à pas' }).click()
-  await expect(page.getByRole('heading', { level: 2 }).first()).toHaveText('Localisation du terrain')
+  // Destination vérifiée : les premières questions reprennent à la première étape sans réponse.
+  await page.getByRole('link', { name: 'Reprendre les premières questions' }).click()
+  await expect(page.getByText('Étape 1 sur 4 · Votre culture')).toBeVisible()
 })
 
 test('producteur : terrain non renseigné et eau à vérifier, aucune consigne contradictoire', async ({ page }) => {
@@ -61,7 +62,7 @@ test('erreur de chargement : aucun faux « rien à faire » ni « aucun retour �
   await page.route(`**/api/dossiers/${id}/preparation`, (route) => route.fulfill({ status: 500, body: '{}' }))
   await page.route(`**/api/dossiers/${id}/relecture`, (route) => route.fulfill({ status: 500, body: '{}' }))
   await page.goto(`/d/${id}`)
-  await expect(page.getByText('Plan indisponible')).toBeVisible()
+  await expect(page.getByText(/Plan indisponible|Démarches indisponibles/)).toBeVisible()
   await expect(page.getByText(/Retours indisponibles|Échanges indisponibles/)).toBeVisible()
   await expect(primary(page)).toHaveCount(0)
   await expect(page.getByText(/Aucune démarche ouverte|Aucun retour|Aucun point bloquant|Aucune intervention/)).toHaveCount(0)

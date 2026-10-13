@@ -41,7 +41,7 @@ test('qui doit agir : questions dans les deux sens, relances, relecture demandé
   await expect(advisor.getByRole('heading', { name: 'Examiner le dossier et rédiger un avis' })).toBeVisible()
   await expect(advisor.getByRole('link', { name: /pas à pas|Compléter/ })).toHaveCount(0)
 
-  // Question du conseiller : le porteur doit répondre ; les points bloquants restent visibles.
+  // Question du conseiller : le porteur doit répondre ; les sujets et leurs points restent visibles.
   await advisor.goto(`/d/${id}/projet/acces_terrain`)
   await advisor.getByRole('link', { name: 'Poser une question sur cette information' }).click()
   await advisor.getByRole('textbox', { name: 'Message' }).fill('Le terrain est-il loué ?')
@@ -51,7 +51,7 @@ test('qui doit agir : questions dans les deux sens, relances, relecture demandé
 
   await page.goto(`/d/${id}`)
   await expect(primary(page)).toHaveText('À faire maintenant · Une réponse est attendue de vous')
-  await expect(page.getByRole('heading', { name: 'Points bloquants' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Les sujets du dossier' })).toBeVisible()
   await page.getByRole('link', { name: 'Répondre au conseiller' }).click()
   await expect(page.locator('#messages')).toBeFocused()
   await expect(page.getByText('Attend votre réponse')).toBeVisible()

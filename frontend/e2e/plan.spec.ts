@@ -10,13 +10,13 @@ test('inconnue → point expliqué → démarche terminée avec résultat incert
   await page.getByRole('button', { name: 'Enregistrer' }).click()
   await expect(page.getByText("« Accès à l'eau » enregistré.")).toBeVisible()
 
-  // Accueil : prochaine action et point bloquant.
-  await page.getByRole('link', { name: 'Aujourd’hui' }).click()
+  // Synthèse : prochaine action et point signalé sur le sujet.
+  await page.getByRole('link', { name: 'Projet', exact: true }).click()
   await expect(page.getByText('Identifier une source d\'eau utilisable')).toBeVisible()
   await expect(page.getByRole('link', { name: "Source d'eau inconnue" })).toBeVisible()
 
   // Plan : justification et statut du contenu visibles.
-  await page.getByRole('link', { name: 'Mon plan' }).click()
+  await page.getByRole('link', { name: 'Démarches', exact: true }).click()
   await expect(page.getByText('Non relu par un spécialiste')).toBeVisible()
   await expect(page.getByText("Pourquoi ? La disponibilité de l'eau pendant toute la période envisagée")).toBeVisible()
 
@@ -54,7 +54,7 @@ test('inconnue → point expliqué → démarche terminée avec résultat incert
   await expect(page).toHaveURL(/\/plan\/\d+$/)
 
   // La démarche terminée reste, une nouvelle démarche s'ajoute.
-  await page.getByRole('link', { name: 'Mon plan', exact: true }).click()
+  await page.getByRole('link', { name: 'Démarches', exact: true }).click()
   const done = page.getByRole('region', { name: /Démarches terminées/ })
   await expect(done.getByText("Identifier une source d'eau utilisable")).toBeVisible()
   await expect(page.getByRole('link', { name: "Confirmer la disponibilité de l'eau pendant la période envisagée" }).first()).toBeVisible()

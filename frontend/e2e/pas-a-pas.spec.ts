@@ -6,8 +6,10 @@ const stepHeading = (page: Page) => page.getByRole('heading', { level: 2 }).firs
 test('débutant : pas à pas, report distinct de « Je ne sais pas », reprise sur les données enregistrées', async ({ page }) => {
   await register(page, 'Awa')
   const id = await createProject(page)
-  await page.goto(`/d/${id}`)
-  await page.getByRole('link', { name: 'Commencer pas à pas' }).click()
+  // Le pas-à-pas reste accessible depuis « Toutes les informations » (les premières questions
+  // sont vérifiées dans debutant.spec.ts).
+  await page.goto(`/d/${id}/projet`)
+  await page.getByRole('link', { name: /Renseigner pas à pas/ }).click()
 
   // L'ordre commence par le lieu ; l'avancement parle de saisie, pas de faisabilité.
   await expect(stepHeading(page)).toHaveText('Localisation du terrain')
@@ -39,14 +41,15 @@ test('débutant : pas à pas, report distinct de « Je ne sais pas », reprise s
 
   // Une saisie en cours reste protégée après un enregistrement réussi dans le pas-à-pas.
   await page.getByLabel('Déclaré').check()
-  await page.getByRole('link', { name: 'Mon plan', exact: true }).click()
+  await page.getByRole('link', { name: 'Démarches', exact: true }).click()
   await expect(page.getByRole('button', { name: 'Rester sur la page' })).toBeVisible()
   await page.getByRole('button', { name: 'Quitter sans enregistrer' }).click()
 
-  // Reprise : on repart de ce qui est enregistré, l'information remise à plus tard est sautée.
+  // Reprise : l'accueil propose de terminer les premières questions (l'eau, remise à plus tard,
+  // n'est pas comptée) ; le pas-à-pas repart de ce qui est enregistré et saute l'eau.
   await page.goto(`/d/${id}`)
-  await expect(page.getByRole('heading', { name: '8 informations à renseigner' })).toBeVisible()
-  await page.getByRole('link', { name: 'Continuer pas à pas' }).click()
+  await expect(page.getByRole('heading', { name: 'Terminer les premières questions (2 sans réponse)' })).toBeVisible()
+  await page.goto(`/d/${id}/projet/pas-a-pas`)
   await expect(stepHeading(page)).toHaveText('Période envisagée')
 
   // Vue complète : reporté = non renseigné ; « Je ne sais pas » = réponse enregistrée.
