@@ -17,6 +17,9 @@ import { FactPage } from './pages/FactPage'
 import { Onboarding } from './pages/Onboarding'
 import { ReviewPage } from './pages/Review'
 import { SubjectPage } from './pages/Subject'
+import { AssistantPage } from './suivi/Assistant'
+import { ActionPage as SuiviAction, ClarifyPage, FollowUpPage, ObservePage } from './suivi/Flows'
+import { AboutDemo, BilanPage, CampaignHome, JournalPage, SuiviLayout } from './suivi/SuiviApp'
 
 /** Accueil selon le rôle choisi dans le bandeau de démonstration. */
 function Home() {
@@ -37,8 +40,29 @@ function NotFound() {
 }
 
 const router = createBrowserRouter([
+  // Démonstration du suivi de campagne : hors de l'enveloppe UX1 (pas de choix de rôle), état propre.
   {
-    element: <Shell />,
+    path: 'suivi',
+    element: <SuiviLayout />,
+    children: [
+      { index: true, element: <CampaignHome /> },
+      { path: 'observer', element: <ObservePage /> },
+      { path: 'clarifier', element: <ClarifyPage /> },
+      { path: 'action', element: <SuiviAction /> },
+      { path: 'revoir/:problemId', element: <FollowUpPage /> },
+      { path: 'journal', element: <JournalPage /> },
+      { path: 'bilan', element: <BilanPage /> },
+      { path: 'demander', element: <AssistantPage /> },
+      { path: 'a-propos', element: <AboutDemo /> },
+    ],
+  },
+  {
+    // État fictif du prototype UX1/UX2 : monté seulement pour ses propres routes.
+    element: (
+      <StoreProvider>
+        <Shell />
+      </StoreProvider>
+    ),
     children: [
       { index: true, element: <Home /> },
       { path: 'demarrer', element: <Onboarding /> },
@@ -68,8 +92,6 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <StoreProvider>
-      <RouterProvider router={router} />
-    </StoreProvider>
+    <RouterProvider router={router} />
   </StrictMode>,
 )

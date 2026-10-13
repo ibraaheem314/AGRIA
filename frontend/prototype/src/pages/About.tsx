@@ -21,6 +21,13 @@ export function About() {
         <SectionTitle>Ce que le prototype ne démontre pas</SectionTitle>
         <p>Ni l'utilité du produit sur le terrain, ni le besoin commercial, ni la pertinence agronomique : ces questions relèvent de l'enquête G1 et du pilote G2.</p>
       </Panel>
+      <Panel>
+        <SectionTitle>Démonstration du suivi de campagne</SectionTitle>
+        <p>
+          Une démonstration séparée montre l'assistance pendant une campagne (observation, problème, action et suivi), avec des réponses
+          scénarisées : <a href="/suivi" className="font-medium text-brand-800 underline underline-offset-2">ouvrir la démonstration du suivi</a>.
+        </p>
+      </Panel>
       <Note tone="neutral">La correspondance de chaque écran avec les fonctions existantes (F1–F6) et les écarts techniques sont décrits dans la documentation du dépôt (avancement, section UX1).</Note>
     </div>
   )
