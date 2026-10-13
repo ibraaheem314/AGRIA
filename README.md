@@ -54,11 +54,12 @@ React + TypeScript + Vite + Tailwind (aucun secret côté navigateur) → API Dj
 
 | Document | Rôle |
 |---|---|
-| [Cahier des charges](docs/PRODUIT.md) | Vision, six fonctions, exclusions, scénarios de recette |
+| [Cadrage produit (13/10/2026)](docs/CADRAGE_PRODUIT.md) | Vision précisée, publics, première version proposée, décisions attendues ; avec [benchmark](docs/BENCHMARK.md), [scénario](docs/SCENARIO_CAMPAGNE.md), [matrice de fiabilité](docs/MATRICE_FIABILITE.md), [première version](docs/PREMIERE_VERSION.md), [protocole](docs/PROTOCOLE_VALIDATION.md) |
+| [Cahier des charges](docs/PRODUIT.md) | Périmètre de préparation F1–F6 (11/10/2026), exclusions, scénarios de recette |
 | [Stratégie](docs/STRATEGIE.md) · [Roadmap](ROADMAP.md) | Cible, proposition de valeur, jalons |
 | [Validation terrain](docs/VALIDATION_TERRAIN.md) · [Marché](docs/MARCHE_SENEGAL.md) | Enquête, pilote, sources |
 | [Architecture](docs/ARCHITECTURE.md) · [Interface](docs/INTERFACE.md) | Fonctionnement du code livré |
 | [Démarrage](docs/DEMARRAGE.md) | Installation, lancement, contrôles, sauvegarde |
 | [Avancement](docs/AVANCEMENT.md) | Preuves par brique, rapport de recette |
-| [Décisions](docs/DECISIONS.md) | Registre des arbitrages (D-001 à D-038) |
+| [Décisions](docs/DECISIONS.md) | Registre des arbitrages (D-001 à D-055) |
 | [Sécurité](docs/SECURITE.md) · [Inventaire](docs/INVENTAIRE.md) · [Plan de refonte](docs/PLAN_REFONTE.md) | Incident de clés, ancien prototype, suivi des tâches |

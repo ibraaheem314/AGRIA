@@ -689,3 +689,17 @@ Non exécutés : `scripts/recette.py` (ni migration, ni persistance, ni script m
 - Réponse différée locale au navigateur (D-049).
 - Premières questions pensées pour le débutant ; le producteur garde l'accès direct.
 - UX3-B proposé : budget guidé ; échanges et avis (destinataire explicite, vocabulaire porteur / conseiller, accueil du conseiller) ; reprise de campagne producteur (informations reprises à reconfirmer) ; retrait ou redirection des écrans remplacés.
+
+# Cadrage produit après UX3-A (13/10/2026)
+
+Mission de cadrage, sans code : [CADRAGE_PRODUIT.md](CADRAGE_PRODUIT.md), [BENCHMARK.md](BENCHMARK.md), [SCENARIO_CAMPAGNE.md](SCENARIO_CAMPAGNE.md), [MATRICE_FIABILITE.md](MATRICE_FIABILITE.md), [PREMIERE_VERSION.md](PREMIERE_VERSION.md), [PROTOCOLE_VALIDATION.md](PROTOCOLE_VALIDATION.md), roadmap révisée, décisions D-052 à D-055. Aucune base, aucun compte, aucune donnée modifiés ; rien de publié.
+
+### Réserves UX3-A, consignées séparément
+
+Constatées à la relecture du code livré ; non corrigées dans cette mission (lot D0 de la roadmap).
+
+- **Messages de sauvegarde ambigus :**
+  - *réponse différée* : une étape des premières questions où toutes les réponses sont « Répondre plus tard » affiche « Étape … enregistrée dans votre dossier » alors que rien n'est envoyé au serveur ;
+  - *sauvegarde partielle* : si la seconde réponse d'une étape échoue, l'alerte « Étape non enregistrée » s'affiche alors que la première réponse de l'étape est bien enregistrée ;
+  - *réponse réseau perdue* : sur la fiche d'une information, un nouvel essai après une réponse perdue renvoie « Aucun changement à enregistrer » (le serveur avait déjà enregistré la première requête), ce qui peut laisser croire que rien n'a été enregistré.
+- **Contenu v2 à charger** (`manage.py load_content`) sur la base de travail et, si elle sert, sur `agria_demo` : sans cela, les nouveaux dossiers de ces bases restent sur la v1 (« Pluie seulement » propose encore « Confirmer la disponibilité de l'eau »). Opération laissée au fondateur.

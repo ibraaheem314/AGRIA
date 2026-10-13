@@ -4,6 +4,8 @@ Version du 11 octobre 2026, révisée après clarification du fondateur.
 Cible retenue par le fondateur (D-012), **à comparer sur le terrain** : débutants avec projet concret et producteurs déjà actifs peu accompagnés. Le profil prioritaire reste à déterminer en G1.
 Point d'entrée recommandé : **préparation accompagnée d'une campagne**, à valider.
 
+**13/10/2026 :** le fondateur a précisé la vision (D-052) : accompagnement sur tout le cycle de culture. Le cadrage qui en découle, le positionnement à tester et le premier public proposé sont dans [CADRAGE_PRODUIT.md](CADRAGE_PRODUIT.md) et [BENCHMARK.md](BENCHMARK.md). La suite de ce document décrit la stratégie du 11/10/2026.
+
 ## Mission
 
 Aider les porteurs de projets et les producteurs au Sénégal à prendre des décisions agricoles mieux préparées, comprendre leurs contraintes et avancer avec un accompagnement adapté.

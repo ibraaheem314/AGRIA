@@ -1,59 +1,98 @@
 # Roadmap AGRIA
 
-Mise à jour : 12 octobre 2026 (conception du parcours cible avant intégration). Promesse à tester : *AGRIA aide une personne à préparer sa prochaine campagne agricole, identifier ce qui lui manque et organiser ses démarches avec un conseiller.*
+Mise à jour : 13 octobre 2026 (cadrage après la vision précisée par le fondateur). Promesse à tester, **proposition** : *AGRIA accompagne une campagne agricole de la préparation au bilan, pour une culture et une zone prises en charge, en gardant la mémoire de ce qui a été prévu, observé et fait, et en disant quand il ne sait pas.*
 
-**Cap produit : Sénégal d'abord, préparation accompagnée d'une campagne, débutant avec projet concret et producteur peu accompagné.** Le conseiller intervient sur le même dossier. Le suivi de production, la formation généraliste et les services financiers restent hors du premier produit. Zone, culture, profil de lancement et payeur restent à valider sur le terrain.
+**Cap produit :** Sénégal d'abord. Vision précisée le 13/10/2026 (D-052) : accompagnement autonome sur tout un cycle cultural (préparation, suivi, problèmes, récolte, bilan), assistant conversationnel utilisant le contexte de la campagne, photos pour documenter un problème, conseiller humain en recours et non en condition systématique. **Proposition à décider** ([CADRAGE_PRODUIT.md](docs/CADRAGE_PRODUIT.md)) : une première version sur un cycle complet mais très limitée en diversité (D-054), sous des règles de fiabilité strictes (D-055). Public, culture, zone et payeur restent à valider sur le terrain.
+
+*Historique : jusqu'au 12/10/2026, le cap était la préparation accompagnée d'une campagne seule (D-013, [PRODUIT.md](docs/PRODUIT.md)) ; ce cap a produit le socle F1–F6 et UX3-A, conservés.*
 
 ## Où en est le projet
 
 | Niveau | État | Preuve ou référence |
 |---|---|---|
 | Fondations techniques (F1–F6) | **Livrées** sur `refonte/fondations` | [AVANCEMENT.md](docs/AVANCEMENT.md), briques 0 à 7 |
-| Parcours débutant (pas à pas, démarche reliée à l'information, budget guidé) | **Livré et vérifié techniquement** ; compréhension **à tester** en G1/G2 | [AVANCEMENT.md](docs/AVANCEMENT.md), « Parcours débutant » ; D-048 à D-050 |
-| Expérience cible et frontend | **UX1 livré** (prototype navigable isolé, `npm run prototype`). **UX2 terminé** : direction retenue par le fondateur (préparation progressive, synthèse courte, lecture par sujet, action principale, espaces Projet · Démarches · Budget · Conseiller), sans étude utilisateur. **UX3-A livré le 13/10/2026** : parcours débutant intégré aux API réelles (premières questions, synthèse, sujets, démarche, actualisation), vérifié en ordinateur et téléphone ; écrans budget, échanges, liste des démarches et reprise producteur inchangés. **UX3-B non commencé.** Validations terrain et agronomique toujours ouvertes | UX1–UX3 ci-dessous ; D-051 ; [AVANCEMENT.md](docs/AVANCEMENT.md), « UX1 » |
-| Contrôles exécutés | **Locaux uniquement** ; runtime courant Python 3.14.8, résultats détaillés dans le rapport | [AVANCEMENT.md](docs/AVANCEMENT.md), lots et corrections après revue |
-| CI GitHub | Configurée, **jamais exécutée** (aucun envoi) | [RESUME_PR.md](docs/RESUME_PR.md) |
-| Préparation du terrain | **Kit G1 et protocole G2 prêts**, non exécutés | [VALIDATION_TERRAIN.md](docs/VALIDATION_TERRAIN.md) |
-| Validation terrain | **Non réalisée** : aucun entretien, participant, conseiller ni contenu relu | — |
+| Parcours débutant (pas à pas, démarche reliée à l'information, budget guidé) | **Livré et vérifié techniquement** ; compréhension **à tester** | [AVANCEMENT.md](docs/AVANCEMENT.md), « Parcours débutant » ; D-048 à D-050 |
+| Expérience cible et frontend | UX1 livré (prototype isolé) ; UX2 terminé (direction retenue, sans étude utilisateur) ; **UX3-A livré le 13/10/2026** (premières questions, synthèse, sujets, démarche, actualisation sur les API réelles) ; **UX3-B suspendu** en attendant les décisions du cadrage | [AVANCEMENT.md](docs/AVANCEMENT.md), « UX3-A » ; D-051 |
+| Cadrage de la vision complète | **Proposé le 13/10/2026**, en attente des décisions du fondateur | [CADRAGE_PRODUIT.md](docs/CADRAGE_PRODUIT.md), [BENCHMARK.md](docs/BENCHMARK.md), [SCENARIO_CAMPAGNE.md](docs/SCENARIO_CAMPAGNE.md), [MATRICE_FIABILITE.md](docs/MATRICE_FIABILITE.md), [PREMIERE_VERSION.md](docs/PREMIERE_VERSION.md), [PROTOCOLE_VALIDATION.md](docs/PROTOCOLE_VALIDATION.md) |
+| Suivi de campagne, calendrier, problèmes, photos, assistant, bilan | **Absents du code** | [CADRAGE_PRODUIT.md](docs/CADRAGE_PRODUIT.md) §2.3 |
+| Contrôles exécutés | **Locaux uniquement** ; Python 3.14.8 | [AVANCEMENT.md](docs/AVANCEMENT.md) |
+| CI GitHub | Configurée, **jamais exécutée** | [RESUME_PR.md](docs/RESUME_PR.md) |
+| Préparation du terrain | Kit G1 et protocole G2 prêts ; protocole d'accompagnement de campagne proposé ; **rien d'exécuté** | [VALIDATION_TERRAIN.md](docs/VALIDATION_TERRAIN.md), [PROTOCOLE_VALIDATION.md](docs/PROTOCOLE_VALIDATION.md) |
+| Validation terrain et agronomique | **Non réalisée** : aucun entretien, participant, référent ni contenu relu | — |
 | Mise en service | **Non réalisée** : aucun hébergement, aucun accès à distance | [SECURITE.md](docs/SECURITE.md) §5 |
 | Sécurité | Clés exposées publiquement ; **aucune révocation confirmée** | [SECURITE.md](docs/SECURITE.md) §1–2 |
 
-**Le pilote n'est pas prêt à démarrer** : il manque les révocations, les résultats de G1, un conseiller, un contenu relu et les plafonds de G2. Le kit permet de commencer G1 dès que le fondateur fixe J0.
+## Décisions attendues du fondateur
 
-## Prochaines étapes
+Détail et arguments : [CADRAGE_PRODUIT.md](docs/CADRAGE_PRODUIT.md) §8.
 
-**Recette technique de la version locale fermée le 12/10/2026** ([AVANCEMENT.md](docs/AVANCEMENT.md), « Clôture de la version locale ») : version démontrable pour un usage accompagné. Cette clôture ne signifie pas que l'expérience cible est validée. Étape produit au 13/10/2026 : **UX3-A livré** (parcours débutant intégré) ; UX3-B à engager sur décision du fondateur. Les corrections livrées et le backend sont conservés comme socle.
+1. Adopter ou amender la vision précisée et ses conséquences sur les décisions antérieures (D-052 ; première version D-054).
+2. Premier public à éprouver (proposition D-053 : producteurs maraîchers actifs via une structure).
+3. Référent agronomique : qui, à quelles conditions.
+4. Ordre entre essai « concierge » sans code et premier développement.
+5. Accès à distance pour l'essai outillé (hébergement, plafond).
+6. Sort d'UX3-B (proposition : ne pas le lancer tel quel).
 
-### Conception de l'expérience (priorité produit actuelle)
+## Trois voies, à ne pas confondre
 
-| # | Étape | Livrable et limite | Condition de sortie |
+Un document de cadrage n'est pas un essai ; un essai n'est pas une validation de marché ; un développement vérifié par des tests n'est pas une validation terrain.
+
+### Cadrage (sans code, sans participants)
+
+| # | Étape | Responsable | Dépendances | Sortie |
+|---|---|---|---|---|
+| C0 | Cadrage produit de la vision complète | Équipe | — | **Fait le 13/10/2026** (documents ci-dessus), à décider |
+| C1 | Préparer l'essai « concierge » : module d'entretien, fiche de campagne prévu/observé/réalisé, grille de notation des réponses, consentement photos, liste de questions et de problèmes pour une culture candidate | Équipe, puis fondateur | Décisions 1 et 2 | Kit prêt à l'emploi ; **prochaine mission recommandée** |
+| C2 | Décisions de cadrage consignées (D-052 à D-055 tranchées, D-014 provisoire) | Fondateur | C0 | Registre des décisions à jour |
+| C3 | Trouver un référent agronomique ; réunir les références de la culture et de la zone candidates | Fondateur | C2 | Référent engagé par écrit ; fiches à relire (V0 du protocole) |
+
+### Essais (avec participants)
+
+| # | Étape | Responsable | Dépendances | Sortie |
+|---|---|---|---|---|
+| T0 | Entretiens étendus (G1 + module suivi de campagne) | Fondateur | E4 (plafonds, J0), C1 | Fiche de décision : public, culture, zone ; D-014 consigné (ancien E5–E6) |
+| T1 | Essai « concierge » sur un cycle réel | Fondateur, référent, participants | T0, C3 | Corpus de questions et de cas ; notes de justesse ; mesures d'effort et de retour (V2) |
+| T2 | Essai outillé sur un cycle | Fondateur, référent, participants | T1, D1–D4 selon les capacités retenues, E9 si accès distant | Décision par capacité (V3) |
+| T3 | Bilan | Fondateur | T2 | Poursuivre, modifier ou abandonner, hypothèse par hypothèse (V4) |
+
+L'ancien G2 (environ trois dossiers de préparation accompagnés, VALIDATION_TERRAIN §7) reste disponible si le fondateur garde d'abord la préparation seule.
+
+### Développement (seulement ce que les décisions justifient)
+
+| # | Lot | Dépendances | Condition de sortie |
 |---|---|---|---|
-| UX1 | Concevoir et matérialiser le parcours cible | Prototype cliquable local, données fictives, sans écriture vers les API métier. Parcours principal : idée concrète → première synthèse utile avant dossier complet → démarche → résultat et actualisation → budget partiel → échange avec un conseiller. Vues producteur et conseiller sur le même modèle de dossier. Présentation téléphone et ordinateur. Réutiliser l'outillage du dépôt sans remplacer l'application actuelle. | Le fondateur peut exécuter les scénarios sans impasse ; rendu inspecté, interactions vérifiées ; correspondance avec les fonctions F1–F6 et écarts identifiés. Un prototype utilisable est livré, pas seulement un document ou des captures. |
-| UX2 | Évaluer le prototype | Essai du fondateur, puis observations de compréhension auprès des profils visés quand des participants sont disponibles. Consigner séparément observations réelles et hypothèses ; G1 reste une enquête sur les besoins, pas une démonstration commerciale. | Choix explicite du fondateur sur le parcours à intégrer et les points à corriger. Une approbation visuelle ne vaut ni preuve d'utilité ni validation agronomique ; sans participants, cette limite reste ouverte. |
-| UX3 | Intégrer progressivement le parcours retenu | Seulement après UX2 : lots reliés aux API existantes, maintien des données, permissions, historique, états incomplets, archivage et protections de saisie. **UX3-A (livré)** : boucle débutant (création, premières questions, synthèse, sujets, démarche, résultat, actualisation, reconnexion). **UX3-B (proposé, non commencé)** : 1) budget guidé intégré ; 2) échanges et avis (« qui reçoit quoi », vocabulaire porteur / conseiller, accueil du conseiller) ; 3) reprise de campagne producteur (informations reprises à reconfirmer, indicateur explicite) ; 4) retrait ou redirection des écrans remplacés (pas-à-pas, « Toutes les informations » comme espace, ancien accueil du conseiller). | Parcours intégrés et vérifiés sur ordinateur et téléphone ; contrôles adaptés aux changements puis vérification complète du code livré. Aucun déploiement implicite. |
+| D0 | Réserves UX3-A : messages de sauvegarde ambigus ; chargement du contenu v2 dans les environnements concernés | — | Corrigé avec le premier lot qui touche ces écrans ; `load_content` lancé par le fondateur sur ses bases |
+| D1 | **Journal de campagne sans IA** : opérations prévues et réalisées, observations datées, photos en pièce jointe privée ; historique en ajout seul ; rien d'automatique sur les faits | Décisions 1 à 3 | Parcours vérifiés ordinateur et téléphone ; aucune donnée réelle avant l'essai |
+| D2 | **Plan daté** à partir d'une fiche relue (fenêtres recalées sur les dates réelles), format de contenu étendu | D1, fiche relue (C3) | Fiche relue chargée ; écarts prévu/réalisé visibles |
+| D3 | **Signalement de problème guidé** par les fiches relues d'une liste fermée ; transmission d'un cas au recours humain | D1, fiches relues | Banc de cas noté par le référent |
+| D4 | **Assistant limité** au dossier et au contenu relu, côté serveur, avec provenance, refus et journalisation ; banc d'évaluation | D1–D3, corpus de T1 | Aucune réponse dangereuse sur le banc ; seuils de [MATRICE_FIABILITE.md](docs/MATRICE_FIABILITE.md) atteints |
+| D5 | **Récolte et bilan** (prévu/réalisé, problèmes et issues, dépenses déclarées) | D1 | Bilan relu avec un participant de l'essai |
+| D6 | Accès à distance (ancien E9) | E1, D-006, décision 5 | SECURITE §5 coché ; restauration testée sur l'environnement cible |
 
-**Règle d'arrêt de UX1 :** livrer le prototype et son scénario d'essai, puis recueillir le retour ; ne pas convertir automatiquement la proposition en refonte de l'application. Toute fonctionnalité nouvelle doit expliquer le problème observé, son lien avec la préparation d'une campagne et ce qu'elle remplace ou simplifie. Les idées hors objectif vont dans la liste différée.
+Capacités **non engagées** tant que la matrice de fiabilité ne le permet pas : suggestion automatique sur photo, volumes d'arrosage, doses de fertilisation, produits de traitement.
 
-### Terrain et exploitation (étapes conservées)
+## Exploitation et prérequis conservés
 
-Restent hors code : révocations (E1), CI distante (E3), enquête G1 (E4–E6), contenu relu (E7) et, seulement si nécessaire, mise en service (E9). UX1–UX3 ne sont pas des prérequis aux entretiens G1 et ne constituent pas une validation du marché.
+| # | Étape | Responsable | État |
+|---|---|---|---|
+| E1 | Révoquer les clés exposées et changer le mot de passe email | Propriétaire des comptes | À faire, urgent ([SECURITE.md](docs/SECURITE.md) §2) |
+| E2 | Maintenir le runtime à jour, `dev.py check --e2e` et `recette.py` | Technique | Courant |
+| E3 | Décider d'envoyer la branche et faire tourner la CI | Propriétaire | À décider |
+| E4 | Fixer J0, seuils et plafonds de temps et de dépenses (D-011) | Fondateur | À faire avant T0 |
+| E5–E6 | Enquête G1 et décision | Fondateur | Remplacés par T0 |
+| E7 | Relecture du contenu et publication d'une version relue | Référent, puis technique | Élargi par C3 (préparation **et** fiches de culture) |
+| E8 | Mode de données de l'essai | Fondateur | Avant T1 |
+| E9 | Mise en service, seulement si nécessaire | Technique et propriétaire | Devient D6 si l'essai outillé est à distance |
+| E10 | G2 (dossiers de préparation accompagnés) | Fondateur, conseiller, participants | Conservé comme option (voir Essais) |
 
-Suivre les dépendances du tableau, pas une séquence obligatoire de E1 à E10. La révocation des clés est urgente ; l'enquête G1 (E4–E6) peut avancer en parallèle des travaux techniques (E2–E3). Ni une fusion GitHub, ni un hébergement, ni la suppression d'un ancien environnement Python ne sont nécessaires aux entretiens.
+## Conception de l'expérience (historique)
 
-| # | Étape et objectif | Responsable | Dépendances | Preuve attendue | Condition de sortie |
-|---|---|---|---|---|---|
-| E1 | Révoquer les clés exposées et changer le mot de passe email | Propriétaire des comptes | Aucune | Registre de [SECURITE.md](docs/SECURITE.md) §2 rempli (date, fournisseur, action), sans valeur | Toutes les lignes « à effectuer » sont confirmées par le propriétaire |
-| E2 | Maintenir le runtime du projet à jour et vérifier son fonctionnement | Technique | Aucune | Version corrective consignée ; `dev.py check --e2e` et `recette.py` réussis sur le poste | Environnement courant validé. Nettoyage des anciens environnements facultatif, sans bloquer le terrain |
-| E3 | Décider d'envoyer la branche et faire tourner la CI | Propriétaire | E1 recommandé ; `verifier_secrets.py` réussi | Exécution GitHub des trois jobs | Trois jobs verts. Fusion selon [RESUME_PR.md](docs/RESUME_PR.md), conflit README résolu |
-| E4 | Fixer J0, les seuils de G1 et les plafonds de temps et de dépenses de G1 | Fondateur | Aucune | D-011 renseigné pour G1 ; seuils écrits dans VALIDATION §6 | Valeurs G1 consignées avant le premier contact ; plafonds G2 à fixer avant E10 |
-| E5 | Enquête G1 : recrutement et entretiens | Fondateur | E4 | Fiches d'entretien privées ; tableau de suivi anonymisé ; synthèse sans données personnelles | Objectif indicatif atteint (5 débutants, 5 producteurs, 2 conseillers), ou arrêt motivé selon la règle fixée en E4 |
-| E6 | Décision de fin de G1 | Fondateur, avec l'avis d'un conseiller | E5 | Fiche §6 remplie avec des identifiants d'entretien ; D-014 consigné | « Poursuivre », « recentrer » ou « arrêter » consigné avec sa date de réexamen |
-| E7 | Relecture du contenu et publication de la v2 relue | Conseiller ou relecteur désigné, puis technique | E6 (zone, culture) | `preparation-generique.v2.json` avec relecteur et date ; `load_content` et tests réussis | v2 chargée ; dossiers réels créés seulement ensuite (D-042) |
-| E8 | Choisir le mode de données de G2 | Fondateur | E6 | Décision consignée : papier ou application locale supervisée (prérequis de VALIDATION §7.5 vérifiés) | Mode consigné avant le premier dossier |
-| E9 | *(Seulement si un accès à distance est indispensable)* Mise en service | Technique et propriétaire | E1, D-006, décision d'hébergement et de budget | Liste de [SECURITE.md](docs/SECURITE.md) §5 cochée ; restauration testée sur l'environnement cible | Accès à distance autorisé par une décision consignée |
-| E10 | G2 : environ trois dossiers réels accompagnés | Fondateur, conseiller, participants | E6, E7, E8 (et E9 si distant) | Journal de temps et de coûts, indicateurs de VALIDATION §8, synthèses remises aux participants | Bilan et décision selon VALIDATION §7.7 |
-
-Après E10 : décider s'il faut consolider, corriger, prolonger avec une limite ou arrêter. Le suivi de campagne et toute extension ne s'envisagent qu'après un bilan G2 favorable.
+| # | Étape | État |
+|---|---|---|
+| UX1 | Prototype navigable isolé du parcours de préparation | Livré le 12/10/2026 |
+| UX2 | Évaluation par le fondateur et choix d'une direction | Terminé le 13/10/2026 (sans étude utilisateur) |
+| UX3-A | Intégration du parcours débutant aux API réelles | Livré le 13/10/2026 |
+| UX3-B | Budget guidé, échanges et avis, reprise producteur, retrait des écrans remplacés | **Suspendu** : seuls les éléments utiles au cycle retenu seront repris ([PREMIERE_VERSION.md](docs/PREMIERE_VERSION.md) §5) |
 
 ## Idées différées
 
@@ -61,24 +100,24 @@ Aucune n'est à développer maintenant. Chacune se réexamine sur preuve, avec u
 
 | Idée | Problème visé | Preuve nécessaire pour la réexaminer |
 |---|---|---|
-| Notifications (SMS, email, WhatsApp) | Une demande ou une question reste sans réponse faute d'alerte | Journal G2 montrant des retards de réponse dus à l'absence d'alerte |
-| Connexion par numéro de téléphone | Des participants n'ont pas d'email | Entretiens G1 (partie G) ou difficultés notées en G2 |
-| Récupération du mot de passe par email | Comptes bloqués | Cas répétés en G2 malgré l'assistance |
-| Mode hors connexion | Saisie impossible sur le terrain | Séances G2 interrompues par le réseau, alors que le mode papier ne suffit pas |
-| Wolof ou explications audio | Explications écrites incomprises | Entretiens et observations G2 |
-| Reformulation assistée par IA d'un contenu relu | Explications trop difficiles | Difficulté constatée en G2 et contenu relu disponible ; jamais pour décider |
-| Météo ou données environnementales | Une décision de préparation dépend d'une donnée climatique | Démarche G2 bloquée faute de cette donnée |
-| Suivi de campagne (journal, dépenses réelles, bilan) | Écart entre prévu et réalisé | Demandes répétées des participants après G2 |
-| Pièces justificatives (photos, devis) | Preuve d'une démarche | Conseiller ne pouvant pas vérifier un résultat en G2 |
-| Migration explicite d'un dossier vers une nouvelle version du contenu | Dossier en cours bloqué sur une version obsolète | Cas réel en pilote ; outil explicite et tracé, jamais silencieux |
-| Conversion entre unités du budget | Prix exprimés dans d'autres unités | Erreurs de saisie observées en G2 |
+| Notifications (SMS, email, WhatsApp) et rappels | Une opération ou une question reste sans suite faute d'alerte | Essai T1 ou T2 montrant des oublis dus à l'absence d'alerte |
+| Connexion par numéro de téléphone | Des participants n'ont pas d'email | Entretiens T0 ou difficultés en essai |
+| Récupération du mot de passe par email | Comptes bloqués | Cas répétés malgré l'assistance |
+| Mode hors connexion | Saisie impossible au champ | Essai T2 interrompu par le réseau |
+| Voix, wolof et autres langues nationales | Écrit difficile ou incompris | Entretiens et observations ; c'est le mode dominant des solutions locales ([BENCHMARK.md](docs/BENCHMARK.md)) |
+| Suggestion automatique sur photo (composant existant) | Description difficile d'un symptôme | Jeu d'images locales étiqueté ; évaluation sur ce jeu |
+| Volumes d'arrosage calculés | Arrosage mal ajusté | Méthode validée par le référent sur des cas réels |
+| Météo ou données environnementales | Une décision de campagne dépend d'une donnée climatique | Cas observés en essai |
+| Vue d'une structure sur ses producteurs (rôle « organisation ») | Animation de plusieurs producteurs | Structure engagée comme canal ou payeur (D-022 à réexaminer) |
+| Migration explicite d'un dossier vers une nouvelle version du contenu | Dossier en cours bloqué sur une version obsolète | Cas réel ; outil explicite et tracé |
+| Conversion entre unités | Quantités exprimées dans d'autres unités | Erreurs de saisie observées |
 
 ## Hors périmètre
 
-Capteurs ou plateforme IoT, chatbot généraliste, marketplace, paiement, crédit ou assurance, prévision de rendement, application mobile native, architecture distribuée, extension géographique ou multi-filières. La conception visuelle et des parcours est autorisée dans UX1–UX3, uniquement pour servir la préparation accompagnée ; une refonte de marque ou un ajout décoratif sans objectif d'usage n'est pas la mission.
+Chatbot **généraliste** (sans rapport avec la campagne ni avec un contenu relu), diagnostic présenté comme certain, entraînement d'un modèle propre au lancement, capteurs ou plateforme IoT, automatisation d'irrigation, marketplace, paiement, crédit ou assurance, prévision de rendement ou de revenu, application mobile native, architecture distribuée, extension multi-filières ou multi-pays avant preuve locale.
 
 ## Revue hebdomadaire
 
-Noter l'étape en cours, les preuves nouvelles, le temps et les dépenses, les risques, la prochaine action avec son responsable et son échéance, et les décisions. Limiter le travail en parallèle à une étape de terrain et une tâche produit ou technique directement utile. Étape produit : **UX3-A livré le 13/10/2026** (parcours débutant intégré ; direction UX2 retenue par le fondateur, sans étude utilisateur ; la refonte complète n'est pas terminée). UX3-B (budget, échanges et avis, reprise producteur, retrait des écrans remplacés) n'est pas commencée. Validations terrain et agronomique toujours ouvertes ; l'essai du fondateur n'est pas une étude utilisateur.
+Noter l'étape en cours par voie (cadrage, essais, développement), les preuves nouvelles, le temps et les dépenses, les risques, la prochaine action avec son responsable et son échéance, et les décisions. Limiter le travail en parallèle à une étape de terrain et une tâche produit ou technique directement utile. Au 13/10/2026 : cadrage C0 proposé ; décisions du fondateur attendues ; aucune voie d'essai engagée.
 
-Références : [produit](docs/PRODUIT.md), [stratégie](docs/STRATEGIE.md), [terrain](docs/VALIDATION_TERRAIN.md), [décisions](docs/DECISIONS.md), [avancement](docs/AVANCEMENT.md).
+Références : [cadrage](docs/CADRAGE_PRODUIT.md), [produit (11/10/2026)](docs/PRODUIT.md), [stratégie](docs/STRATEGIE.md), [terrain](docs/VALIDATION_TERRAIN.md), [décisions](docs/DECISIONS.md), [avancement](docs/AVANCEMENT.md).
