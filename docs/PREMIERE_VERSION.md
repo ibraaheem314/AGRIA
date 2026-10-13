@@ -1,16 +1,18 @@
 # Première version proposée : un cycle complet, peu de situations
 
-Version du **13 octobre 2026**. **Proposition à décider (D-054)** ; elle ne choisit définitivement ni public, ni culture, ni zone. Contexte : [CADRAGE_PRODUIT.md](CADRAGE_PRODUIT.md) ; conditions de fiabilité : [MATRICE_FIABILITE.md](MATRICE_FIABILITE.md).
+Version du **13 octobre 2026**, corrigée le même jour. **Proposition à décider (D-054)** ; elle ne choisit définitivement ni public, ni culture, ni zone. Elle décrit la première version **visée**, pas un lot à construire d'un bloc : le premier lot est choisi après les premiers retours, selon l'aide qu'il apporte à une décision de l'utilisateur ([CADRAGE_PRODUIT](CADRAGE_PRODUIT.md) §9). Contexte : [CADRAGE_PRODUIT.md](CADRAGE_PRODUIT.md) ; conditions de fiabilité : [MATRICE_FIABILITE.md](MATRICE_FIABILITE.md).
 
 ## 1. Principe
 
 Garder **la profondeur du cycle** (préparer → planter → suivre → résoudre un problème → récolter → faire le bilan) et **limiter la diversité** : un public, une culture, une zone, un mode de production, une liste fermée de conseils et de problèmes. Élargir ensuite la diversité, pas l'inverse : une préparation seule ne permet pas d'éprouver la vision, et un cycle « toutes cultures » ne peut pas être fiable.
 
+La valeur visée est l'aide à la décision (savoir quoi faire ensuite, comprendre une difficulté, suivre l'effet d'une action). La mémoire de la campagne en est le moyen : elle n'est construite que dans la mesure où une aide en a besoin.
+
 ## 2. Critères de choix
 
 | Élément | Critères | Candidats à examiner (non choisis) |
 |---|---|---|
-| Premier public | Décisions fréquentes pendant la campagne ; capacité à repérer une réponse inadaptée ; accessible pour un essai ; payeur plausible | Producteurs maraîchers actifs via une structure (recommandé, [CADRAGE](CADRAGE_PRODUIT.md) §4) ; débutants accompagnés par un programme |
+| Premier public | Décisions fréquentes pendant la campagne ; besoin d'aide exprimé ; accessible pour un essai ; payeur plausible | Producteurs actifs et débutants avec un projet concret, **comparés** ([CADRAGE](CADRAGE_PRODUIT.md) §4, D-056) ; une structure est un canal ou un payeur potentiel |
 | Culture | Cycle assez court pour qu'un essai observe une récolte ; importance pour le public ; références locales existantes et relisibles ; **petit nombre de problèmes fréquents, distinguables** ; référent compétent disponible ; risque d'erreur gérable | Une culture maraîchère irriguée courante (par exemple oignon, tomate ou chou, présents dans le calendrier FAO pour le Sénégal) ; l'oignon est une spécialité citée par l'ISRA/CDH ([MARCHE_SENEGAL](MARCHE_SENEGAL.md)) ; la tomate offre plus de problèmes visibles, donc plus d'intérêt pour la photo, mais plus de risques |
 | Zone | Concentration du public ; accès du fondateur ; référent connaissant la zone ; couverture réseau ; existence d'une zone agro-écologique documentée | Niayes (la description FAO de la zone lui attribue environ 80 % de la production horticole du pays) ; Vallée du fleuve |
 | Mode de production | Un seul mode, irrigué, petite surface, plein champ ; source d'eau identifiée | Maraîchage irrigué de contre-saison, arrosage manuel ou goutte-à-goutte : à préciser selon les participants |
@@ -24,9 +26,9 @@ Garder **la profondeur du cycle** (préparer → planter → suivre → résoudr
 
 1. **Préparation** (existante, UX3-A), avec un contenu relu pour la culture et la zone.
 2. **Plan de campagne daté** à partir des dates **réelles**, en fenêtres issues de la fiche relue ; distinction prévu / observé / réalisé.
-3. **Journal** : opérations réalisées (arrosage, apport, traitement, désherbage, autre), observations datées (stade, état, problème), photos en pièce jointe privée.
+3. **Mémoire de la campagne** (journal) : opérations réalisées, observations datées, photos en pièce jointe privée ; elle sert les points 2, 4, 5 et 6, et n'est pas une fin en soi.
 4. **Signalement d'un problème** guidé par les fiches relues d'une liste fermée : questions qui distinguent les causes, hypothèses explicites, actions prévues par la fiche, vérification planifiée ; transmission possible au recours humain avec le dossier.
-5. **Assistant limité** au dossier de la personne et au contenu relu : provenance affichée, refus quand rien ne fonde une réponse, aucune écriture de fait. Il peut être remplacé, au premier essai, par une réponse préparée ou relue par le référent (essai « concierge »).
+5. **Assistant limité** au dossier de la personne et au contenu relu : provenance affichée, refus quand rien ne fonde une réponse, aucune écriture de fait. Activé seulement après son évaluation ; au premier essai, il peut être remplacé par des réponses préparées ou relues par le référent (essai « concierge »), ce qui éprouve l'utilité du service sans valider l'autonomie de l'IA. Son report n'est pas un abandon ; il en va de même pour l'aide par photo.
 6. **Récolte et bilan simple** : dates, quantités dans l'unité de la personne, prévu/réalisé, problèmes et issues, dépenses déclarées.
 7. **Accès depuis le téléphone du participant** dès que l'essai sort des séances supervisées : hébergement et SECURITE §5 deviennent alors des prérequis.
 

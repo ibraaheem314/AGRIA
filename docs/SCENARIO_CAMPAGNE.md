@@ -1,6 +1,6 @@
 # Scénario illustratif d'une campagne complète
 
-**Scénario fictif.** Personne, lieu, culture et événements sont inventés pour illustrer le fonctionnement proposé ; rien ne provient d'un entretien. **Aucune date, dose, quantité ni aucun produit n'est donné** : les crochets `[…]` désignent ce qu'une référence relue fournirait. Statut : proposition ([CADRAGE_PRODUIT.md](CADRAGE_PRODUIT.md)).
+**Scénario fictif.** Personne, lieu, culture et événements sont inventés pour illustrer le fonctionnement proposé ; rien ne provient d'un entretien. **Aucune date, dose, quantité ni aucun produit n'est donné** : les crochets `[…]` désignent ce qu'une référence relue fournirait. Statut : proposition ([CADRAGE_PRODUIT.md](CADRAGE_PRODUIT.md)). Une **démonstration interactive** en reprend trois moments (où en est la culture, problème sur les feuilles, action et suivi de son résultat) : prototype, route `/suivi` ([DEMARRAGE](DEMARRAGE.md)).
 
 **Personnage :** Ndèye (fictive), productrice maraîchère, cultive une petite parcelle irriguée par un puits, au téléphone Android, à l'aise à l'oral en wolof, lit le français avec effort. Culture d'exemple : une culture **repiquée** (pépinière puis repiquage), choisie parce qu'elle fait apparaître des opérations décalées. La culture et la zone réellement retenues dépendront des décisions D-014 et D-054.
 

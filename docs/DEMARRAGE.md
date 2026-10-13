@@ -206,6 +206,27 @@ npm run test:prototype     # vérification Playwright (1280 et 390 px) sur un se
 | 7–9 min | Awa | « À faire maintenant » : répondre à la conseillère ; modifier « Accès à l'eau » ; onglet Conseiller : avis « À réexaminer » ; décision « Modifier le projet » | La décision est celle du porteur, distincte de l'avis |
 | 9–10 min | Modou | « Créer et voir ce qui est repris » → « Toujours vrai cette saison » sur deux informations, « A changé » sur l'eau, noter un changement → Projet ; puis Campagnes → campagne 2026 | Pas de parcours d'initiation ; résultats 2026 présentés comme historique ; aucun conseiller attribué à la nouvelle campagne |
 
+## Démonstration du suivi de campagne (fictive, réponses scénarisées)
+
+Route `/suivi` du prototype : trois situations reliées dans une même campagne fictive (où en est la culture ; problème sur les feuilles ; action réalisée et suivi de son résultat), avec journal et aperçu du bilan. Aucune IA, aucune analyse d'image, aucun appel réseau, aucune base ; état gardé dans le navigateur sous une clé distincte du prototype UX1/UX2. La culture et le lieu sont des supports d'illustration, pas un choix de marché.
+
+```powershell
+cd frontend
+npm run prototype          # puis ouvrir http://127.0.0.1:5176/suivi
+```
+
+**Parcours de cinq minutes**
+
+| Temps | Faire | Observer |
+|---|---|---|
+| 0–1 min | Lire « Où en est ma culture ? » | Contexte court ; une chose à vérifier maintenant et pourquoi ; « Aucun arrosage déclaré… ce n'est pas la preuve qu'il n'a pas eu lieu » ; repiquage réalisé 5 jours après la fenêtre ; plan « Prévu » distinct du « Réalisé » |
+| 1–3 min | « J'observe un problème sur les feuilles » → image d'exemple → quatre questions → « Ce que votre journal dit déjà » (seul l'arrosage manquant est demandé) → réponse scénarisée | Aucune cause ni traitement ; ce qu'il est utile de faire ; rien n'entre au journal avant « Confirmer et enregistrer l'observation » |
+| 3–4 min | Déclarer « Retrait de feuilles ou de plants » → vérifier → « Confirmer : je l'ai fait » → « Faire l'observation de suivi » → « C'est stable », continuer à suivre | Date future refusée ; lien avec le problème ; « une amélioration ne prouve pas que l'action en est la cause » ; le cas revient en tête de « Ma campagne » |
+| 4–5 min | Journal, puis Bilan ; « Demander » : « Combien d'engrais dois-je mettre ? » puis une question hors sujet | Faits déclarés sans causalité ; refus explicite de dose ; réponse « hors scénario » |
+| Facultatif | « Noter une observation » → « Prêt à récolter » | Contradiction à clarifier par la personne : corriger la date (le plan est recalé, les opérations restent), corriger l'observation, ou « je vérifierai » |
+
+« Recommencer » (bandeau) revient au début. Vérification : `npm run test:prototype` (serveur isolé sur 5177).
+
 ## Contrôles
 
 ```powershell

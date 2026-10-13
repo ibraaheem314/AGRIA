@@ -20,6 +20,8 @@ Ce tableau n'est pas une étude de marché. L'existence d'un accompagnement ne p
 
 ## Portes d'entrée vérifiées pour la première vague de G1
 
+*13/10/2026 : liste opérationnelle courte, complétée par l'ISRA-CDH (référent possible) et Jokalante (solution locale à comprendre), dans le [kit des premiers contacts](terrain/KIT_PREMIERS_CONTACTS.md) §6 ; sites vérifiés accessibles ce jour-là.*
+
 Vérification du **12 octobre 2026** sur les sites officiels, sauf mention contraire. Ce sont des **canaux institutionnels publics**, pas des personnes. Aucune de ces structures n'a été contactée ni n'a donné son accord : un contact public n'est pas un accord, et une institution existante n'est pas forcément disponible.
 
 Le classement combine deux critères : la **pertinence** pour l'objectif (un conseiller et deux personnes préparant une campagne) et la **possibilité concrète** d'obtenir une mise en relation.

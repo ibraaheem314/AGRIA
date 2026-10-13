@@ -1,6 +1,6 @@
 # Protocole de validation de l'accompagnement de campagne
 
-Version du **13 octobre 2026**. **Statut : proposé, non exécuté.** Aucun participant, aucune structure, aucun référent agronomique n'est recruté. Ce protocole complète [VALIDATION_TERRAIN.md](VALIDATION_TERRAIN.md), dont les règles générales (§0 : consentement, aucune donnée personnelle dans le dépôt, faits plutôt qu'opinions, aucune promesse, plafonds de dépenses) s'appliquent sans changement. Le protocole G2 de préparation de dossiers reste valable si le fondateur décide de garder d'abord la préparation seule.
+Version du **13 octobre 2026**, corrigée le même jour (évaluations courtes avant le suivi longitudinal ; portée de l'essai « concierge »). **Statut : proposé, non exécuté.** Aucun participant, aucune structure, aucun référent agronomique n'est recruté. Ce protocole complète [VALIDATION_TERRAIN.md](VALIDATION_TERRAIN.md), dont les règles générales (§0 : consentement, aucune donnée personnelle dans le dépôt, faits plutôt qu'opinions, aucune promesse, plafonds de dépenses) s'appliquent sans changement. Le protocole G2 de préparation de dossiers reste valable si le fondateur décide de garder d'abord la préparation seule.
 
 **Ne constituent pas une validation :** une démonstration fictive, les tests logiciels, l'essai du fondateur, un taux de précision publié par un tiers, un avis favorable sur une maquette.
 
@@ -19,15 +19,20 @@ Version du **13 octobre 2026**. **Statut : proposé, non exécuté.** Aucun part
 
 ## 2. Phases
 
+**Principe :** d'abord des évaluations **courtes** (compréhension, utilité immédiate, effort perçu), possibles dès maintenant avec la démonstration fictive ; ensuite un suivi **longitudinal**, seulement pour ce qui exige réellement le temps d'une campagne (réutilisation, suivi d'un problème, bilan). **Il n'est pas nécessaire d'attendre deux cycles agricoles avant tout développement** : un lot peut être construit après les premiers retours, puis éprouvé sur la durée qu'il exige.
+
 | Phase | Objet | Moyens | Durée indicative | Sortie |
 |---|---|---|---|---|
-| **V0 Référent et références** | Trouver un référent agronomique ; réunir les références de la culture et de la zone candidates ; constituer une première liste de problèmes et de questions | Échanges, documents ISRA/CDH, calendrier FAO, conseil public | À fixer | Référent engagé par écrit ; liste fermée de problèmes ; fiches à relire |
-| **V1 Entretiens étendus** | Éprouver H1 et préparer H8 | Guide G1 (VALIDATION_TERRAIN §3), avec le module ci-dessous | 2 à 4 semaines | Fiche de décision : public, culture, zone, participants pour V2 |
-| **V2 Essai « concierge »** | H2 à H7 sans code nouveau, sur une vraie campagne | Fiche de campagne prévu/observé/réalisé (papier ou message) ; questions par message ou voix ; réponses préparées à partir des fiches et **relues par le référent avant envoi**, ou envoyées avec la mention « non relue » selon une règle écrite | Un cycle de la culture retenue | Corpus de questions et de cas réels ; notes de justesse ; mesures d'effort et de retour |
-| **V3 Essai outillé** | Les mêmes hypothèses avec l'application (journal, problèmes guidés, assistant limité si son banc est réussi) | Application hébergée (SECURITE §5) ou séances supervisées | Un cycle | Comparaison avec V2 ; décision sur chaque capacité |
-| **V4 Bilan** | Décider | Rapport agrégé et anonymisé | — | Poursuivre, modifier ou abandonner, hypothèse par hypothèse |
+| **V1 Premiers contacts** | H1 et H8 ; repérer les décisions difficiles et les besoins | Entretien court centré sur des décisions récentes ([kit](terrain/KIT_PREMIERS_CONTACTS.md)) | 1 à 3 semaines | Relevés ; premiers éléments pour choisir public, culture, zone |
+| **V2 Test de la démonstration** | H2 (utilité immédiate), H4 (incertitude acceptée), H7 (compréhension), effort perçu (H5) | Démonstration fictive `/suivi`, script de tâches ([kit](terrain/KIT_PREMIERS_CONTACTS.md)), dans le même rendez-vous que V1 | 15 à 20 minutes par personne | Tâches réussies ou non, incompréhensions, décisions réelles citées, besoin jugé prioritaire |
+| **V0 Référent et références** (en parallèle) | Rendre possible un conseil destiné à être appliqué | Échanges, documents ISRA/CDH, calendrier FAO, conseil public | À fixer | Référent engagé par écrit ; liste fermée de problèmes ; fiches à relire |
+| **V3 Essai court du lot choisi** | La capacité retenue après V1–V2 (par exemple le suivi d'un problème) | Application (séances supervisées ou hébergée) ou mode « concierge » | Le temps qu'exige la capacité : quelques semaines pour suivre un problème | Décision sur cette capacité |
+| **V4 Suivi longitudinal** | H3 à H6 sur une campagne réelle : réutilisation, effort dans la durée, justesse sur des cas réels, bilan | Application et, si besoin, réponses préparées ou relues par le référent | Une campagne de la culture retenue | Corpus de cas ; notes de justesse ; mesures d'effort et de retour |
+| **V5 Bilan** | Décider | Rapport agrégé et anonymisé | — | Poursuivre, modifier ou abandonner, hypothèse par hypothèse |
 
-### Module ajouté au guide d'entretien (V1)
+**Portée d'un essai « concierge ».** Si toutes les réponses sont préparées ou relues par un expert avant envoi, l'essai mesure l'**utilité du service** (les personnes s'en servent-elles, pour quelles décisions, avec quel effort ?) et constitue un corpus de cas. Il **ne valide pas à lui seul l'autonomie de l'IA** : celle-ci s'évalue séparément, en comparant ses réponses aux cas du corpus notés par le référent, avant toute activation ([MATRICE_FIABILITE](MATRICE_FIABILITE.md)).
+
+### Questions sur le suivi de campagne (reprises dans le guide du kit)
 
 À poser sur des faits récents, après la partie E du guide G1 :
 
@@ -50,12 +55,12 @@ Version du **13 octobre 2026**. **Statut : proposé, non exécuté.** Aucun part
 | Réutilisation (H6) | Semaines avec au moins un usage spontané ; délai entre un problème et sa déclaration | Journal d'usage (sans contenu personnel dans le dépôt) | Distinguer usage spontané et usage relancé |
 | Disposition à payer (H8) | Niveaux **distincts**, jamais additionnés : aucun / intérêt verbal / engagement écrit / paiement ; payeur nommé (catégorie) | Question fermée en fin d'essai ; proposition concrète (prix ou contribution) si le fondateur la fixe | Une subvention n'est pas une demande récurrente |
 
-## 4. Critères de suite (propositions, à fixer par le fondateur avant V2)
+## 4. Critères de suite (propositions, à fixer par le fondateur avant V3)
 
 | Hypothèse | Poursuivre si | Modifier si | Abandonner ou revoir si |
 |---|---|---|---|
 | H1 | La majorité des participants de V1 cite une décision de campagne récente difficile, faute d'aide au bon moment | Le besoin existe mais porte sur une autre étape (vente, intrants, eau) | Aucun cas récent coûteux ; l'aide existante suffit |
-| H2 | Au moins la moitié des participants de V2 rapporte au moins une décision réelle influencée, avec enjeu | Utilité limitée à une capacité (par exemple les problèmes) : recentrer dessus | Aucune décision influencée |
+| H2 | En V2, la majorité cite une décision réelle récente où l'aide montrée aurait servi ; en V3–V4, au moins la moitié rapporte une décision réelle influencée, avec enjeu | Utilité limitée à une capacité (par exemple les problèmes) : recentrer dessus | Aucune décision influencée |
 | H3 | Aucune réponse dangereuse ; une large majorité de réponses exactes et applicables (seuil chiffré fixé avec le référent) | Erreurs concentrées sur une capacité : la désactiver, corriger la fiche | Réponse dangereuse répétée, ou erreurs que la relecture ne corrige pas |
 | H4 | Refus jugés appropriés par le référent, acceptés par les participants | Trop de refus : élargir le contenu relu avant tout | Le service affirme sans fondement malgré les règles |
 | H5 | Saisie maintenue jusqu'à la récolte par la majorité, temps jugé acceptable | Abandon dû à une saisie précise : la simplifier, essayer la voix | Abandon général malgré simplification |
@@ -67,7 +72,7 @@ Trois à huit participants ne permettent aucune conclusion statistique. Les déc
 
 ## 5. Sécurité des participants et des données
 
-- **Aucune consigne risquée** : en V2, tout conseil sur un traitement, une dose ou une pratique à risque passe par le référent avant envoi ; à défaut, le service le dit et oriente.
+- **Aucune consigne risquée** : en V3 et V4, tout conseil sur un traitement, une dose ou une pratique à risque passe par le référent avant envoi ; à défaut, le service le dit et oriente.
 - Consentement écrit sur l'usage des données, **y compris des photos** (qui peuvent montrer des personnes ou des lieux) ; aucune photo dans le dépôt ; aucune transmission à un service tiers (API de diagnostic, modèle d'IA) sans consentement explicite et décision consignée.
 - Conservation limitée (proposition reprise de VALIDATION_TERRAIN §7.5) ; synthèse remise au participant.
 - Arrêt anticipé : participant indisponible, référent absent, réponse dangereuse, dépassement d'un plafond.

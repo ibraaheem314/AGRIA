@@ -1,6 +1,8 @@
 # Matrice de fiabilité : capacités, données, connaissances, validation
 
-Version du **13 octobre 2026**. **Proposition** ([CADRAGE_PRODUIT.md](CADRAGE_PRODUIT.md) §6, D-055). Elle dit à quelles conditions chaque capacité de la vision peut être activée. **Aucune dose, aucun volume, aucun produit, aucune date de culture n'est donné ici.** Aucune de ces capacités n'existe dans le code au 13/10/2026.
+Version du **13 octobre 2026**. **Proposition** ([CADRAGE_PRODUIT.md](CADRAGE_PRODUIT.md) §6, D-055). Elle dit à quelles conditions chaque capacité de la vision peut être activée. **Aucune dose, aucun volume, aucun produit, aucune date de culture n'est donné ici.** Aucune de ces capacités n'existe dans l'application au 13/10/2026 ; la démonstration fictive `/suivi` en montre le fonctionnement avec des réponses scénarisées, sans contenu agronomique applicable.
+
+Rappel des conditions d'avancement ([CADRAGE_PRODUIT](CADRAGE_PRODUIT.md) §7, D-057) : recueillir et restituer ce que la personne a déclaré ne demande pas de référent ; un conseil destiné à être appliqué exige des connaissances adaptées et relues ; une capacité automatisée exige une évaluation propre avant activation. Un report n'est pas un abandon.
 
 ## 1. Synthèse
 

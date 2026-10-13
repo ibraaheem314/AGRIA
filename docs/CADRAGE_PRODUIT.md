@@ -1,14 +1,16 @@
 # Cadrage produit : de la préparation à l'accompagnement d'une campagne
 
-Version du **13 octobre 2026**, après la livraison UX3-A. **Statut : proposition à décider par le fondateur.** Aucun choix de public, de culture ou de zone n'est arrêté par ce document. Rien n'y est validé sur le terrain.
+Version du **13 octobre 2026**, après la livraison UX3-A ; **corrigée le même jour** (positionnement, concurrence, premier public, conditions d'avancement, validation) après relecture du fondateur, et complétée par une démonstration interactive et un kit de terrain. **Statut : proposition à décider par le fondateur, sauf la vision, exprimée par lui.** Aucun choix de public, de culture ou de zone n'est arrêté par ce document. Rien n'y est validé sur le terrain.
 
-Documents liés : [benchmark](BENCHMARK.md) · [scénario de campagne](SCENARIO_CAMPAGNE.md) · [matrice de fiabilité](MATRICE_FIABILITE.md) · [première version proposée](PREMIERE_VERSION.md) · [protocole de validation](PROTOCOLE_VALIDATION.md) · [roadmap](../ROADMAP.md) · [décisions](DECISIONS.md) (D-052 à D-055).
+Documents liés : [benchmark](BENCHMARK.md) · [scénario de campagne](SCENARIO_CAMPAGNE.md) · [matrice de fiabilité](MATRICE_FIABILITE.md) · [première version proposée](PREMIERE_VERSION.md) · [protocole de validation](PROTOCOLE_VALIDATION.md) · [roadmap](../ROADMAP.md) · [décisions](DECISIONS.md) (D-052 à D-057) · démonstration : `npm run prototype`, puis `/suivi` ([DEMARRAGE](DEMARRAGE.md)) · [kit de premiers contacts](terrain/KIT_PREMIERS_CONTACTS.md).
 
 Conventions : **Fait** = établi par le code, les tests ou une source citée. **Hypothèse** = plausible, non vérifiée. **Recommandation** = proposition à décider.
 
 ## 1. La vision précisée
 
 Vision donnée par le fondateur le 13/10/2026 (D-052) : un accompagnement agricole accessible de façon autonome, qui aide à préparer une campagne, accompagne pendant la culture (prochaines actions, observations, arrosage, fertilisation, difficultés, dans le périmètre pris en charge), répond par un assistant conversationnel qui utilise le contexte de la campagne, s'appuie éventuellement sur des photos, et suit la culture jusqu'à la récolte et au bilan. Le conseiller humain apporte une expertise sur certains cas ; sa présence n'est pas une condition systématique. L'autonomie n'autorise pas une réponse certaine quand les données ou les connaissances manquent.
+
+**Précision du fondateur, 13/10/2026 (seconde mission) :** AGRIA est un assistant agricole qui accompagne une campagne jusqu'à la récolte et au bilan. Il aide l'utilisateur à savoir quoi faire ensuite, comprendre les difficultés rencontrées, recueillir les observations nécessaires, adapter ses actions au contexte réel de sa campagne et suivre les résultats de ses interventions. **Le journal est la mémoire qui permet cette assistance ; il n'est pas la finalité du produit.** Le conseiller humain construit et valide les connaissances, puis intervient en recours sur certains cas ; l'accès systématique à un conseiller n'est pas une condition d'utilisation. L'assistant conversationnel contextualisé et l'aide par photo font partie de la vision : leur activation dépend de leur évaluation, et leur report au premier essai ne vaut pas abandon.
 
 **Ce qui change par rapport aux documents du 11 et du 12 octobre :** la préparation d'une campagne, jusqu'ici décrite comme la totalité de la première version ([PRODUIT.md](PRODUIT.md) §1), devient une composante d'un cycle complet. L'historique est conservé : les documents antérieurs décrivent fidèlement le cap de leur date.
 
@@ -51,7 +53,7 @@ Vision donnée par le fondateur le 13/10/2026 (D-052) : un accompagnement agrico
 
 ### 2.4 Décisions anciennes incompatibles ou en tension avec la vision
 
-Elles ne sont **pas réécrites** : chacune reste datée dans son document. Elles sont à trancher (voir §8).
+Elles ne sont **pas réécrites** : chacune reste datée dans son document. Elles sont à trancher au fil des décisions (voir §10).
 
 | Décision ou texte | Contenu | Tension | Proposition |
 |---|---|---|---|
@@ -59,7 +61,7 @@ Elles ne sont **pas réécrites** : chacune reste datée dans son document. Elle
 | PRODUIT §6 | L'IA n'est pas indispensable ; au plus reformuler, résumer, structurer une saisie | Forte | L'assistant devient une composante, sous des règles de fiabilité strictes (D-055, proposition) |
 | PRODUIT §8, ROADMAP « Hors périmètre » | Écarte « chatbot agricole ouvert » et « diagnostic photo autonome » | Partielle | Maintenir l'exclusion d'un chatbot **généraliste** et d'un diagnostic **autonome** ; admettre un assistant **limité au périmètre et à la campagne**, et la photo comme **observation documentée** |
 | STRATEGIE « Discipline » | Une fonction n'entre que si elle sert F1–F6 | Directe | Élargir le critère au cycle de campagne retenu |
-| PRODUIT §2, F5, ROADMAP (promesse) | « Avancer avec un conseiller » au cœur de la promesse | Partielle | Le conseiller devient un recours, pas une condition d'usage ; l'expertise reste indispensable à la **validation du contenu** |
+| PRODUIT §2, F5, ROADMAP (promesse) | « Avancer avec un conseiller » au cœur de la promesse | Partielle | L'expertise humaine construit et valide les connaissances, puis intervient en recours sur certains cas ; elle n'est pas une condition d'usage |
 | D-022 | Pas de rôle « organisation » | Si une structure est le payeur ou le canal | Garder D-022 pour le premier essai ; réexaminer seulement si le public C est retenu |
 | D-047 | Pas d'explications d'initiation (aucun contenu relu) | Compatible, mais limitante | Inchangée : tout contenu agronomique passe par une relecture datée (D-026) |
 | D-008, D-009, D-048 | IA non décisionnaire, distinction démonstration/mesure/preuve, pas de mise à jour automatique | **Compatibles** et structurantes | Conserver et étendre aux réponses de l'IA et aux photos |
@@ -84,25 +86,27 @@ Toutes les lignes « situation », « solution actuelle » et « bénéfice » s
 | Informations que la personne peut raisonnablement fournir | Lieu, culture, dates réelles, source d'eau, surface approximative, observations décrites, photos | Les mêmes, plus ses pratiques habituelles ; analyses de sol rares | Liste des producteurs, zones, cultures ; le détail vient des producteurs |
 | Bénéfice attendu | Moins d'erreurs coûteuses, confiance, première trace | Réponse plus rapide aux problèmes, trace utile au bilan | Temps d'animation mieux employé, suivi lisible |
 | Utilisateur / bénéficiaire / payeur éventuel | La personne / elle-même / rarement elle au début : programme, ONG, famille | Le producteur / lui-même / lui-même, une coopérative ou un acheteur | L'animateur / les producteurs et la structure / la structure ou son bailleur |
-| Risque principal | Elle a le plus besoin d'aide et le moins de moyens de repérer une réponse fausse | Il compare avec son expérience : un conseil faible est vite rejeté | Cycle de vente long ; concurrence d'outils installés ; rôle « organisation » à construire |
+| Risque principal | Elle a le plus besoin d'aide et dispose de peu de repères pour juger une réponse | Ses habitudes peuvent lui faire rejeter un conseil juste comme accepter un conseil faux : l'expérience ne garantit pas qu'il repère une erreur | Cycle de vente long ; concurrence d'outils installés ; rôle « organisation » à construire |
 
-### Recommandation de premier public (proposition)
+### Premier public : deux hypothèses à comparer (D-056, remplace D-053)
 
-**Petits producteurs maraîchers actifs (B), recrutés et, si possible, appuyés par une structure (C) qui fournit l'accès, une expertise de référence et une hypothèse de payeur.** Le débutant (A) reste dans la vision ; la préparation livrée lui sert déjà, et il serait visé une fois des réponses fiabilisées.
+Aucun public n'est retenu à ce stade. Les entretiens et les essais de la démonstration comparent :
 
-Raisons :
+| | Producteurs actifs (B) | Débutants avec un projet concret (A) |
+|---|---|---|
+| Ce qui plaide pour | Décisions de campagne fréquentes et immédiates ; plusieurs campagnes par an en maraîchage irrigué ; l'utilité en cours de culture peut se mesurer vite | Besoin d'aide le plus large (quoi faire, quand, comment réagir) ; la préparation livrée leur sert déjà ; des programmes les accompagnent |
+| Ce qui plaide contre | Habitudes établies, aide déjà disponible chez les pairs ou le vendeur d'intrants ; besoin peut-être limité aux problèmes ponctuels | Moins de repères pour juger une réponse : exige des connaissances relues avant tout conseil appliqué ; accès plus difficile hors programme |
+| Ce qu'il faut observer | Décisions récentes difficiles, aide réellement obtenue et délai, usage du téléphone et de la voix, intérêt pour un suivi | Mêmes points, plus la capacité à décrire une observation et le besoin d'être guidé pas à pas |
 
-1. **Les décisions pendant la culture sont fréquentes et réelles** chez le producteur actif : l'utilité de l'accompagnement en cours de campagne, cœur de la vision, peut s'y mesurer vite.
-2. **Un producteur expérimenté repère mieux une réponse inadaptée** : c'est le public le plus sûr pour éprouver un assistant et des fiches encore jeunes. Le débutant, lui, appliquerait une erreur sans la détecter.
-3. **Une structure** facilite le recrutement, porte une expertise agronomique pour relire le contenu, et constitue l'hypothèse de payeur la moins fragile ; elle n'impose pas de conseiller à chaque usage.
-
-Preuves manquantes : un groupe accessible de producteurs avec une campagne à venir ; les décisions de campagne qu'ils jugent difficiles ; leur usage actuel du téléphone, de l'écrit et de la voix ; une structure et un référent agronomique disposés à participer ; un payeur. Condition de révision : si les entretiens montrent que les producteurs actifs n'attendent rien d'un suivi, ou qu'un débutant accompagné par un programme est plus accessible et mieux encadré, réexaminer en faveur de A.
+**Une structure** (coopérative, ONG, programme, entreprise) est un **canal de recrutement ou un payeur potentiel**, pas une ressource acquise : aucune n'a été contactée ni n'a donné son accord ([kit](terrain/KIT_PREMIERS_CONTACTS.md)). Recruter par une structure peut biaiser l'échantillon vers des personnes déjà accompagnées : à noter dans les fiches.
 
 ## 5. Positionnement à tester
 
-Voir [BENCHMARK](BENCHMARK.md) §4. En une phrase, **proposition** : *le carnet de campagne qui accompagne : il se souvient de ce qui a été prévu, observé et fait, propose la prochaine action à partir de références locales relues, et dit quand il ne sait pas.*
+**Bénéfice pour l'utilisateur, d'abord (proposition) :** *savoir quoi faire ensuite dans sa campagne, comprendre ce qui arrive à sa culture et suivre l'effet de ce qu'il a fait, avec une aide qui tient compte de ce qu'il a réellement fait et observé, et qui dit quand elle ne sait pas.*
 
-AGRIA n'est ni présenté comme unique, ni comme supérieur aux solutions existantes. Le partenariat (contenu, canal vocal, diagnostic) est à envisager avant de tout construire.
+**Ce qui le rend possible :** une mémoire structurée de la campagne (prévu, observé, réalisé) que l'assistant consulte avant de répondre, et des connaissances adaptées à la culture et à la zone, relues avant d'être appliquées. La mémoire est le moyen ; l'aide à la décision est la valeur proposée.
+
+Ce que la comparaison des solutions existantes établit et n'établit pas : [BENCHMARK](BENCHMARK.md) §3 et §5. Des concurrents annoncent une personnalisation par profil et usages répétés (FarmerChat) : AGRIA ne revendique aucune exclusivité. La différence à éprouver porte sur l'**adaptation des réponses aux opérations et observations enregistrées d'une campagne**, que les sources consultées ne décrivent pas, sans prouver qu'elle est absente. Le partenariat (contenu, canal vocal, diagnostic) reste à envisager avant de tout construire.
 
 ## 6. Principes de fiabilité retenus pour toute la suite (proposition, D-055)
 
@@ -115,21 +119,63 @@ AGRIA n'est ni présenté comme unique, ni comme supérieur aux solutions exista
 
 Le détail par capacité est dans la [matrice de fiabilité](MATRICE_FIABILITE.md).
 
-## 7. Ce qu'apporte une première version cohérente
+## 7. Conditions d'avancement (D-057)
 
-Voir [PREMIERE_VERSION](PREMIERE_VERSION.md) : un cycle complet (préparation → plan daté → journal → problème → récolte → bilan) pour **une** culture, **une** zone, **un** mode de production et une **liste fermée** de conseils et de problèmes, avec un assistant limité à la campagne et au contenu relu. La diversité s'élargit ensuite, pas la profondeur du cycle.
+Trois catégories de travail, à ne pas confondre :
 
-## 8. Décisions prioritaires attendues du fondateur
+| Catégorie | Exemples | Condition |
+|---|---|---|
+| **Possible sans référent agronomique** | Entretiens ; démonstration fictive ; consultation et organisation de l'historique d'une campagne (ce que la personne a déclaré) ; rappels de ce qu'elle a prévu elle-même ; préparation des grilles et des bancs d'évaluation ; développement du recueil des observations et des opérations | Aucun contenu agronomique présenté comme applicable |
+| **Conseil agronomique destiné à être appliqué** | Fenêtres d'un calendrier cultural ; repères d'arrosage ; apports ; fiches de problèmes et actions associées | Connaissances adaptées à la culture et à la zone, relues et datées par une personne compétente ([MATRICE_FIABILITE](MATRICE_FIABILITE.md)) |
+| **Capacité automatisée** | Réponse générée par un assistant ; suggestion sur photo ; calcul de volume ou de dose | Évaluation propre, sur des cas locaux, avant activation ; un résultat publié par un tiers ne suffit pas |
 
-1. **Adopter ou amender la vision précisée et ses conséquences** (D-052 et le tableau §2.4) : en particulier, la première version couvre-t-elle un cycle complet limité, ou d'abord la préparation seule ?
-2. **Premier public à éprouver** : producteurs actifs recrutés via une structure (recommandé) ou débutants accompagnés par un programme.
-3. **Référent agronomique** : qui peut relire un calendrier, des fiches de problèmes et noter des réponses, à quelles conditions ; sans lui, aucun conseil agronomique ne peut être activé.
-4. **Ordre entre essai sans code et développement** : lancer d'abord un essai « concierge » (accompagnement par message, réponses préparées ou relues par le référent) pour constituer le corpus de questions et mesurer l'utilité, ou commencer par le journal de campagne.
-5. **Accès à distance** : un suivi au champ suppose un hébergement et la mise en sécurité de SECURITE §5 ; décider s'il est engagé pour l'essai outillé, et avec quel plafond.
-6. **UX3-B** : ne pas le lancer tel quel ; retenir seulement ce qui sert le cycle choisi (voir la [roadmap](../ROADMAP.md)).
+Le référent agronomique conditionne la deuxième catégorie, pas la première : la démonstration, le kit de terrain et une partie du développement avancent sans lui.
 
-## 9. Prochaine mission concrète recommandée
+## 8. Ce qu'apporte une première version cohérente
 
-**C1 — Préparer l'essai « concierge » de suivi de campagne, sans code** : guide d'entretien G1 étendu au suivi en cours de culture ; fiche de campagne prévu/observé/réalisé (papier ou message) ; grille de notation des réponses par le référent ; liste des questions et problèmes à couvrir pour une culture candidate ; modalités de consentement et de conservation des photos. Elle produit les preuves qui conditionnent toutes les autres décisions, et ne dépend d'aucun hébergement.
+Voir [PREMIERE_VERSION](PREMIERE_VERSION.md) : un cycle complet pour **une** culture, **une** zone, **un** mode de production et une **liste fermée** de conseils et de problèmes, avec un assistant limité à la campagne et au contenu relu. La diversité s'élargit ensuite, pas la profondeur du cycle.
 
-Première mission de développement, **une fois les décisions 1 à 3 prises** : **D1 — journal de campagne sans IA** (opérations prévues et réalisées, observations datées, photos en pièce jointe privée), réutilisable quelle que soit la culture retenue. Détail dans la [roadmap](../ROADMAP.md).
+## 9. Préparer la décision suivante
+
+### Hypothèses prioritaires et indices
+
+| Hypothèse | Indices qui la soutiendraient | Indices qui la fragiliseraient |
+|---|---|---|
+| H1. Pendant la culture, des décisions difficiles se prennent sans aide au bon moment | Cas récents racontés avec leur conséquence ; délai pour obtenir une réponse ; recours au vendeur d'intrants faute d'autre aide | « Je demande à mon voisin et ça suffit » ; aucun cas coûteux récent |
+| H2. Une aide qui tient compte de la campagne est comprise et utile tout de suite | Dans le test de la démonstration, la personne trouve seule quoi vérifier, comprend pourquoi, et cite une décision réelle où cela l'aurait aidée | Elle cherche une réponse immédiate (« donne-moi le produit ») et juge les questions inutiles |
+| H3. Recueillir observations et opérations est acceptable | Saisie jugée rapide ; préférence exprimée pour la voix ou la photo plutôt que l'écrit, mais pas de refus | « Je n'ai pas le temps de noter » ; abandon dès la deuxième saisie |
+| H4. L'aide aux problèmes est le besoin le plus pressant | Problèmes cités en premier ; photos déjà envoyées à quelqu'un | Problèmes rares ou déjà bien couverts |
+| H5. La planification (quoi faire et quand) est le besoin le plus pressant | Oublis ou retards d'opérations racontés ; demande de rappels | Calendrier maîtrisé par l'habitude |
+| H6. Quelqu'un paierait | Payeur nommé, engagement écrit | Intérêt verbal seulement |
+
+### Informations nécessaires pour choisir public, culture et zone
+
+Les décisions que les personnes trouvent difficiles et leur fréquence ; les cultures réellement conduites et leurs problèmes récurrents ; l'accès aux personnes (canal, langue, téléphone, réseau) ; l'existence de références locales et d'une personne compétente pour les relire ; la saison des campagnes (pour situer un suivi longitudinal) ; un payeur plausible.
+
+### Le plus petit lot fonctionnel après les premiers retours
+
+Il n'est **pas fixé d'avance** : il sera choisi selon l'aide qu'il apporte à une décision de l'utilisateur, d'après les retours.
+
+| Si les retours montrent surtout… | Plus petit lot envisageable | Aide apportée à une décision | Condition |
+|---|---|---|---|
+| Un besoin d'aide face aux problèmes (H4) | **Signalement guidé d'un problème** : description structurée, photo jointe, questions utiles, suivi de l'évolution, transmission du cas | « Que dois-je regarder, et faut-il demander de l'aide ? » | Questions d'observation génériques sans référent ; hypothèses de cause seulement avec des fiches relues |
+| Un besoin de savoir quoi faire et quand (H5) | **Plan de campagne recalé sur les dates réelles**, avec ce qui est à vérifier maintenant | « Que dois-je faire cette semaine ? » | Fenêtres issues d'une fiche relue pour la culture et la zone |
+| Un besoin de suivre l'effet de ses actions | **Action déclarée et suivi de son résultat** (observation de suivi, comparaison) | « Ce que j'ai fait a-t-il changé quelque chose ? » | Sans référent, en restant sur des faits déclarés |
+| Un besoin d'abord conversationnel | **Assistant limité** au dossier et au contenu relu | Réponse immédiate en contexte | Banc d'évaluation réussi (catégorie « capacité automatisée ») |
+| Un besoin hors du suivi (vente, intrants, accès à l'eau) | À recadrer avant tout développement | — | Décision consignée |
+
+Dans tous les cas, l'enregistrement des observations et des opérations n'est construit que dans la mesure où le lot choisi en a besoin : il n'est pas un lot en soi.
+
+## 10. Décisions encore indispensables
+
+1. **Référent agronomique** : qui peut relire les connaissances de la culture et de la zone candidates et noter des réponses, à quelles conditions. Il conditionne tout conseil destiné à être appliqué, pas les entretiens ni la démonstration.
+2. **Plafonds et date de départ des premiers contacts** (D-011) : temps, déplacements, éventuel dédommagement.
+3. **Accès à distance** pour un essai outillé hors séance supervisée (hébergement, SECURITE §5), seulement quand un lot est prêt à être essayé.
+
+Le choix du public, de la culture et de la zone se fera sur les retours des premiers contacts ; UX3-B reste suspendu.
+
+## 11. Prochaine action concrète
+
+**Pour le fondateur :** utiliser le [kit de premiers contacts](terrain/KIT_PREMIERS_CONTACTS.md) : contacter les premières personnes de l'échantillon exploratoire (producteurs actifs et débutants) et une structure ou un référent, mener les entretiens courts et le test de la démonstration, et remplir les fiches de relevé.
+
+**Pour le développement :** aucun lot n'est engagé avant les premiers retours ; le choix suivra le tableau du §9.

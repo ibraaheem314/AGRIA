@@ -703,3 +703,23 @@ Constatées à la relecture du code livré ; non corrigées dans cette mission (
   - *sauvegarde partielle* : si la seconde réponse d'une étape échoue, l'alerte « Étape non enregistrée » s'affiche alors que la première réponse de l'étape est bien enregistrée ;
   - *réponse réseau perdue* : sur la fiche d'une information, un nouvel essai après une réponse perdue renvoie « Aucun changement à enregistrer » (le serveur avait déjà enregistré la première requête), ce qui peut laisser croire que rien n'a été enregistré.
 - **Contenu v2 à charger** (`manage.py load_content`) sur la base de travail et, si elle sert, sur `agria_demo` : sans cela, les nouveaux dossiers de ces bases restent sur la v1 (« Pluie seulement » propose encore « Confirmer la disponibilité de l'eau »). Opération laissée au fondateur.
+
+# Démonstration de valeur et préparation du terrain (13/10/2026)
+
+Mission : passer du cadrage à une démonstration concrète, préparer les premiers contacts, corriger des conclusions insuffisamment fondées. Ni UX3-B, ni intégration de chatbot ou de diagnostic.
+
+- **Cadrage corrigé** ([CADRAGE_PRODUIT.md](CADRAGE_PRODUIT.md)) : positionnement exprimé d'abord par le bénéfice pour l'utilisateur, la mémoire de campagne comme moyen ; premier public ramené à deux hypothèses comparées, structure = canal ou payeur potentiel, suppression de l'idée que l'expérience garantit de repérer un mauvais conseil (D-056 remplace D-053) ; conditions d'avancement en trois catégories et validation courte avant le longitudinal (D-057) ; décision suivante préparée (hypothèses, indices, informations nécessaires, plus petit lot selon les retours).
+- **Concurrence** ([BENCHMARK.md](BENCHMARK.md)) : page FarmerChat de Digital Green Trust vérifiée (« personnalisé par les profils des producteurs et les usages répétés ») ; article de l'équipe lu (historique de conversation, contenu vérifié par des experts, environ 75 % de questions répondues) ; quatre niveaux de mémoire distingués ; deux parcours examinés (FarmerChat, Plantix) sans compte ni installation : **rien n'a été essayé**.
+- **Démonstration** : prototype, route `/suivi` (`frontend/prototype/src/suivi/`), procédure dans [DEMARRAGE.md](DEMARRAGE.md). Le fournisseur d'état du prototype UX1/UX2 n'est plus monté que sur ses propres routes (la démonstration ne crée pas son état).
+- **Terrain** : [kit des premiers contacts](terrain/KIT_PREMIERS_CONTACTS.md) et [fiche de relevé](terrain/fiche-releve-modele.csv) ; pistes de structures vérifiées accessibles le 13/10/2026 ; aucun message envoyé.
+
+### Vérifications
+
+| Contrôle | Résultat |
+|---|---|
+| `npm run test:prototype` (serveur isolé 5177, contextes neufs, 1280 et 390 px) | **15 réussis, 1 ignoré** (clavier physique sur téléphone, inchangé) : parcours UX1/UX2 et 3 nouveaux parcours `/suivi` |
+| Dans ces parcours | Aucune requête hors de `127.0.0.1` ; l'état UX1 (`agria.prototype.ux1`) n'est pas créé par la démonstration ; pas de défilement horizontal ; rien au journal avant confirmation |
+| `eslint` (dont la règle interdisant tout import du prototype dans `src`), TypeScript, `npm run build:prototype` | OK |
+| Captures 1280 et 390 px (hors dépôt) | Lisibilité, retours, confirmations, cas incomplets inspectés |
+
+Non relancés : tests backend et parcours de l'application connectée (`dev.py check --e2e`) : ni l'application, ni le backend, ni les données n'ont changé ; seuls le prototype et la documentation ont été modifiés. Aucune base écrite (le prototype n'a pas de backend).
