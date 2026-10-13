@@ -1,8 +1,7 @@
 name: CI
 
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
 
 # Lecture seule : aucun job n'écrit dans le dépôt ni n'utilise de secret.
 permissions:
