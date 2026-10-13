@@ -1,12 +1,12 @@
 import { useEffect, useRef, useSyncExternalStore } from 'react'
-import { Link, NavLink, Outlet, useLocation, useMatch, useNavigate } from 'react-router'
+import { Link, Outlet, useLocation, useMatch, useNavigate } from 'react-router'
 import { useLogout, useMe } from '../features/auth/session'
 import { useDossiers } from '../features/dossiers/api'
 import { forgetDossier, lastDossier } from '../features/dossiers/lastDossier'
 import { words } from '../features/dossiers/roles'
 import { UnsavedChangesProvider, useConfirmLeave } from '../shared/unsaved'
 
-/** En-tête, navigation principale (Aujourd'hui · Mon projet · Mon plan · Aide) et contenu. */
+/** En-tête, navigation principale par espace (porteur : Projet · Démarches · Budget · Conseiller · Aide) et contenu. */
 function subscribeOnline(callback: () => void) {
   window.addEventListener('online', callback)
   window.addEventListener('offline', callback)
@@ -55,14 +55,32 @@ function Layout() {
   const current = dossiers.data?.find((d) => String(d.id) === dossierId)
   const w = words(current ?? { role: 'porteur', archived: false })
 
-  const links = dossierId
-    ? [
-        { to: `/d/${dossierId}`, label: 'Aujourd’hui', end: true },
-        { to: `/d/${dossierId}/projet`, label: w.projectNav, end: false },
-        { to: `/d/${dossierId}/plan`, label: w.planNav, end: false },
-        { to: '/aide', label: 'Aide', end: true },
-      ]
-    : [{ to: '/aide', label: 'Aide', end: true }]
+  const advisor = current?.role === 'conseiller'
+  const base = `/d/${dossierId}`
+  const path = location.pathname
+  // Lien actif selon l'espace : la synthèse, les sujets et les informations relèvent de « Projet ».
+  const links: { to: string; label: string; active: boolean }[] = dossierId
+    ? advisor
+      ? [
+          { to: base, label: w.homeNav, active: path === base },
+          { to: `${base}/projet`, label: w.projectNav, active: path.startsWith(`${base}/projet`) || path.startsWith(`${base}/sujet`) },
+          { to: `${base}/plan`, label: w.planNav, active: path.startsWith(`${base}/plan`) },
+          { to: `${base}/relecture`, label: w.exchangesNav, active: path.startsWith(`${base}/relecture`) || path.startsWith(`${base}/synthese`) },
+          { to: '/aide', label: 'Aide', active: path === '/aide' },
+        ]
+      : [
+          {
+            to: base,
+            label: w.homeNav,
+            active: path === base || path.startsWith(`${base}/sujet`) || path.startsWith(`${base}/demarrer`) ||
+              (path.startsWith(`${base}/projet`) && !path.startsWith(`${base}/projet/budget`)),
+          },
+          { to: `${base}/plan`, label: w.planNav, active: path.startsWith(`${base}/plan`) },
+          { to: `${base}/projet/budget`, label: 'Budget', active: path.startsWith(`${base}/projet/budget`) },
+          { to: `${base}/relecture`, label: w.exchangesNav, active: path.startsWith(`${base}/relecture`) || path.startsWith(`${base}/synthese`) },
+          { to: '/aide', label: 'Aide', active: path === '/aide' },
+        ]
+    : [{ to: '/aide', label: 'Aide', active: path === '/aide' }]
 
   return (
     <div className="min-h-dvh pb-20 sm:pb-0">
@@ -70,7 +88,7 @@ function Layout() {
         Aller au contenu
       </a>
       <header className="no-print border-b border-line bg-surface">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
           <Link to="/" className="text-lg font-bold text-brand-700">AGRIA</Link>
           {user && (
             <div className="flex items-center gap-3 text-sm">
@@ -97,20 +115,18 @@ function Layout() {
         </div>
         {user && (
           <nav aria-label="Navigation principale" className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-surface sm:static sm:border-t-0">
-            <ul className="mx-auto flex max-w-3xl">
+            <ul className="mx-auto flex max-w-5xl">
               {links.map((link) => (
                 <li key={link.to} className="flex-1 sm:flex-none">
-                  <NavLink
+                  <Link
                     to={link.to}
-                    end={link.end}
-                    className={({ isActive }) =>
-                      `flex min-h-12 items-center justify-center whitespace-nowrap border-t-4 px-1 text-sm font-medium sm:border-b-4 sm:border-t-0 sm:px-4 ${
-                        isActive ? 'border-brand-700 text-brand-800' : 'border-transparent text-muted hover:text-ink'
-                      }`
-                    }
+                    aria-current={link.active ? 'page' : undefined}
+                    className={`flex min-h-12 items-center justify-center whitespace-nowrap border-t-4 px-1 text-sm font-medium sm:border-b-4 sm:border-t-0 sm:px-4 ${
+                      link.active ? 'border-brand-700 text-brand-800' : 'border-transparent text-muted hover:text-ink'
+                    }`}
                   >
                     {link.label}
-                  </NavLink>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -122,7 +138,7 @@ function Layout() {
           Vous semblez hors connexion : rien ne pourra être enregistré avant le retour du réseau. Votre saisie reste à l'écran.
         </div>
       )}
-      <main id="contenu" ref={mainRef} tabIndex={-1} className="mx-auto max-w-3xl px-4 py-6 focus:outline-none">
+      <main id="contenu" ref={mainRef} tabIndex={-1} className="mx-auto max-w-5xl px-4 py-6 focus:outline-none">
         {logout.isError && (
           <p role="alert" className="mb-4 text-danger-700">Déconnexion impossible : {logout.error.message}</p>
         )}

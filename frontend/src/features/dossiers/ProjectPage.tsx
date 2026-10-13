@@ -26,6 +26,12 @@ export function ProjectPage() {
 
   return (
     <div className="space-y-6">
+      {owner && (
+        <p className="no-print">
+          <Link to={`/d/${dossier.id}`} className="text-brand-700 underline">← Projet</Link>
+          <span className="text-muted"> · Toutes les informations</span>
+        </p>
+      )}
       <PageTitle
         subtitle={`${dossier.label} · ${dossier.project.profile_label}${owner ? '' : ` · porteur : ${dossier.project.owner.display_name}`}`}
       >

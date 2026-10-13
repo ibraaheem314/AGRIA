@@ -53,7 +53,7 @@ export function DossiersPage() {
         <>
           <DossierList title="Dossiers archivés (consultation)" items={archived} />
           <p className="text-sm text-muted">
-            Pour préparer la saison suivante d’un projet archivé, ouvrez-le puis « Préparer une autre campagne » dans Mon projet.
+            Pour préparer la saison suivante d’un projet archivé, ouvrez-le puis « Préparer une autre campagne » dans « Toutes les informations ».
           </p>
         </>
       )}

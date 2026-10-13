@@ -289,7 +289,7 @@ function NextStep({ dossier, action }: { dossier: ReturnType<typeof useCurrentDo
           {owner && (
             <>
               {' '}Si son résultat change une information, mettez-la à jour dans{' '}
-              <Link to={`/d/${dossier.id}/projet`} className="underline">Mon projet</Link>.
+              <Link to={`/d/${dossier.id}/projet`} className="underline">Toutes les informations</Link>.
             </>
           )}
         </p>

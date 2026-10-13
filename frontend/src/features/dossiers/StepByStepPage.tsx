@@ -7,6 +7,7 @@ import type { Dossier, FactItem } from './api'
 import { useCurrentDossier } from './DossierLayout'
 import { FactForm } from './FactEditPage'
 import { canEdit } from './roles'
+import { readDeferred, writeDeferred } from './deferred'
 
 /**
  * Ordre de saisie proposé pas à pas : d'abord le lieu, l'accès au terrain et l'eau, dont dépendent
@@ -23,29 +24,6 @@ export function orderedFacts(dossier: Pick<Dossier, 'facts'>): FactItem[] {
     return i === -1 ? ORDER.length : i
   }
   return [...dossier.facts].sort((a, b) => rank(a.key) - rank(b.key))
-}
-
-// « Remettre à plus tard » n'enregistre rien côté serveur : c'est un simple repère de ce
-// navigateur pour passer à la suite. L'information reste « non renseignée ».
-const storageKey = (dossierId: number) => `agria.pas-a-pas.${dossierId}`
-
-function readDeferred(dossierId: number): string[] {
-  try {
-    const raw = window.localStorage.getItem(storageKey(dossierId))
-    const parsed: unknown = raw ? JSON.parse(raw) : []
-    return Array.isArray(parsed) ? parsed.filter((k): k is string => typeof k === 'string') : []
-  } catch {
-    return []
-  }
-}
-
-function writeDeferred(dossierId: number, keys: string[]) {
-  try {
-    if (keys.length) window.localStorage.setItem(storageKey(dossierId), JSON.stringify(keys))
-    else window.localStorage.removeItem(storageKey(dossierId))
-  } catch {
-    // Stockage indisponible : le report vaut pour cette visite seulement.
-  }
 }
 
 export function StepByStepPage() {
@@ -162,17 +140,17 @@ export function StepByStepPage() {
               </ul>
               <div className="mt-3 flex flex-wrap gap-3">
                 <Button onClick={() => { next(null); updateDeferred([]) }}>Les reprendre maintenant</Button>
-                <ButtonLink to={`/d/${dossier.id}/plan`} variant="secondary">Voir Mon plan</ButtonLink>
+                <ButtonLink to={`/d/${dossier.id}/plan`} variant="secondary">Voir les démarches</ButtonLink>
               </div>
             </>
           ) : (
             <>
               <h2 ref={headingRef} tabIndex={-1} className="font-semibold">Chaque information a une réponse enregistrée</h2>
               <p className="mt-1">
-                Cela ne veut pas dire que le projet est faisable. Les points à vérifier et les démarches sont dans Mon plan.
+                Cela ne veut pas dire que le projet est faisable. Les points à vérifier et les démarches sont dans « Démarches ».
               </p>
               <div className="mt-3 flex flex-wrap gap-3">
-                <ButtonLink to={`/d/${dossier.id}/plan`}>Voir Mon plan</ButtonLink>
+                <ButtonLink to={`/d/${dossier.id}/plan`}>Voir les démarches</ButtonLink>
                 <ButtonLink to={`/d/${dossier.id}/projet/budget`} variant="secondary">Préparer le budget provisoire</ButtonLink>
                 <ButtonLink to={`/d/${dossier.id}/projet`} variant="ghost">Voir tout le projet</ButtonLink>
               </div>

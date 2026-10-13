@@ -16,4 +16,11 @@ export default tseslint.config(
       'no-console': ['error', { allow: ['error'] }],
     },
   },
+  {
+    // L'application n'importe rien du prototype (état fictif, comptes, moteur copié) : UX3-A.
+    files: ['src/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', { patterns: [{ group: ['**/prototype/**', '**/prototype'], message: 'Le prototype reste isolé de l’application.' }] }],
+    },
+  },
 )

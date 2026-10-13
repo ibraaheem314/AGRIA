@@ -1,43 +1,243 @@
 import type { ReactNode } from 'react'
-import { Link } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { formatDate, formatDateTime, plural } from '../../shared/format'
 import { Alert, Badge, ButtonLink, Card, Loading, PageTitle } from '../../shared/ui'
 import { usePreparation, type Check } from '../plan/api'
 import { useRelecture, type Message } from '../reviews/api'
 import { useCurrentDossier } from './DossierLayout'
-import { isDetailed } from './guidance'
 import { factCounts } from './ProjectPage'
 import { useBudget } from '../budget/api'
 import { budgetSentence } from '../budget/BudgetPage'
 import { advisorHome, ownerHome, type HomePlan } from './priority'
+import { readDeferred } from './deferred'
+import { canEdit } from './roles'
+import { FIRST_KEYS, openChecks, shortValue, SUBJECT_STATE, subjectsFor, subjectState } from './subjects'
 
-/** Accueil : prochaine démarche, points bloquants, état du dossier, retours disponibles. */
+/** Accueil du dossier : synthèse pour le porteur, accueil existant pour le conseiller. */
 export function TodayPage() {
+  const dossier = useCurrentDossier()
+  return dossier.role === 'porteur' ? <OwnerSynthesis /> : <AdvisorToday />
+}
+
+/**
+ * Synthèse du porteur (direction retenue après UX2) : un résumé bref de ce qui est indiqué, une
+ * action principale avec sa raison, les autres possibilités, puis les sujets ; l'état du dossier
+ * dans un seul panneau. Tout vient du serveur ; l'ordre des actions suit `priority.ts`.
+ */
+function OwnerSynthesis() {
   const dossier = useCurrentDossier()
   const prep = usePreparation(dossier.id)
   const relecture = useRelecture(dossier.id)
+  const [params] = useSearchParams()
+  const first = params.get('premiere') === '1'
+  const active = canEdit(dossier)
+  const deferred = active ? readDeferred(dossier.id) : []
+  const toAnswer = relecture.data?.threads.filter((m) => m.state === 'a_repondre') ?? []
+  const home = prep.data && !relecture.isPending ? ownerHome(dossier, prep.data, toAnswer.length, deferred) : null
+  const subjects = subjectsFor(dossier)
+  const summary = FIRST_KEYS.map((k) => dossier.facts.find((f) => f.key === k)).filter((f) => f !== undefined)
+  const base = `/d/${dossier.id}`
+
+  return (
+    <div className="space-y-6">
+      <PageTitle subtitle={`${dossier.label} · ${dossier.project.profile_label} · état : ${dossier.status.label}`}>
+        {dossier.project.name}
+      </PageTitle>
+
+      <section aria-labelledby="resume" className="space-y-2">
+        <h2 id="resume" className="font-semibold">
+          {first ? 'Votre point de départ' : dossier.archived ? 'Ce qui était indiqué' : 'Ce que vous avez indiqué'}
+        </h2>
+        <ul className="flex flex-wrap gap-x-5 gap-y-1.5">
+          {summary.map((f) => {
+            const known = !['non_renseigne', 'inconnu'].includes(f.state.status)
+            return (
+              <li key={f.key} className="text-sm">
+                <span className="text-muted">{f.label} : </span>
+                <span className={known ? 'font-medium' : 'italic text-muted'}>{shortValue(f, deferred.includes(f.key))}</span>
+              </li>
+            )
+          })}
+        </ul>
+        {first && (
+          <p className="text-sm text-muted">
+            Ce n'est pas un avis sur la faisabilité : c'est ce qui est connu, ce qui ne l'est pas encore, et une première étape.
+          </p>
+        )}
+      </section>
+
+      {prep.isError && (
+        <Alert tone="danger" role="alert" title="Démarches indisponibles">
+          {prep.error.message}{' '}
+          <button type="button" className="font-medium underline" onClick={() => prep.refetch()}>Réessayer</button>
+        </Alert>
+      )}
+
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="space-y-4">
+          {dossier.archived && <ArchivedCard />}
+          {!dossier.archived && dossier.status.code === 'differe' && <DecisionCard />}
+          {active && !home && !prep.isError && <Loading label="Chargement de la prochaine étape…" />}
+          {active && home && (
+            <>
+              <HomeActions plan={home} dossierId={dossier.id} advisor={false} />
+              <p className="text-sm text-muted">
+                Ou bien : <Link to={`${base}/plan`} className="font-medium text-brand-700 underline">choisir une autre démarche</Link>
+                {' · '}
+                <Link to={`${base}/projet/budget`} className="font-medium text-brand-700 underline">préparer le budget</Link>
+                {' · '}compléter un sujet ci-dessous.
+              </p>
+            </>
+          )}
+          <SubjectList subjects={subjects} deferred={deferred} />
+        </div>
+
+        <aside className="space-y-4" aria-label="État du dossier">
+          <StatePanel />
+          <ExchangesCard toAnswer={toAnswer} />
+          {!dossier.archived && dossier.status.code !== 'differe' && <DecisionCard />}
+        </aside>
+      </div>
+    </div>
+  )
+}
+
+/** Les sujets, une ligne chacun : état déduit du serveur, premier point ouvert, démarches liées. */
+function SubjectList({ subjects, deferred }: { subjects: ReturnType<typeof subjectsFor>; deferred: string[] }) {
+  const dossier = useCurrentDossier()
+  const prep = usePreparation(dossier.id)
+  const base = `/d/${dossier.id}`
+  const checks = prep.data?.checks ?? []
+  return (
+    <section aria-labelledby="sujets" className="space-y-2">
+      <h2 id="sujets" className="text-lg font-semibold">{dossier.archived ? 'Les sujets à l’archivage' : 'Les sujets du dossier'}</h2>
+      <ul className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
+        {subjects.map((subject) => {
+          const state = prep.data ? subjectState(subject, checks) : null
+          const open = openChecks(subject, checks)[0]
+          const keys = subject.facts.map((f) => f.key)
+          const related = prep.data?.actions.filter((a) => a.related_fact && keys.includes(a.related_fact.key)).length ?? 0
+          const untouched = subject.facts.every((f) => f.state.status === 'non_renseigne')
+          const later = untouched && subject.facts.some((f) => deferred.includes(f.key))
+          let line = ''
+          if (open) line = open.message
+          else if (state === 'non_aborde') line = untouched ? (later ? 'Remis à plus tard' : 'Pas encore abordé') : 'Certaines informations restent à donner'
+          else if (state === 'rien_signale') line = 'Rien n’est signalé par les règles disponibles'
+          return (
+            <li key={subject.key}>
+              <Link
+                to={`${base}/sujet/${subject.key}`}
+                className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-4 py-3 hover:bg-canvas focus-visible:bg-canvas"
+              >
+                <span className="min-w-0">
+                  <span className="block font-semibold text-ink">{subject.title}</span>
+                  <span className="block text-sm text-muted">
+                    {line}
+                    {related > 0 ? `${line ? ' · ' : ''}${plural(related, 'démarche', 'démarches')}` : ''}
+                  </span>
+                </span>
+                {state && (
+                  <Badge tone={SUBJECT_STATE[state].tone}>
+                    {dossier.archived ? SUBJECT_STATE[state].archived : SUBJECT_STATE[state].label}
+                  </Badge>
+                )}
+              </Link>
+            </li>
+          )
+        })}
+      </ul>
+      <p className="text-sm text-muted">
+        Le détail, les démarches et les questions de chaque sujet s'ouvrent en le sélectionnant. « Rien de signalé » n'est
+        pas une validation.{' '}
+        <Link to={`${base}/projet`} className="font-medium text-brand-700 underline">
+          {dossier.role === 'conseiller' ? 'Toutes les informations du porteur' : 'Toutes les informations'}
+        </Link>
+      </p>
+    </section>
+  )
+}
+
+/** Un seul panneau d'état : informations renseignées, démarches, budget, contenu utilisé. */
+function StatePanel() {
+  const dossier = useCurrentDossier()
+  const prep = usePreparation(dossier.id)
+  const budget = useBudget(dossier.id)
   const counts = factCounts(dossier)
-  const owner = dossier.role === 'porteur'
-  const active = owner && !dossier.archived
-  const detailed = isDetailed(dossier)
+  const base = `/d/${dossier.id}`
+  const actions = prep.data?.actions ?? []
+  const done = actions.filter((a) => a.status === 'terminee').length
+  const blocked = actions.filter((a) => a.status === 'bloquee')
+  const open = actions.length - done
+  const template = prep.data?.template
+  const filled = counts.declare + counts.estime + counts.verifie
+  return (
+    <Card>
+      <h2 className="font-semibold">État du dossier</h2>
+      <dl className="mt-1 divide-y divide-line text-sm">
+        <div className="py-2">
+          <dt className="font-medium">Informations</dt>
+          <dd>
+            {plural(filled, 'renseignée', 'renseignées')} · {plural(counts.inconnu, 'inconnue', 'inconnues')} ·{' '}
+            {counts.non_renseigne} pas encore abordée{counts.non_renseigne > 1 ? 's' : ''}
+          </dd>
+        </div>
+        <div className="py-2">
+          <dt className="font-medium">Démarches</dt>
+          <dd>
+            {prep.data ? (
+              <>
+                {dossier.archived ? `À l’archivage : ${open} restai${open > 1 ? 'ent' : 't'} à faire` : plural(open, 'ouverte', 'ouvertes')}
+                {blocked.length > 0 ? `, dont ${plural(blocked.length, 'bloquée', 'bloquées')}` : ''} · {plural(done, 'terminée', 'terminées')}.{' '}
+                <Link to={`${base}/plan`} className="font-medium text-brand-700 underline">Voir les démarches</Link>
+                {blocked.length > 0 && (
+                  <ul className="mt-1 space-y-1">
+                    {blocked.map((a) => (
+                      <li key={a.id}>
+                        <Link to={`${base}/plan/${a.id}`} className="text-brand-700 underline">{a.title}</Link>{' '}
+                        <Badge tone="danger">Bloquée</Badge>
+                        {a.blocked_reason && <span className="block text-muted">Motif : {a.blocked_reason}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </>
+            ) : prep.isError ? (
+              'indisponibles.'
+            ) : (
+              '…'
+            )}
+          </dd>
+        </div>
+        <div className={`py-2 ${budget.data?.totals.overall.status === 'incomplet' ? 'text-warn-700' : ''}`}>
+          <dt className="font-medium">Budget</dt>
+          <dd>
+            {budget.isError ? 'indisponible.' : budget.data ? budgetSentence(budget.data.totals.overall) : '…'}{' '}
+            <Link to={`${base}/projet/budget`} className="font-medium text-brand-700 underline">Ouvrir le budget</Link>
+          </dd>
+        </div>
+      </dl>
+      <p className="mt-1 text-xs text-muted">
+        Ces compteurs mesurent l'avancement de la préparation, pas les chances de réussite du projet.
+        {template ? ` Démarches proposées à partir d’un contenu générique (${template.review_label.toLowerCase()}).` : ''}
+      </p>
+    </Card>
+  )
+}
+
+/** Accueil du conseiller : ses interventions, les points bloquants et l'état du dossier. */
+function AdvisorToday() {
+  const dossier = useCurrentDossier()
+  const prep = usePreparation(dossier.id)
+  const relecture = useRelecture(dossier.id)
 
   // Les informations vides bloquantes sont regroupées : la liste ne répète pas « non renseigné ».
   const blockingChecks = prep.data?.checks.filter((c) => c.blocking && c.level !== 'a_completer') ?? []
   const blockingEmpty = prep.data?.checks.filter((c) => c.blocking && c.level === 'a_completer') ?? []
   const blockedActions = prep.data?.actions.filter((a) => a.status === 'bloquee') ?? []
-  const starting = ['brouillon', 'a_completer'].includes(dossier.status.code)
   // Qui doit agir dans les échanges : état calculé par le serveur pour la personne connectée.
   const toAnswer = relecture.data?.threads.filter((m) => m.state === 'a_repondre') ?? []
-  const stepByStep = active && dossier.project.profile === 'debutant' && counts.non_renseigne > 0
   // Action principale : une seule, calculée à un seul endroit, une fois le plan et les échanges lus.
-  const home =
-    prep.data && !relecture.isPending
-      ? owner
-        ? ownerHome(dossier, prep.data, toAnswer.length)
-        : relecture.data
-          ? advisorHome(dossier, relecture.data)
-          : null
-      : null
+  const home = prep.data && relecture.data ? advisorHome(dossier, relecture.data) : null
 
   return (
     <div className="space-y-4">
@@ -55,11 +255,13 @@ export function TodayPage() {
 
       {!dossier.archived && dossier.status.code === 'differe' && <DecisionCard />}
 
-      {!dossier.archived && home && (owner || !relecture.isError) && <HomeActions plan={home} dossierId={dossier.id} advisor={!owner} />}
+      {!dossier.archived && home && <HomeActions plan={home} dossierId={dossier.id} advisor />}
 
       <ExchangesCard toAnswer={toAnswer} />
 
       {!dossier.archived && dossier.status.code !== 'differe' && <DecisionCard />}
+
+      <SubjectList subjects={subjectsFor(dossier)} deferred={[]} />
 
       {prep.isSuccess && (
         <Card>
@@ -99,22 +301,6 @@ export function TodayPage() {
       )}
 
       <SummaryCard />
-      {active && detailed && starting && (
-        <details className="rounded-lg border border-line bg-surface p-4">
-          <summary className="cursor-pointer font-semibold">Comment avancer</summary>
-          <ol className="mt-2 list-decimal space-y-1 pl-5">
-            <li>
-              {stepByStep
-                ? <>Renseignez votre projet, pas à pas ou dans <strong>Mon projet</strong>.</>
-                : <>Dans <strong>Mon projet</strong>, indiquez ce que vous savez. « Je ne sais pas » est une réponse acceptée : elle devient un point à vérifier.</>}
-            </li>
-            <li>Dans <strong>Mon plan</strong>, suivez les démarches proposées et notez leur résultat réel.</li>
-            <li>Chiffrez le <strong>budget provisoire</strong>, même incomplet.</li>
-            <li>Posez vos questions et demandez une relecture à votre conseiller, s'il vous a été attribué.</li>
-          </ol>
-          <p className="mt-2 text-sm text-muted">Ces étapes organisent la préparation ; elles ne remplacent pas l'avis d'un conseiller sur votre projet.</p>
-        </details>
-      )}
 
     </div>
   )

@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useBlocker, useLocation } from 'react-router'
 import { Button } from './ui'
 
@@ -77,9 +77,12 @@ export function UnsavedChangesProvider({ children }: { children: ReactNode }) {
   }, [blocker, deferred])
 
   const open = deferred !== null || blocker.state === 'blocked'
+  // Valeur stable : sinon chaque rendu du fournisseur relancerait l'effet des formulaires et
+  // réarmerait la protection juste après « Quitter sans enregistrer » (ex. déconnexion).
+  const value = useMemo(() => ({ setDirty, allowNextNavigation, confirmLeave }), [setDirty, allowNextNavigation, confirmLeave])
 
   return (
-    <UnsavedContext.Provider value={{ setDirty, allowNextNavigation, confirmLeave }}>
+    <UnsavedContext.Provider value={value}>
       {children}
       {open && <LeaveDialog onProceed={onProceed} onCancel={onCancel} />}
     </UnsavedContext.Provider>

@@ -3,6 +3,7 @@ import type { Relecture } from '../reviews/api'
 import type { Dossier } from './api'
 import { isDetailed } from './guidance'
 import { canEdit } from './roles'
+import { FIRST_KEYS } from './subjects'
 
 /** Une action proposée à l'accueil : où elle mène et pourquoi elle est proposée. */
 export type HomeAction = {
@@ -22,7 +23,12 @@ export type HomePlan = { primary: HomeAction | null; secondary: HomeAction[] }
  * aucune action n'est interdite, aucune dépendance agronomique n'est supposée.
  * Dossier archivé ou consulté par un conseiller : rien à proposer ici.
  */
-export function ownerHome(dossier: Dossier, prep: Preparation, questionsToAnswer: number): HomePlan {
+export function ownerHome(
+  dossier: Dossier,
+  prep: Preparation,
+  questionsToAnswer: number,
+  deferred: string[] = [],
+): HomePlan {
   if (!canEdit(dossier)) return { primary: null, secondary: [] }
   const base = `/d/${dossier.id}`
   const debutant = dossier.project.profile === 'debutant'
@@ -69,15 +75,35 @@ export function ownerHome(dossier: Dossier, prep: Preparation, questionsToAnswer
       label: 'Continuer la démarche',
     })
   }
+  // Débutant : les premières questions d'abord (sauf celles remises à plus tard), puis le pas-à-pas.
+  const firstPending = FIRST_KEYS.filter((k) =>
+    dossier.facts.some((f) => f.key === k && f.state.status === 'non_renseigne' && !deferred.includes(k)),
+  )
+  // Premières questions interrompues : les terminer passe avant les démarches prêtes (UX3-A).
+  const firstQuestions = debutant && firstPending.length > 0
   const fill: HomeAction | null =
     empty.length === 0
       ? null
+      : firstQuestions
+        ? {
+            key: 'renseigner',
+            heading: 'Renseigner le dossier',
+            title:
+              firstPending.length === FIRST_KEYS.length
+                ? 'Répondre aux premières questions'
+                : `Terminer les premières questions (${firstPending.length} sans réponse)`,
+            why: "Quatre courtes étapes : la culture, le lieu et le terrain, l'eau, la vente. « Je ne sais pas encore » est une réponse acceptée.",
+            to: `${base}/demarrer`,
+            label: firstPending.length === FIRST_KEYS.length ? 'Commencer' : 'Reprendre les premières questions',
+          }
       : debutant
         ? {
             key: 'renseigner',
             heading: 'Renseigner le dossier',
             title: `${empty.length} information${empty.length > 1 ? 's' : ''} à renseigner`,
-            why: "Une information à la fois, en commençant par le lieu, l'accès au terrain et l'eau. « Je ne sais pas » est une réponse acceptée.",
+            why: ['localisation', 'acces_terrain', 'eau'].some((k) => empty.some((f) => f.key === k))
+              ? "Une information à la fois, en commençant par le lieu, l'accès au terrain et l'eau. « Je ne sais pas » est une réponse acceptée."
+              : 'Une information à la fois. « Je ne sais pas » est une réponse acceptée.',
             to: `${base}/projet/pas-a-pas`,
             label: empty.length === dossier.facts.length ? 'Commencer pas à pas' : 'Continuer pas à pas',
           }
@@ -103,12 +129,13 @@ export function ownerHome(dossier: Dossier, prep: Preparation, questionsToAnswer
         }
       : null
   if (blockingFill) candidates.push(blockingFill)
+  else if (fill && firstQuestions) candidates.push(fill)
   if (ready) {
     candidates.push({
       key: 'demarche',
       heading: 'Démarche à réaliser',
       title: ready.title,
-      why: blockingFill
+      why: blockingFill || firstQuestions
         ? `${explain(ready.explanation) ? `${ready.explanation} ` : ''}Elle peut avancer en parallèle de la saisie.`
         : explain(ready.explanation),
       to: `${base}/plan/${ready.id}`,
@@ -126,7 +153,7 @@ export function ownerHome(dossier: Dossier, prep: Preparation, questionsToAnswer
       label: 'Faire le point sur la démarche',
     })
   }
-  if (fill && !blockingFill) candidates.push(fill)
+  if (fill && !blockingFill && !firstQuestions) candidates.push(fill)
 
   const [primary = null, ...secondary] = candidates
   return { primary, secondary }

@@ -10,6 +10,7 @@ import { describeValue, STATUS_LABEL, STATUS_TONE } from './factDisplay'
 import { SituationLine, useOpenPoints } from './ProjectPage'
 import { useCurrentDossier } from './DossierLayout'
 import { words } from './roles'
+import { subjectsFor } from './subjects'
 import { fetchPreparation, preparationKey, usePreparation } from '../plan/api'
 
 type EditableStatus = Exclude<FactStatus, 'non_renseigne'>
@@ -56,7 +57,7 @@ export async function savedSummary(queryClient: QueryClient, dossierId: number, 
     if (check) return `${saved} Point encore ouvert : ${check.message}.`
     return `${saved} Plus aucun point n'est signalé sur cette information par les règles disponibles (ce n'est pas une validation du projet).`
   } catch {
-    return `${saved} Les vérifications n'ont pas pu être relues : consultez Mon plan.`
+    return `${saved} Les vérifications n'ont pas pu être relues : consultez les démarches.`
   }
 }
 
@@ -66,6 +67,8 @@ export function FactEditPage() {
   const { factKey = '' } = useParams()
   const [searchParams] = useSearchParams()
   const fromAction = Number(searchParams.get('depuis')) || null
+  // Ouverte depuis un sujet : le retour et la fin de l'enregistrement y ramènent.
+  const subject = subjectsFor(dossier).find((s) => s.key === searchParams.get('sujet') && s.facts.some((f) => f.key === factKey))
   const fact = dossier.facts.find((f) => f.key === factKey)
   if (!fact) {
     return (
@@ -75,10 +78,17 @@ export function FactEditPage() {
     )
   }
   const editable = dossier.role === 'porteur' && !dossier.archived
+  const back = fromAction
+    ? `/d/${dossier.id}/plan/${fromAction}`
+    : subject
+      ? `/d/${dossier.id}/sujet/${subject.key}`
+      : `/d/${dossier.id}/projet`
   return (
     <div className="space-y-6">
       <p className="no-print">
-        <Link to={`/d/${dossier.id}/projet`} className="text-brand-700 underline">{words(dossier).backToProject}</Link>
+        <Link to={subject && !fromAction ? back : `/d/${dossier.id}/projet`} className="text-brand-700 underline">
+          {subject && !fromAction ? `← ${subject.title}` : words(dossier).backToProject}
+        </Link>
       </p>
       <PageTitle subtitle={fact.why}>{fact.label}</PageTitle>
       <FactSituation dossierId={dossier.id} factKey={fact.key} />
@@ -89,10 +99,10 @@ export function FactEditPage() {
           fact={fact}
           dossierId={dossier.id}
           statuses={dossier.statuses}
-          cancelTo={fromAction ? `/d/${dossier.id}/plan/${fromAction}` : `/d/${dossier.id}/projet`}
+          cancelTo={back}
           onSaved={(message, allowNextNavigation) => {
             allowNextNavigation()
-            navigate(fromAction ? `/d/${dossier.id}/plan/${fromAction}` : `/d/${dossier.id}/projet`, {
+            navigate(back, {
               state: { flash: message },
             })
           }}

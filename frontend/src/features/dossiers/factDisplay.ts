@@ -19,8 +19,9 @@ export const STATUS_TONE: Record<FactStatus, 'neutral' | 'ok' | 'warn' | 'danger
   verifie: 'info',
 }
 
-/** Résumé lisible d'une valeur, champ par champ, à partir des définitions du serveur. */
-export function describeValue(fact: Pick<FactItem, 'fields'>, value: FactValue | null): string[] {
+/** Résumé lisible d'une valeur, champ par champ, à partir des définitions du serveur.
+ * `labels` : préfixer chaque valeur par le nom du champ quand l'information en a plusieurs. */
+export function describeValue(fact: Pick<FactItem, 'fields'>, value: FactValue | null, labels = true): string[] {
   if (!value) return []
   const lines: string[] = []
   for (const field of fact.fields) {
@@ -46,7 +47,7 @@ export function describeValue(fact: Pick<FactItem, 'fields'>, value: FactValue |
       default:
         text = String(raw)
     }
-    lines.push(fact.fields.length > 1 ? `${field.label} : ${text}` : text)
+    lines.push(labels && fact.fields.length > 1 ? `${field.label} : ${text}` : text)
   }
   return lines
 }

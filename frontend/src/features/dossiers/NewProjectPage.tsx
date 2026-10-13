@@ -44,7 +44,9 @@ export function NewProjectPage() {
       {
         onSuccess: (dossier) => {
           allowNextNavigation()
-          navigate(`/d/${dossier.id}/projet`, { state: { flash: 'Projet créé.' } })
+          // Débutant : les premières questions ; producteur : l'écran existant (reprise en UX3-B).
+          const to = dossier.project.profile === 'debutant' ? `/d/${dossier.id}/demarrer` : `/d/${dossier.id}/projet`
+          navigate(to, { state: { flash: 'Projet créé.' } })
         },
       },
     )
